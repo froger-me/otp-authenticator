@@ -1,0 +1,179 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body.otpa-page {
+	font-family: sans-serif;
+	line-height: 1.5;
+	color: #6d6d6d;
+}
+
+.otpa-preview {
+	zoom: 0.75!important;
+}
+
+.otpa-inner {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 999999;
+	background: #eeeeee;
+	overflow-y: scroll;
+}
+
+.otpa-preview.otpa-page .otpa-inner {
+	overflow: hidden;
+}
+
+.otpa-wrapper {
+	display: none;
+	width: 100%;
+	max-width: 360px;
+	margin: auto;
+	position: absolute;
+	top: 50px;
+	left: 50%;
+	transform: translate(-50%, 0);
+	z-index: 99999;
+}
+
+.otpa-logo {
+	width: auto;
+	height: 75px;
+	margin: 0 auto 40px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.otpa-wrapper h1 {
+	font-size: 22px;
+	line-height: 1.5;
+	color: #505050;
+	font-weight: 400;
+	letter-spacing: normal;
+	margin: 0 0 25px;
+}
+
+.otpa-form {
+	background: #ffffff;
+	max-width: 360px;
+	min-width: 320px;
+	width: 100%;
+	padding: 45px 35px;
+	text-align: center;
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.otpa-form input[type=text],
+.otpa-form input[type=number],
+.otpa-form input[type=email],
+.otpa-form input[type=tel],
+.otpa-form input[type=password] {
+	outline: none;
+	background: #ececec;
+	width: 100%;
+	border: 0;
+	margin: 0 0 15px;
+	padding: 15px;
+	color: #444444;
+	box-sizing: border-box;
+	font-size: 14px;
+	box-shadow: none;
+	font-weight: normal;
+	line-height: 1.5;
+}
+
+[placeholder]:focus::-webkit-input-placeholder {
+	-webkit-transition: opacity 0.5s 0.5s ease;
+	transition: opacity 0.5s 0.5s ease;
+	opacity: 0;
+}
+
+.otpa-form button {
+	text-transform: uppercase;
+	width: 100%;
+	border: 0;
+	outline: none;
+	padding: 15px;
+	font-weight: normal;
+	font-size: 14px;
+	-webkit-transition: all 0.3 ease;
+	transition: all 0.3 ease;
+	cursor: pointer;
+	margin: 0 0 15px 0;
+	border-radius: 0;
+	text-decoration: none;
+	text-shadow: none;
+	-webkit-appearance: none;
+}
+
+.otpa-form button:hover,
+.otpa-form button:active,
+.otpa-form button:focus {
+	outline: none;
+	border: 0;
+}
+
+.otpa-form button::after {
+	display: none;
+}
+
+.otpa-form button:disabled {
+		opacity: 0.5 !important;
+		cursor: not-allowed;
+}
+
+.otpa-form .message.result {
+	min-height: 20px;
+}
+
+.otpa-form .message {
+	font-size: 14px;
+	margin: 0 0 15px 0;
+}
+
+.otpa-form .message.align-left {
+	text-align: left;
+}
+
+.otpa-form .message.footer {
+	margin: 0;
+}
+
+.otpa-form .message a {
+	outline: none;
+	text-decoration: none;
+}
+
+.otpa-form .hidden {
+	display: none;
+}
+
+.otpa-validation-status.not-validated:before {
+		background-color: #ff3b30;
+}
+
+@media screen and (max-width: 375px) {
+	.otpa-wrapper {
+		max-width: 100%;
+	}
+
+	.otpa-inner {
+		background: #ffffff;
+	}
+
+	.otpa-form {
+		max-width: 100%;
+		top: initial;
+		bottom: initial;
+		transform: none;
+		left: initial;
+		right: initial;
+		box-shadow: none;
+	}
+}

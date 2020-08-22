@@ -1,0 +1,30 @@
+.otpa-form .otpa-button-field {
+	margin: 0 0 15px 0;
+}
+
+.otpa-form .otpa-button-field input {
+	width: 80%;
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0;
+}
+
+.otpa-form .otpa-button-field button {
+	width: 20%;
+	font-size: 14px;
+	background: #d0d0d0;
+	text-transform: none;
+	color: #444444;
+	display: inline-block;
+	vertical-align: middle;
+	font-weight: bold;
+	padding: 15px 5px;
+	margin: 0;
+	line-height: 1.5;
+}
+
+.otpa-form .otpa-button-field button:hover,
+.otpa-form .otpa-button-field button:active,
+.otpa-form .otpa-button-field button:focus {
+	background: #d6d6d6;
+}

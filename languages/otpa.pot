@@ -1,0 +1,1454 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OTP Authenticator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-22 17:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.4.2; wp-5.5"
+
+#. %1$s hours, %2$s minutes and %2$s seconds
+#: functions.php:172
+#, php-format
+msgid "%1$s, %2$s and %3$s"
+msgstr ""
+
+#. %s number of hours
+#: functions.php:174 functions.php:190 functions.php:216 functions.php:225
+#, php-format
+msgid "%s hour"
+msgid_plural "%s hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s number of minutes
+#: functions.php:176 functions.php:192 functions.php:203 functions.php:228
+#, php-format
+msgid "%s minute"
+msgid_plural "%s minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s number of seconds
+#: functions.php:178 functions.php:205 functions.php:218 functions.php:231
+#, php-format
+msgid "%s second"
+msgid_plural "%s seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %1$s hours and %2$s minutes
+#. %1$s minutes and %2$s seconds
+#. %1$s hours and %2$s seconds
+#: functions.php:188 functions.php:201 functions.php:214
+#, php-format
+msgid "%1$s and %2$s"
+msgstr ""
+
+#: inc/class-otpa-2fa.php:82 inc/class-otpa-user-info.php:278
+#: inc/class-otpa-user-info.php:289 inc/class-otpa-user-info.php:315
+#: inc/class-otpa-user-info.php:326 inc/class-otpa.php:233
+msgid "Error: unauthorized access - please reload the page and try again."
+msgstr ""
+
+#: inc/class-otpa-2fa.php:97 inc/class-otpa.php:250
+msgid ""
+"Error: unauthorized operation - if the problem persists, please contact an "
+"administrator."
+msgstr ""
+
+#: inc/class-otpa-2fa.php:151 inc/templates/otpa-otp-info.php:104
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: inc/class-otpa-2fa.php:193
+msgid "OTP Authenticator: Two-Factor Authentication required."
+msgstr ""
+
+#: inc/class-otpa-2fa.php:426
+msgid "An error occured."
+msgstr ""
+
+#: inc/class-otpa-2fa.php:426 inc/class-otpa-2fa.php:475 inc/class-otpa.php:132
+msgid ""
+"Please reload the page and try again - if the problem persists, please "
+"contact an administrator."
+msgstr ""
+
+#: inc/class-otpa-2fa.php:462
+msgid "Two-Factor Authentication is ON - Click to Disable"
+msgstr ""
+
+#: inc/class-otpa-2fa.php:463
+msgid "Two-Factor Authentication is OFF - Click to Enable"
+msgstr ""
+
+#: inc/class-otpa-2fa.php:474 inc/class-otpa.php:132
+#: inc/templates/otpa-set-otp-identifier-form-page.php:72
+#: inc/templates/otpa-otp-form-page.php:27
+msgid "An undefined error occured."
+msgstr ""
+
+#: inc/class-otpa-passwordless.php:68 inc/class-otpa-passwordless.php:92
+msgid "Passwordless Authentication"
+msgstr ""
+
+#: inc/class-otpa-passwordless.php:142
+msgid "Welcome!"
+msgstr ""
+
+#: inc/class-otpa-passwordless.php:142
+#: inc/class-otpa-account-validation.php:239 inc/class-otpa.php:692
+#: inc/class-otpa.php:736
+msgid "Redirecting..."
+msgstr ""
+
+#: inc/class-otpa-settings.php:113
+msgid "Edit configuration"
+msgstr ""
+
+#: inc/class-otpa-settings.php:115
+msgid "OTP Authenticator is not ready. "
+msgstr ""
+
+#. Name of the plugin
+#: inc/class-otpa-settings.php:129 inc/class-otpa-user-info.php:110
+#: inc/templates/admin/main-settings-page.php:7
+msgid "OTP Authenticator"
+msgstr ""
+
+#: inc/class-otpa-settings.php:178
+msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+#: inc/class-otpa-settings.php:251
+msgid "Authentication Gateway"
+msgstr ""
+
+#: inc/class-otpa-settings.php:257
+msgid ""
+"Authentication Gateway used to send the One-Time Password Verification Code."
+msgstr ""
+
+#: inc/class-otpa-settings.php:261
+msgid "Enable Two-Factor Authentication"
+msgstr ""
+
+#: inc/class-otpa-settings.php:264
+msgid ""
+"When Two-Factor Authentication is enabled, users logging in with their login "
+"and password will be asked to login with the selected Authentication Gateway "
+"as well."
+msgstr ""
+
+#. %1$s is the 2FA shortcode, %2$s is the "OTPA 2FA Form" Gutenberg Block name
+#: inc/class-otpa-settings.php:266
+#, php-format
+msgid ""
+"Unless forced, users can opt in & out of Two Factor Authentication in their "
+"WordPress user profile, or with a button displayed either by the %1$s "
+"shortcode or with the %2$s Block."
+msgstr ""
+
+#: inc/class-otpa-settings.php:268
+msgid "OTPA 2FA Switch"
+msgstr ""
+
+#: inc/class-otpa-settings.php:269
+msgid ""
+"Enabling Two-Factor Authentication disables Passwordless Authentication and "
+"Account Validation."
+msgstr ""
+
+#: inc/class-otpa-settings.php:273
+msgid "Force Two-Factor Authentication"
+msgstr ""
+
+#: inc/class-otpa-settings.php:276
+msgid ""
+"When Two-Factor Authentication is enabled and this option is active, users "
+"cannot opt-out of using it during login."
+msgstr ""
+
+#: inc/class-otpa-settings.php:276 inc/class-otpa-settings.php:283
+msgid ""
+"If they have not set an identifier at registration, they will be asked to do "
+"so immediately at their next login."
+msgstr ""
+
+#: inc/class-otpa-settings.php:280
+msgid "Two-Factor Authentication enabled by default"
+msgstr ""
+
+#: inc/class-otpa-settings.php:283
+msgid ""
+"When Two-Factor Authentication is enabled and this option is active, users "
+"need to use Two-Factor Authentication at login by default, but can opt out "
+"at anytime."
+msgstr ""
+
+#: inc/class-otpa-settings.php:287
+msgid "Enable Passwordless Authentication"
+msgstr ""
+
+#: inc/class-otpa-settings.php:290
+msgid ""
+"When Passwordless Authentication is enabled, users can choose to log in with "
+"the selected Authentication Gateway instead of using their login and "
+"password."
+msgstr ""
+
+#: inc/class-otpa-settings.php:290
+msgid ""
+"Passwordless Authentication and Two-Factor Authentication cannot be enabled "
+"at the same time."
+msgstr ""
+
+#: inc/class-otpa-settings.php:294
+msgid "Enable Account Validation"
+msgstr ""
+
+#: inc/class-otpa-settings.php:297
+msgid ""
+"When Account Validation is enabled, logged in users with an account not "
+"previously validated or with an expired account validation are asked to "
+"validate their account with the selected Authentication Gateway before "
+"accessing the website."
+msgstr ""
+
+#: inc/class-otpa-settings.php:297
+msgid ""
+"Users will automatically be asked to validate their account upon editing the "
+"identifier used by the selected Authentication Gateway."
+msgstr ""
+
+#: inc/class-otpa-settings.php:297
+msgid ""
+"An account is validated whenever an OTP Verification Code is successfully "
+"used (including during Passwordless Authentication if enabled)."
+msgstr ""
+
+#: inc/class-otpa-settings.php:297
+msgid ""
+"Account Validation and Two-Factor Authentication cannot be enabled at the "
+"same time."
+msgstr ""
+
+#: inc/class-otpa-settings.php:301
+msgid "Account Validation Expiry"
+msgstr ""
+
+#: inc/class-otpa-settings.php:307 inc/class-otpa-settings.php:373
+msgid "Expressed in hours."
+msgstr ""
+
+#: inc/class-otpa-settings.php:307
+msgid ""
+"After the specified duration, at their next login, users will be asked to "
+"validate their account again before accessing the website."
+msgstr ""
+
+#: inc/class-otpa-settings.php:307
+msgid ""
+"Set this value to -1 to never expire the validation ; set this value to 0 to "
+"force users to validate their account each time they log in."
+msgstr ""
+
+#: inc/class-otpa-settings.php:311
+msgid "Roles excluded from Account Validation"
+msgstr ""
+
+#: inc/class-otpa-settings.php:316
+msgid ""
+"Selected roles will not be asked to validate their account before accessing "
+"the website."
+msgstr ""
+
+#: inc/class-otpa-settings.php:320
+msgid "Sandbox Mode"
+msgstr ""
+
+#: inc/class-otpa-settings.php:323
+msgid ""
+"When Sandbox Mode is on, the Authentication Gateway is bypassed and the One-"
+"Time Password Verification Code is send to the Activity Logs only."
+msgstr ""
+
+#: inc/class-otpa-settings.php:323
+msgid ""
+"Do not use in production, users requesting OTP Verification Codes will not "
+"receive them!"
+msgstr ""
+
+#: inc/class-otpa-settings.php:327
+msgid "OTP Verification Code Max. Requests"
+msgstr ""
+
+#: inc/class-otpa-settings.php:333
+msgid ""
+"Maximum number of One-Time Password Verification Code requests allowed "
+"before the user gets temporarily blocked from requesting a new code."
+msgstr ""
+
+#: inc/class-otpa-settings.php:333
+msgid ""
+"If the number of requests reaches this value for a given user, OTP "
+"Verification Codes and requests are temporarily unusable."
+msgstr ""
+
+#: inc/class-otpa-settings.php:333 inc/class-otpa-settings.php:343
+msgid ""
+"Allowance is reset automatically after the user successfully used an OTP "
+"Verification Code, when the OTP Temporary Block expired, or when the OTP "
+"Tracking expired."
+msgstr ""
+
+#: inc/class-otpa-settings.php:333
+msgid "Set this value to 0 to allow unlimited requests (discouraged)."
+msgstr ""
+
+#: inc/class-otpa-settings.php:337
+msgid "Max. Failed Verification Attempts"
+msgstr ""
+
+#: inc/class-otpa-settings.php:343
+msgid ""
+"Maximum number of failed One-Time Password Verification Code submission "
+"attempts allowed."
+msgstr ""
+
+#: inc/class-otpa-settings.php:343
+msgid ""
+"If the number of failed attempts reaches this value for a given user, OTP "
+"Verification Codes and requests are temporarily unusable."
+msgstr ""
+
+#: inc/class-otpa-settings.php:343
+msgid "Set this value to 0 to allow unlimited attempts (discouraged)."
+msgstr ""
+
+#: inc/class-otpa-settings.php:347
+msgid "OTP Verification Code Request Frequency"
+msgstr ""
+
+#: inc/class-otpa-settings.php:353
+msgid "Expressed in secondes."
+msgstr ""
+
+#: inc/class-otpa-settings.php:353
+msgid "Frequency of allowed One-Time Password Verification Code requests."
+msgstr ""
+
+#: inc/class-otpa-settings.php:353
+msgid "Prevents users from requesting codes too often."
+msgstr ""
+
+#: inc/class-otpa-settings.php:357
+msgid "OTP Verification Code Expiry"
+msgstr ""
+
+#: inc/class-otpa-settings.php:363 inc/class-otpa-settings.php:383
+msgid "Expressed in minutes."
+msgstr ""
+
+#: inc/class-otpa-settings.php:363
+msgid ""
+"The amount of time after which the One-Time Password Verification Code is no "
+"longer valid."
+msgstr ""
+
+#: inc/class-otpa-settings.php:363
+msgid ""
+"It is recommended to keep this value low, but no too low otherwise the users "
+"would be unable to receive and type their code before it expires."
+msgstr ""
+
+#: inc/class-otpa-settings.php:363 inc/class-otpa-settings.php:383
+msgid "Minimum 1 minute."
+msgstr ""
+
+#: inc/class-otpa-settings.php:367
+msgid "OTP Tracking Expiry"
+msgstr ""
+
+#: inc/class-otpa-settings.php:373
+msgid ""
+"Used to determine when to expire \"OTP Verification Code Max. Requests\" and "
+"\"Max. Failed Verification Attempts\"."
+msgstr ""
+
+#: inc/class-otpa-settings.php:373
+msgid "Minimum 1 hour."
+msgstr ""
+
+#: inc/class-otpa-settings.php:377
+msgid "OTP Temporary Block Expiry"
+msgstr ""
+
+#: inc/class-otpa-settings.php:383
+msgid ""
+"If one of \"OTP Verification Code Max. Requests\" or \"Max. Failed "
+"Verification Attempts\" is greater than 0 and is reached for a given user, "
+"this value determines how long the OTP Authentication is unusable."
+msgstr ""
+
+#: inc/class-otpa-settings-renderer.php:314
+msgid "Select Image"
+msgstr ""
+
+#: inc/class-otpa-settings-renderer.php:316
+msgid "Remove"
+msgstr ""
+
+#. %1$s is the field type, %2$s is the field ID
+#: inc/class-otpa-settings-renderer.php:330
+#, php-format
+msgid "Unsupported field type %1$s for field ID %2$s"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:127
+msgid "Warning - Account Validation is enabled: "
+msgstr ""
+
+#: inc/class-otpa-user-info.php:130
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:56
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:119
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:259
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:52
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:225
+msgid "if changed, you will be asked to validate your account immediately."
+msgstr ""
+
+#: inc/class-otpa-user-info.php:132
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:58
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:54
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:227
+msgid ""
+"if changed, the user will be asked to validate their account immediately."
+msgstr ""
+
+#: inc/class-otpa-user-info.php:139 inc/class-otpa-user-info.php:382
+msgid "Validated"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:139 inc/class-otpa-user-info.php:382
+msgid "Not validated"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:140 inc/class-otpa-user-info.php:141
+#: inc/class-otpa-user-info.php:142
+msgid "Yes"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:140 inc/class-otpa-user-info.php:141
+#: inc/class-otpa-user-info.php:142
+msgid "No"
+msgstr ""
+
+#. %s is the OTP identifier field label
+#: inc/class-otpa-user-info.php:149
+#, php-format
+msgid "Only when the %s is updated"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:154
+msgid "At next login"
+msgstr ""
+
+#. %s is the duration before validation expiry
+#: inc/class-otpa-user-info.php:159
+#, php-format
+msgid "in %s"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:205 inc/class-otpa-user-info.php:214
+#: inc/class-otpa-user-info.php:227
+msgid "Error: "
+msgstr ""
+
+#. %s is the OTP Identifier field label
+#: inc/class-otpa-user-info.php:207
+#, php-format
+msgid "%s field is required."
+msgstr ""
+
+#: inc/class-otpa-user-info.php:304 inc/class-otpa-user-info.php:336
+msgid "Reloading page..."
+msgstr ""
+
+#: inc/class-otpa-user-info.php:342
+msgid "OTP Validated"
+msgstr ""
+
+#: inc/class-otpa-user-info.php:392 inc/class-otpa.php:331
+#: inc/templates/otpa-set-otp-identifier-form-page.php:34
+#: inc/templates/otpa-set-otp-identifier-form-page.php:54
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:330
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:178
+msgid "OTP Identifier"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:103
+msgid "Saved OTP Form Style"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:183
+msgid "Logo"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:185
+msgid "Logo to display on the OTP Form pages."
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:185
+msgid "Recommended maximum height: 75px."
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:189
+msgid "Submit Button Background Color"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:194
+msgid "Background color of the OTP Form submit button."
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:198
+msgid "Submit Button Text Color"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:203
+msgid "Text color of the OTP Form submit button."
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:207
+msgid "Links Text Color"
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:212
+msgid "Text color of the links displayed on the OTP Form pages."
+msgstr ""
+
+#: inc/class-otpa-style-settings.php:236
+msgid "Hyperlink"
+msgstr ""
+
+#: inc/class-otpa-account-validation.php:84
+msgid "Validate your account"
+msgstr ""
+
+#: inc/class-otpa-account-validation.php:111
+msgid "OTP Authenticator: Account Validation required."
+msgstr ""
+
+#: inc/class-otpa-account-validation.php:239
+msgid "Account successfully validated!"
+msgstr ""
+
+#: inc/class-otpa-logger.php:19
+msgid "Info"
+msgstr ""
+
+#: inc/class-otpa-logger.php:20
+msgid "Success"
+msgstr ""
+
+#: inc/class-otpa-logger.php:21
+msgid "Warning"
+msgstr ""
+
+#: inc/class-otpa-logger.php:22
+msgid "Alert"
+msgstr ""
+
+#. %d is the current number of log entries
+#: inc/class-otpa-logger.php:190 inc/templates/admin/logs-settings-page.php:34
+#, php-format
+msgid "Clear All (%d entries)"
+msgstr ""
+
+#: inc/class-otpa-logger.php:299
+msgid "(No message)"
+msgstr ""
+
+#: inc/class-otpa.php:55
+msgid "Failed to create the necessary database table(s)."
+msgstr ""
+
+#: inc/class-otpa.php:95
+msgid "The OTP Gateway is invalid."
+msgstr ""
+
+#: inc/class-otpa.php:98
+msgid "Too many failed attempts or too many code requests have been detected."
+msgstr ""
+
+#. %s is the human-readable time to wait
+#: inc/class-otpa.php:100
+#, php-format
+msgid "Please try again in %s."
+msgstr ""
+
+#: inc/class-otpa.php:105
+msgid "User not found."
+msgstr ""
+
+#: inc/class-otpa.php:105 inc/class-otpa.php:108 inc/class-otpa.php:111
+#: inc/class-otpa.php:114 inc/class-otpa.php:117
+msgid "Please request a new code and try again."
+msgstr ""
+
+#: inc/class-otpa.php:108
+msgid ""
+"A database error occured: the new OTP Verification Code could not be "
+"persisted"
+msgstr ""
+
+#: inc/class-otpa.php:111
+msgid "The provided Verification Code has expired."
+msgstr ""
+
+#: inc/class-otpa.php:114 inc/class-otpa.php:117
+msgid "The provided Verification Code is invalid."
+msgstr ""
+
+#: inc/class-otpa.php:120
+msgid "The identifier is invalid."
+msgstr ""
+
+#: inc/class-otpa.php:123
+msgid "The identifier is already registered."
+msgstr ""
+
+#: inc/class-otpa.php:126
+msgid "An undefined error occured: missing code."
+msgstr ""
+
+#: inc/class-otpa.php:129
+msgid "Please wait a moment before requesting a new code."
+msgstr ""
+
+#: inc/class-otpa.php:294
+msgid "Get a Verification Code"
+msgstr ""
+
+#. %s is the OTP Identifier label on the next line
+#: inc/class-otpa.php:327
+#, php-format
+msgid "Set your %s"
+msgstr ""
+
+#: inc/class-otpa.php:692
+msgid "Code successfully verified!"
+msgstr ""
+
+#: inc/class-otpa.php:736
+msgid "Identifier saved!"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:14
+msgid "(required)"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:38
+msgid "Account Validation Status"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:44
+msgid "Excluded from Account Validation?"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:50
+msgid "Account Validation needed?"
+msgstr ""
+
+#. %s is the OTP identifier label
+#: inc/templates/otpa-otp-info.php:60
+#, php-format
+msgid "%s recently updated?"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:70
+msgid "Account Validation Expiry:"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:80
+msgid "Toggle Account Validation"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:85
+msgid "Reset Account Validation"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:87
+msgid "Validate Account"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:92 inc/templates/otpa-otp-info.php:116
+msgid "Reloads the page - make sure all other changes are already saved."
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:95 inc/templates/otpa-otp-info.php:119
+msgid "An undefined error occured. Please reload the page and try again"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:109
+msgid "2FA is ON - Click to Disable"
+msgstr ""
+
+#: inc/templates/otpa-otp-info.php:111
+msgid "2FA is OFF - Click to Enable"
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:22
+msgid "A One Time Password Identifier is required."
+msgstr ""
+
+#. %s is the OTP Identifier label
+#: inc/templates/otpa-set-otp-identifier-form-page.php:30
+#, php-format
+msgid ""
+"Warning! This %s will be required to access the website after login at your "
+"next visit."
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:42
+msgid ""
+"If it is invalid, you will be unable to access the website while logged in."
+msgstr ""
+
+#. %s is the OTP Identifier label
+#: inc/templates/otpa-set-otp-identifier-form-page.php:50
+#, php-format
+msgid ""
+"Warning! This %s will be used to validate your account immediately after "
+"submitting this form."
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:62
+msgid ""
+"If it is invalid, you will be unable to validate your account, and unable to "
+"access the website while logged in."
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:66
+msgid "Make sure it is correct before saving."
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:69
+#: inc/gateways/templates/otpa-default-gateway-otp-widget.php:7
+msgid "Identifier"
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:72
+#: inc/templates/otpa-otp-form-page.php:27
+msgid ""
+"Make sure you have a working internet connection and try again. If the "
+"problem persists, please contact an administrator."
+msgstr ""
+
+#: inc/templates/otpa-set-otp-identifier-form-page.php:74
+msgid "Save"
+msgstr ""
+
+#: inc/templates/otpa-otp-form-page.php:29
+#: inc/templates/admin/otpa-form-preview-page.php:27
+msgid "Submit"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:17
+msgid "Alibaba Cloud SMS"
+msgstr ""
+
+#. %s is the name of the required field
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:61
+#: inc/gateways/class-otpa-twilio-gateway.php:42
+#, php-format
+msgid "Authentication Gateway setting value \"%s\" is missing."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:66
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:140
+msgid "Access Key"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:73
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:152
+msgid "Access Secret"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:83
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:249
+msgid "Template Code (模版CODE)"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:90
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:260
+msgid "Signature Name (签名名称)"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:101
+#: inc/gateways/class-otpa-twilio-gateway.php:76
+msgid ""
+"The Phone Max. Digits value must be greater than or equal to the Phone Min. "
+"Digits value."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:114
+msgid "Use International SMS Product"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:117
+msgid ""
+"When International SMS Product is used, SMS sent to non-chinese phone "
+"numbers will not use a template unless explicitely restricted to Chinese and "
+"US Phone Numbers."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:117
+msgid ""
+"Messages sent to Chinese phone numbers still require an approved Template "
+"(See \"SMS Settings\" below)."
+msgstr ""
+
+#. %s is the link to the Alibaba Cloud Product.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:119
+#, php-format
+msgid "If checked, requires the %s product."
+msgstr ""
+
+#. %s is the link to the Alibaba Cloud Product.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:123
+#, php-format
+msgid "If unchecked, requires the %s product."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:129
+msgid "International SMS Product - restricted to Chinese and US Phone Numbers"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:132
+msgid ""
+"When International SMS Product is restricted to Chinese and US Phone Numbers,"
+" SMS sent to user must use a pre-approved Template Code."
+msgstr ""
+
+#. %s is the link to the Alibaba Cloud Product.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:134
+#, php-format
+msgid "Requires the %s product."
+msgstr ""
+
+#. %1$s is the link to Mainland Alibaba Cloud console, %2$s is the link to the international one.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:145
+#, php-format
+msgid ""
+"The Access Key found in \"Products and Services\" > \"Short Message "
+"Service\" of the %1$s or the %2$s."
+msgstr ""
+
+#. %1$s is the link to Mainland Alibaba Cloud console, %2$s is the link to the international one.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:157
+#, php-format
+msgid ""
+"The Access Secret found in \"Products and Services\" > \"Short Message "
+"Service\" of the %1$s or the %2$s."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:164
+msgid "Region"
+msgstr ""
+
+#. %s is the link to Alibaba Cloud Regions and zones documentation.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:169
+#, php-format
+msgid "The Region identifier used by the Cloud API (see %s)."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:170
+msgid "Regions and zones documentation"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:171
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:183
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:245
+#: inc/gateways/class-otpa-twilio-gateway.php:188
+msgid "If left empty, a default value will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:175
+msgid "API Version"
+msgstr ""
+
+#. %1$s is the link to China Mainland Alibaba Cloud SMS Service Public Request Parameters documentation, %2$s is the International one.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:180
+#, php-format
+msgid ""
+"The API Version for the SMS Service Product (see %1$s for the China Mainland "
+"Alibaba Cloud SMS Product, or the %2$s for the International Alibaba Cloud "
+"SMS Product)."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:181
+msgid "公共请求参数"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:182
+msgid "Common parameters documentation"
+msgstr ""
+
+#. %s is the Gateway name
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:186
+#: inc/gateways/class-otpa-wp-email-gateway.php:60
+#: inc/gateways/class-otpa-twilio-gateway.php:121
+#, php-format
+msgid "%s Gateway Settings"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:191
+#: inc/gateways/class-otpa-twilio-gateway.php:126
+msgid "Phone Field Meta key"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:195
+#: inc/gateways/class-otpa-twilio-gateway.php:130
+msgid ""
+"The key of a User Metadata field holding the value of mobile phones in the "
+"WordPress database."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:195
+#: inc/gateways/class-otpa-twilio-gateway.php:130
+msgid ""
+"Upon update, to keep identifiers unique, if the mobile phone is already "
+"registered with another user account, the metadata will not be saved."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:195
+#: inc/gateways/class-otpa-twilio-gateway.php:130
+msgid ""
+"If left empty or the meta key does not exist, a default field for the mobile "
+"phone number will be displayed on the WordPress default user profile edit "
+"forms."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:199
+#: inc/gateways/class-otpa-twilio-gateway.php:134
+msgid "Phone Max. Digits"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:205
+#: inc/gateways/class-otpa-twilio-gateway.php:140
+msgid "The maximum amount of digits of mobile phone numbers (excluding prefix)"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:205
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:215
+msgid "If left empty, \"11\" (Mainland China) will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:209
+#: inc/gateways/class-otpa-twilio-gateway.php:144
+msgid "Phone Min. Digits"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:215
+#: inc/gateways/class-otpa-twilio-gateway.php:150
+msgid "The minimum amount of digits of mobile phone numbers (excluding prefix)"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:219
+#: inc/gateways/class-otpa-twilio-gateway.php:154
+msgid "Allowed Phone Prefixes"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:225
+msgid ""
+"A comma-separated list of prefixes allowed at user input (for example: \"+86,"
+"+1,+33\")."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:225
+#: inc/gateways/class-otpa-twilio-gateway.php:164
+msgid ""
+"If left empty or none is provided at user input, the Default Phone Prefix "
+"will be used for the input phone number."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:225
+msgid ""
+"Forced to \"+86,+1\" if the International SMS Product is used and restricted "
+"to Chinese and US Phone Numbers."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:229
+#: inc/gateways/class-otpa-twilio-gateway.php:168
+msgid "Default Phone Prefix"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:235
+#: inc/gateways/class-otpa-twilio-gateway.php:174
+msgid ""
+"The default prefix to add to the phone numbers by default if none is "
+"provided at user input."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:235
+msgid "If left empty, \"+86\" (Mainland China) will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:237
+#: inc/gateways/class-otpa-twilio-gateway.php:180
+msgid "Mobile Phone Number Settings"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:242
+msgid "International SMS Product Message"
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:245
+msgid ""
+"The message sent to non-chinese phones requesting an OTP Verification Code "
+"when using the International SMS Product, not restricted to Chinese and US "
+"Phone Numbers."
+msgstr ""
+
+#. %1$s is the link to Mainland Alibaba Cloud console, %2$s is the link to the international one.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:253
+#, php-format
+msgid ""
+"A valid Template Code found in \"Products and Services\" > \"Short Message "
+"Service\" of the %1$s or the %2$s."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:256
+msgid ""
+"Required to be able to send messages to chinese phone numbers, or if using "
+"the International SMS Product and restricted to Chinese and US Phone Numbers."
+msgstr ""
+
+#. %1$s is the link to Mainland Alibaba Cloud console, %2$s is the link to the international one.
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:264
+#, php-format
+msgid ""
+"A valid Signature Name found in \"Products and Services\" > \"Short Message "
+"Service\" of the %1$s, or an 11 characters string if using the International "
+"SMS Product."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:268
+#: inc/gateways/class-otpa-twilio-gateway.php:190
+msgid "SMS Settings"
+msgstr ""
+
+#. %s is the masked email address
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:324
+#: inc/gateways/class-otpa-twilio-gateway.php:230
+#, php-format
+msgid "Enter your mobile phone number %s to request a Verification Code."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:328
+#: inc/gateways/class-otpa-twilio-gateway.php:234
+msgid ""
+"Enter your registered mobile phone number to request a Verification Code."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:337
+#: inc/gateways/class-otpa-twilio-gateway.php:243
+msgid "Mobile Phone Number"
+msgstr ""
+
+#. %s is the phone length
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:442
+#: inc/gateways/class-otpa-twilio-gateway.php:348
+#, php-format
+msgid "%s digits"
+msgstr ""
+
+#. %1$s is the phone min length, %2$s is the phone max length
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:445
+#: inc/gateways/class-otpa-twilio-gateway.php:351
+#, php-format
+msgid "between %1$s and %2$s digits"
+msgstr ""
+
+#. %1$s is the phone length hint, %2$s is the phone prefix hint %3$s is the default prefix hint
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:448
+#: inc/gateways/class-otpa-twilio-gateway.php:354
+msgid "The mobile phone number is invalid."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:448
+#: inc/gateways/class-otpa-twilio-gateway.php:354
+#, php-format
+msgid "Format: %1$s, allowed prefixes: %2$s ; default %3$s."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:451
+#: inc/gateways/class-otpa-twilio-gateway.php:357
+msgid "The mobile phone number is already registered."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:577
+#: inc/gateways/class-otpa-abstract-gateway.php:767
+#: inc/gateways/class-otpa-wp-email-gateway.php:216
+#: inc/gateways/class-otpa-twilio-gateway.php:439
+msgid "Sandbox simulated request - data sent to the Authentication Gateway: "
+msgstr ""
+
+#. %s is the user's OTP identifier
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:590
+#: inc/gateways/class-otpa-twilio-gateway.php:453
+#, php-format
+msgid "An SMS with a Verification Code was sent to %s (sandbox)."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:596
+#: inc/gateways/class-otpa-twilio-gateway.php:459
+msgid "The Authentication Gateway has experienced a problem."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:596
+#: inc/gateways/class-otpa-twilio-gateway.php:459
+msgid "Please contact an administrator."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:651
+#: inc/gateways/class-otpa-twilio-gateway.php:475
+msgid ""
+"An undefined error occured - please try again or use another phone number."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:656
+msgid ""
+"You are submitting this form too many times or too fast - please try again "
+"in 1 minute."
+msgstr ""
+
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:658
+#: inc/gateways/class-otpa-twilio-gateway.php:495
+msgid ""
+"The phone number is invalid. Please try again with a valid mobile phone "
+"number."
+msgstr ""
+
+#. %s is the user's mobile phone number
+#: inc/gateways/class-otpa-alibaba-cloud-sms-gateway.php:673
+#: inc/gateways/class-otpa-twilio-gateway.php:510
+#, php-format
+msgid "An SMS with a Verification Code was sent to %s."
+msgstr ""
+
+#: inc/gateways/class-otpa-abstract-gateway.php:413
+msgid ""
+"A system error occurred: unable to initialize the Authentication Gateway API."
+msgstr ""
+
+#: inc/gateways/class-otpa-abstract-gateway.php:413
+#: inc/gateways/class-otpa-abstract-gateway.php:428
+msgid ""
+"Please try again - if the problem persists, please contact an administrator."
+msgstr ""
+
+#: inc/gateways/class-otpa-abstract-gateway.php:428
+msgid ""
+"A system error occurred: unable to load the Authentication Gateway Library."
+msgstr ""
+
+#. %s is the user's OTP identifier
+#: inc/gateways/class-otpa-abstract-gateway.php:752
+#, php-format
+msgid "A Verification Code was sent to %s."
+msgstr ""
+
+#. %s is the user's OTP identifier
+#: inc/gateways/class-otpa-abstract-gateway.php:778
+#, php-format
+msgid "An Verification Code was sent to %s (sandox)."
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:14
+msgid "WordPress Email"
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:43
+msgid "Email Subject"
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:47
+msgid ""
+"The subject of the email containing the One-Time Password. If left empty, a "
+"default value will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:51
+msgid "Email Message"
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:57
+msgid ""
+"The content of the email sent to users. Value keys between ### will be "
+"replaced dynamically. List of dynamic value keys: USERNAME, SITENAME, EMAIL, "
+"CODE, SITEURL. If left empty, a default value will be used."
+msgstr ""
+
+#. %s is the masked email address
+#: inc/gateways/class-otpa-wp-email-gateway.php:92
+#, php-format
+msgid "Enter your email address %s to request a Verification Code."
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:96
+msgid "Enter your email address to request a Verification Code."
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:106
+msgid "Email"
+msgstr ""
+
+#: inc/gateways/class-otpa-wp-email-gateway.php:147
+msgid " OTP Verification Code"
+msgstr ""
+
+#. %s is the user's OTP identifier
+#: inc/gateways/class-otpa-wp-email-gateway.php:228
+#, php-format
+msgid "An email with a Verification Code was sent to %s (sandbox)."
+msgstr ""
+
+#. %s is the user's email address
+#: inc/gateways/class-otpa-wp-email-gateway.php:244
+#, php-format
+msgid "An email with a Verification Code was sent to %s."
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:16
+msgid "Twilio"
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:47
+#: inc/gateways/class-otpa-twilio-gateway.php:89
+msgid "Account SID"
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:54
+#: inc/gateways/class-otpa-twilio-gateway.php:100
+msgid "Auth Token"
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:61
+#: inc/gateways/class-otpa-twilio-gateway.php:111
+msgid "Twilio Phone Number"
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:66
+msgid ""
+"Twilio PHP Libraries require PHP 7.2 or highier. Please update PHP on your "
+"server to use this AUthentication Gateway."
+msgstr ""
+
+#. %s is the link to the Twilio console.
+#: inc/gateways/class-otpa-twilio-gateway.php:94
+#, php-format
+msgid "The Account SID found in the %s."
+msgstr ""
+
+#. %s is the link to the Twilio console.
+#: inc/gateways/class-otpa-twilio-gateway.php:105
+#, php-format
+msgid "The Auth Token found in the %s."
+msgstr ""
+
+#. %s is the link to the Twilio console.
+#: inc/gateways/class-otpa-twilio-gateway.php:116
+#, php-format
+msgid "A Twilio phone number used to send the messages, found in the %s."
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:140
+#: inc/gateways/class-otpa-twilio-gateway.php:150
+msgid "If left empty, \"10\" (USA) will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:160
+msgid ""
+"A comma-separated list of prefixes allowed at user input (for example: \"+1,"
+"+33,+44\")."
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:178
+msgid "If left empty, \"+1\" (USA) will be used."
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:185
+msgid "Message"
+msgstr ""
+
+#: inc/gateways/class-otpa-twilio-gateway.php:188
+msgid "The message sent to phones requesting an OTP Verification Code."
+msgstr ""
+
+#: inc/templates/admin/style-settings-tab.php:9
+msgid "OTP Form Style Settings"
+msgstr ""
+
+#: inc/templates/admin/otpa-form-preview-page.php:25
+msgid "Messages are displayed here."
+msgstr ""
+
+#: inc/templates/admin/logs-settings-tab.php:9
+msgid "Activity Logs"
+msgstr ""
+
+#: inc/templates/admin/gateway-settings-tab.php:9
+msgid "Authentication Gateway Settings"
+msgstr ""
+
+#: inc/templates/admin/main-settings-page.php:12
+msgid "General Settings"
+msgstr ""
+
+#: inc/templates/admin/logs-settings-page.php:19
+msgid "Enable Logs"
+msgstr ""
+
+#: inc/templates/admin/logs-settings-page.php:27
+msgid "Number of Log Entries"
+msgstr ""
+
+#: inc/templates/admin/logs-settings-page.php:39
+msgid ""
+"Number of log entries to display, and the minimum number of rows to keep in "
+"the database during cleanup. Logs are cleaned up automatically every hour. "
+"The number indicated in the \"Clear All\" button is the real current number "
+"of rows in the database, and clicking it deletes all of them."
+msgstr ""
+
+#: inc/templates/admin/logs-settings-page.php:49
+msgid "Refresh"
+msgstr ""
+
+#: inc/gateways/templates/otpa-default-gateway-otp-widget.php:9
+msgid "Code"
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:53
+msgid "Warning - OTP Account Validation is enabled: "
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:96
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:252
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:37
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:215
+msgid "Used for Passwordless Authentication"
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:98
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:254
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:39
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:217
+msgid "Used for Two-Factor Authentication"
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:107
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:160
+msgid "User Account Validation is enabled: "
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:112
+msgid ""
+"if changed, you will be asked to validate your account immediately upon "
+"checkout."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:114
+msgid "you will be asked to validate your account immediately upon checkout."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:116
+msgid ""
+"you will be asked to validate your account immediately upon checkout if you "
+"choose to create an account."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:121
+msgid "you will be asked to validate your account immediately."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:165
+msgid ""
+"if changed, you will be asked to validate your account with this phone "
+"number immediately upon checkout."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:167
+msgid ""
+"you will be asked to validate your account immediately with this phone "
+"number upon checkout."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:169
+msgid ""
+"you will be asked to validate your account immediately with this phone "
+"number upon checkout if you choose to create an account."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:172
+msgid ""
+"if changed, you will be asked to validate your account with this phone "
+"number immediately."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:174
+msgid ""
+"you will be asked to validate your account with this phone number "
+"immediately."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:242
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:208
+msgid "One-Time Password Identifier"
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:259
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:49
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:222
+msgid "Account Validation is enabled: "
+msgstr ""
+
+#. %s is the identifier's label
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:332
+#: inc/integration/ultimate-member/class-otpa-um-integration.php:183
+#, php-format
+msgid "The %s is required."
+msgstr ""
+
+#: inc/integration/woocommerce/class-otpa-woocommerce-integration.php:339
+msgid "<strong>Error</strong>: "
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"One-Time Password Authentication: add Two-Factor Authentication, "
+"Passwordless Authentication and Account Validation to your WordPress website"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://github.com/froger-me/otp-authenticator"
+msgstr ""
+
+#. Author of the plugin
+msgid "Alexandre Froger"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://froger.me/"
+msgstr ""
