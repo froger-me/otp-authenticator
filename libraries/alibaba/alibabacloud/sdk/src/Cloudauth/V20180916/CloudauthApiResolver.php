@@ -34,9 +34,6 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
     public $method = 'POST';
 
     /** @var string */
-    protected $scheme = 'https';
-
-    /** @var string */
     public $serviceCode = 'cloudauth';
 }
 
@@ -52,6 +49,9 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
  */
 class CompareFaces extends Rpc
 {
+
+    /** @var string */
+    public $scheme = 'https';
 
     /**
      * @param string $value
@@ -122,9 +122,6 @@ class CompareFaces extends Rpc
  */
 class CreateAuthKey extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'http';
 }
 
 /**
@@ -139,9 +136,6 @@ class CreateAuthKey extends Rpc
  */
 class CreateVerifySDK extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'http';
 }
 
 /**
@@ -168,9 +162,6 @@ class CreateVerifySDK extends Rpc
  */
 class DescribeDeviceInfo extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'http';
 }
 
 /**
@@ -183,9 +174,6 @@ class DescribeDeviceInfo extends Rpc
  */
 class DescribeVerifySDK extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'http';
 }
 
 /**
@@ -290,6 +278,9 @@ class DetectFaceAttributes extends Rpc
  */
 class GetMaterials extends Rpc
 {
+
+    /** @var string */
+    public $scheme = 'https';
 }
 
 /**
@@ -348,9 +339,6 @@ class GetVerifyToken extends Rpc
  */
 class ModifyDeviceInfo extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'http';
 }
 
 /**
@@ -409,6 +397,9 @@ class SubmitMaterials extends Rpc
  */
 class SubmitVerification extends Rpc
 {
+
+    /** @var string */
+    public $scheme = 'https';
 
     /**
      * @param string $value

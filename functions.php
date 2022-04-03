@@ -398,6 +398,15 @@ function otpa_is_identifier_synced() {
 }
 
 /**
+ * Check whether the OTP gateway is the WordPress User email
+ *
+ * @return bool whether the OTP gateway is the WordPress User email
+ */
+function otpa_is_email_gateway() {
+	return 'Otpa_WP_Email_Gateway' !== otpa_get_active_gateway_class_name();
+}
+
+/**
  * Get a user's OTP identifier
  *
  * @param int $user_id If falsey, the current user's ID ; the ID of a user otherwise - default false

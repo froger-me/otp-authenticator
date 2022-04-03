@@ -114,7 +114,7 @@ class Otpa_User_Info {
 				$identifier_field_description = false;
 				$identifier_field_editable    = otpa_gateway_allow_edit_identifier();
 				$current_user                 = wp_get_current_user();
-				$user_validation_info         = otpa_get_user_account_validation_info( $user->ID );
+				$user_validation_info         = ( $user ) ? otpa_get_user_account_validation_info( $user->ID ) : false;
 				$current_user_validation_info = otpa_get_user_account_validation_info( $current_user->ID );
 
 				if (
@@ -189,17 +189,30 @@ class Otpa_User_Info {
 
 		}
 
-		ob_start();
+		$output = '';
 
-		require_once OTPA_PLUGIN_PATH . 'inc/templates/otpa-otp-info.php';
+		if ( $user ) {
 
-		$output = ob_get_clean();
+			ob_start();
+
+			require_once OTPA_PLUGIN_PATH . 'inc/templates/otpa-otp-info.php';
+
+			$output = ob_get_clean();
+		}
 
 		return $output;
 	}
 
 	public function validate_default_otp_info( $identifier, $errors, $user = false ) {
+		global $pagenow;
+
 		$new_errors = array();
+		$bypass     = empty( $identifier ) && otpa_is_email_gateway() && 'user-new.php' === $pagenow;
+
+		if ( $bypass ) {
+
+			return $errors;
+		}
 
 		if ( empty( $identifier ) ) {
 			$new_errors[] = '<strong>' . __( 'Error: ', 'otpa' ) . '</strong>' . sprintf(

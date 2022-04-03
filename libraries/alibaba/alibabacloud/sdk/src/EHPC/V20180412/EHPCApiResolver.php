@@ -6,12 +6,13 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
 
 /**
  * @method AddContainerApp addContainerApp(array $options = [])
+ * @method AddExistedNodes addExistedNodes(array $options = [])
  * @method AddLocalNodes addLocalNodes(array $options = [])
  * @method AddNodes addNodes(array $options = [])
  * @method AddQueue addQueue(array $options = [])
+ * @method AddSecurityGroup addSecurityGroup(array $options = [])
  * @method AddUsers addUsers(array $options = [])
  * @method ApplyNodes applyNodes(array $options = [])
- * @method BindAccountToClusterUser bindAccountToClusterUser(array $options = [])
  * @method CreateCluster createCluster(array $options = [])
  * @method CreateGWSCluster createGWSCluster(array $options = [])
  * @method CreateGWSImage createGWSImage(array $options = [])
@@ -28,6 +29,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method DeleteJobTemplates deleteJobTemplates(array $options = [])
  * @method DeleteNodes deleteNodes(array $options = [])
  * @method DeleteQueue deleteQueue(array $options = [])
+ * @method DeleteSecurityGroup deleteSecurityGroup(array $options = [])
  * @method DeleteUsers deleteUsers(array $options = [])
  * @method DescribeAutoScaleConfig describeAutoScaleConfig(array $options = [])
  * @method DescribeCluster describeCluster(array $options = [])
@@ -42,6 +44,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method DescribeJob describeJob(array $options = [])
  * @method DescribeNFSClientStatus describeNFSClientStatus(array $options = [])
  * @method DescribePrice describePrice(array $options = [])
+ * @method EcdDeleteDesktops ecdDeleteDesktops(array $options = [])
  * @method EditJobTemplate editJobTemplate(array $options = [])
  * @method GetAccountingReport getAccountingReport(array $options = [])
  * @method GetAutoScaleConfig getAutoScaleConfig(array $options = [])
@@ -49,15 +52,16 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method GetCloudMetricProfiling getCloudMetricProfiling(array $options = [])
  * @method GetClusterVolumes getClusterVolumes(array $options = [])
  * @method GetGWSConnectTicket getGWSConnectTicket(array $options = [])
+ * @method GetHealthMonitorLogs getHealthMonitorLogs(array $options = [])
  * @method GetHybridClusterConfig getHybridClusterConfig(array $options = [])
  * @method GetIfEcsTypeSupportHtConfig getIfEcsTypeSupportHtConfig(array $options = [])
+ * @method GetSchedulerInfo getSchedulerInfo(array $options = [])
  * @method GetVisualServiceStatus getVisualServiceStatus(array $options = [])
  * @method GetWorkbenchToken getWorkbenchToken(array $options = [])
+ * @method InitializeEHPC initializeEHPC(array $options = [])
  * @method InstallSoftware installSoftware(array $options = [])
  * @method InvokeShellCommand invokeShellCommand(array $options = [])
- * @method ListAccountMapping listAccountMapping(array $options = [])
  * @method ListAvailableEcsTypes listAvailableEcsTypes(array $options = [])
- * @method ListAvailableFileSystemTypes listAvailableFileSystemTypes(array $options = [])
  * @method ListCloudMetricProfilings listCloudMetricProfilings(array $options = [])
  * @method ListClusterLogs listClusterLogs(array $options = [])
  * @method ListClusters listClusters(array $options = [])
@@ -81,7 +85,9 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ListPreferredEcsTypes listPreferredEcsTypes(array $options = [])
  * @method ListQueues listQueues(array $options = [])
  * @method ListRegions listRegions(array $options = [])
+ * @method ListSecurityGroups listSecurityGroups(array $options = [])
  * @method ListSoftwares listSoftwares(array $options = [])
+ * @method ListTasks listTasks(array $options = [])
  * @method ListUsers listUsers(array $options = [])
  * @method ListVolumes listVolumes(array $options = [])
  * @method ModifyClusterAttributes modifyClusterAttributes(array $options = [])
@@ -101,8 +107,8 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method SetGWSClusterPolicy setGWSClusterPolicy(array $options = [])
  * @method SetGWSInstanceName setGWSInstanceName(array $options = [])
  * @method SetGWSInstanceUser setGWSInstanceUser(array $options = [])
- * @method SetJobUser setJobUser(array $options = [])
  * @method SetQueue setQueue(array $options = [])
+ * @method SetSchedulerInfo setSchedulerInfo(array $options = [])
  * @method StartCluster startCluster(array $options = [])
  * @method StartGWSInstance startGWSInstance(array $options = [])
  * @method StartNodes startNodes(array $options = [])
@@ -113,7 +119,6 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method StopNodes stopNodes(array $options = [])
  * @method StopVisualService stopVisualService(array $options = [])
  * @method SubmitJob submitJob(array $options = [])
- * @method UnbindAccountToClusterUser unbindAccountToClusterUser(array $options = [])
  * @method UninstallSoftware uninstallSoftware(array $options = [])
  * @method UpdateClusterVolumes updateClusterVolumes(array $options = [])
  * @method UpdateQueueConfig updateQueueConfig(array $options = [])
@@ -149,6 +154,40 @@ class AddContainerApp extends Rpc
 }
 
 /**
+ * @method string getImageId()
+ * @method $this withImageId($value)
+ * @method array getInstance()
+ * @method string getClientToken()
+ * @method $this withClientToken($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getJobQueue()
+ * @method $this withJobQueue($value)
+ * @method string getImageOwnerAlias()
+ * @method $this withImageOwnerAlias($value)
+ */
+class AddExistedNodes extends Rpc
+{
+
+    /**
+     * @param array $instance
+     *
+     * @return $this
+     */
+	public function withInstance(array $instance)
+	{
+	    $this->data['Instance'] = $instance;
+		foreach ($instance as $depth1 => $depth1Value) {
+			if(isset($depth1Value['Id'])){
+				$this->options['query']['Instance.' . ($depth1 + 1) . '.Id'] = $depth1Value['Id'];
+			}
+		}
+
+		return $this;
+    }
+}
+
+/**
  * @method string getClusterId()
  * @method $this withClusterId($value)
  * @method string getNodes()
@@ -161,6 +200,10 @@ class AddLocalNodes extends Rpc
 /**
  * @method string getImageId()
  * @method $this withImageId($value)
+ * @method string getSystemDiskLevel()
+ * @method $this withSystemDiskLevel($value)
+ * @method string getClientToken()
+ * @method $this withClientToken($value)
  * @method string getAllocatePublicAddress()
  * @method $this withAllocatePublicAddress($value)
  * @method string getInternetMaxBandWidthOut()
@@ -171,6 +214,8 @@ class AddLocalNodes extends Rpc
  * @method $this withImageOwnerAlias($value)
  * @method string getSystemDiskType()
  * @method $this withSystemDiskType($value)
+ * @method string getMinCount()
+ * @method $this withMinCount($value)
  * @method string getSystemDiskSize()
  * @method $this withSystemDiskSize($value)
  * @method string getInstanceType()
@@ -191,6 +236,8 @@ class AddLocalNodes extends Rpc
  * @method $this withComputeSpotStrategy($value)
  * @method string getHostNameSuffix()
  * @method $this withHostNameSuffix($value)
+ * @method string getSync()
+ * @method $this withSync($value)
  * @method string getVSwitchId()
  * @method $this withVSwitchId($value)
  * @method string getPeriodUnit()
@@ -221,6 +268,18 @@ class AddNodes extends Rpc
  * @method $this withClusterId($value)
  */
 class AddQueue extends Rpc
+{
+}
+
+/**
+ * @method string getClientToken()
+ * @method $this withClientToken($value)
+ * @method string getSecurityGroupId()
+ * @method $this withSecurityGroupId($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class AddSecurityGroup extends Rpc
 {
 }
 
@@ -261,12 +320,16 @@ class AddUsers extends Rpc
  * @method $this withImageId($value)
  * @method string getMemory()
  * @method $this withMemory($value)
+ * @method string getSystemDiskLevel()
+ * @method $this withSystemDiskLevel($value)
  * @method string getAllocatePublicAddress()
  * @method $this withAllocatePublicAddress($value)
  * @method string getInternetMaxBandWidthOut()
  * @method $this withInternetMaxBandWidthOut($value)
  * @method string getResourceAmountType()
  * @method $this withResourceAmountType($value)
+ * @method string getStrictResourceProvision()
+ * @method $this withStrictResourceProvision($value)
  * @method string getSystemDiskType()
  * @method $this withSystemDiskType($value)
  * @method string getCores()
@@ -288,8 +351,12 @@ class AddUsers extends Rpc
  * @method $this withPriorityStrategy($value)
  * @method string getInstanceFamilyLevel()
  * @method $this withInstanceFamilyLevel($value)
+ * @method string getRound()
+ * @method $this withRound($value)
  * @method string getInternetChargeType()
  * @method $this withInternetChargeType($value)
+ * @method string getInterval()
+ * @method $this withInterval($value)
  * @method array getInstanceTypeModel()
  * @method string getInternetMaxBandWidthIn()
  * @method $this withInternetMaxBandWidthIn($value)
@@ -346,22 +413,6 @@ class ApplyNodes extends Rpc
 }
 
 /**
- * @method string getUserPwd()
- * @method $this withUserPwd($value)
- * @method string getClusterId()
- * @method $this withClusterId($value)
- * @method string getAccountName()
- * @method $this withAccountName($value)
- * @method string getAccountUid()
- * @method $this withAccountUid($value)
- * @method string getUserName()
- * @method $this withUserName($value)
- */
-class BindAccountToClusterUser extends Rpc
-{
-}
-
-/**
  * @method array getAdditionalVolumes()
  * @method string getEcsOrderManagerInstanceType()
  * @method string getKeyPairName()
@@ -378,6 +429,8 @@ class BindAccountToClusterUser extends Rpc
  * @method string getPassword()
  * @method $this withPassword($value)
  * @method string getEcsOrderLoginCount()
+ * @method string getWithoutElasticIp()
+ * @method $this withWithoutElasticIp($value)
  * @method string getRemoteVisEnable()
  * @method $this withRemoteVisEnable($value)
  * @method string getSystemDiskSize()
@@ -412,6 +465,10 @@ class BindAccountToClusterUser extends Rpc
  * @method $this withSccClusterId($value)
  * @method string getImageId()
  * @method $this withImageId($value)
+ * @method string getSystemDiskLevel()
+ * @method $this withSystemDiskLevel($value)
+ * @method string getClientToken()
+ * @method $this withClientToken($value)
  * @method string getEhpcVersion()
  * @method $this withEhpcVersion($value)
  * @method string getAccountType()
@@ -433,6 +490,10 @@ class BindAccountToClusterUser extends Rpc
  * @method $this withClientVersion($value)
  * @method string getOsTag()
  * @method $this withOsTag($value)
+ * @method string getClusterVersion()
+ * @method $this withClusterVersion($value)
+ * @method string getIsComputeEss()
+ * @method $this withIsComputeEss($value)
  * @method array getApplication()
  * @method string getEcsChargeType()
  * @method $this withEcsChargeType($value)
@@ -613,6 +674,8 @@ class CreateCluster extends Rpc
 /**
  * @method string getClusterType()
  * @method $this withClusterType($value)
+ * @method string getVSwitchId()
+ * @method $this withVSwitchId($value)
  * @method string getVpcId()
  * @method $this withVpcId($value)
  * @method string getName()
@@ -655,6 +718,8 @@ class CreateGWSImage extends Rpc
  * @method $this withClusterId($value)
  * @method string getWorkMode()
  * @method $this withWorkMode($value)
+ * @method string getVSwitchId()
+ * @method $this withVSwitchId($value)
  * @method string getPeriodUnit()
  * @method $this withPeriodUnit($value)
  * @method string getAutoRenew()
@@ -673,6 +738,8 @@ class CreateGWSInstance extends Rpc
 /**
  * @method string getKeyPairName()
  * @method $this withKeyPairName($value)
+ * @method string getMultiOs()
+ * @method $this withMultiOs($value)
  * @method string getSecurityGroupName()
  * @method $this withSecurityGroupName($value)
  * @method string getOnPremiseVolumeRemotePath()
@@ -704,6 +771,8 @@ class CreateGWSInstance extends Rpc
  * @method $this withZoneId($value)
  * @method string getImageId()
  * @method $this withImageId($value)
+ * @method string getClientToken()
+ * @method $this withClientToken($value)
  * @method string getEhpcVersion()
  * @method $this withEhpcVersion($value)
  * @method string getSecurityGroupId()
@@ -838,12 +907,16 @@ class CreateJobFile extends Rpc
 /**
  * @method string getStderrRedirectPath()
  * @method $this withStderrRedirectPath($value)
+ * @method string getClockTime()
+ * @method $this withClockTime($value)
  * @method string getCommandLine()
  * @method $this withCommandLine($value)
  * @method string getArrayRequest()
  * @method $this withArrayRequest($value)
  * @method string getPackagePath()
  * @method $this withPackagePath($value)
+ * @method string getMem()
+ * @method $this withMem($value)
  * @method string getStdoutRedirectPath()
  * @method $this withStdoutRedirectPath($value)
  * @method string getVariables()
@@ -852,10 +925,20 @@ class CreateJobFile extends Rpc
  * @method $this withRunasUser($value)
  * @method string getReRunable()
  * @method $this withReRunable($value)
+ * @method string getThread()
+ * @method $this withThread($value)
  * @method string getPriority()
  * @method $this withPriority($value)
+ * @method string getGpu()
+ * @method $this withGpu($value)
+ * @method string getNode()
+ * @method $this withNode($value)
+ * @method string getTask()
+ * @method $this withTask($value)
  * @method string getName()
  * @method $this withName($value)
+ * @method string getQueue()
+ * @method $this withQueue($value)
  */
 class CreateJobTemplate extends Rpc
 {
@@ -947,6 +1030,8 @@ class DeleteJobTemplates extends Rpc
  * @method array getInstance()
  * @method string getClusterId()
  * @method $this withClusterId($value)
+ * @method string getSync()
+ * @method $this withSync($value)
  * @method string getReleaseInstance()
  * @method $this withReleaseInstance($value)
  */
@@ -978,6 +1063,16 @@ class DeleteNodes extends Rpc
  * @method $this withClusterId($value)
  */
 class DeleteQueue extends Rpc
+{
+}
+
+/**
+ * @method string getSecurityGroupId()
+ * @method $this withSecurityGroupId($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class DeleteSecurityGroup extends Rpc
 {
 }
 
@@ -1034,6 +1129,10 @@ class DescribeContainerApp extends Rpc
 /**
  * @method string getClusterId()
  * @method $this withClusterId($value)
+ * @method string getAsyncMode()
+ * @method $this withAsyncMode($value)
+ * @method string getTaskId()
+ * @method $this withTaskId($value)
  */
 class DescribeGWSClusterPolicy extends Rpc
 {
@@ -1073,6 +1172,10 @@ class DescribeGWSImages extends Rpc
  * @method $this withInstanceId($value)
  * @method string getPageSize()
  * @method $this withPageSize($value)
+ * @method string getUserUid()
+ * @method $this withUserUid($value)
+ * @method string getUserName()
+ * @method $this withUserName($value)
  */
 class DescribeGWSInstances extends Rpc
 {
@@ -1172,6 +1275,9 @@ class DescribePrice extends Rpc
 			if(isset($depth1Value['InternetChargeType'])){
 				$this->options['query']['Commodities.' . ($depth1 + 1) . '.InternetChargeType'] = $depth1Value['InternetChargeType'];
 			}
+			if(isset($depth1Value['SystemDiskPerformanceLevel'])){
+				$this->options['query']['Commodities.' . ($depth1 + 1) . '.SystemDiskPerformanceLevel'] = $depth1Value['SystemDiskPerformanceLevel'];
+			}
 			if(isset($depth1Value['SystemDiskSize'])){
 				$this->options['query']['Commodities.' . ($depth1 + 1) . '.SystemDiskSize'] = $depth1Value['SystemDiskSize'];
 			}
@@ -1191,14 +1297,40 @@ class DescribePrice extends Rpc
 }
 
 /**
+ * @method array getDesktopId()
+ */
+class EcdDeleteDesktops extends Rpc
+{
+
+    /**
+     * @param array $desktopId
+     *
+     * @return $this
+     */
+	public function withDesktopId(array $desktopId)
+	{
+	    $this->data['DesktopId'] = $desktopId;
+		foreach ($desktopId as $i => $iValue) {
+			$this->options['query']['DesktopId.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
+}
+
+/**
  * @method string getStderrRedirectPath()
  * @method $this withStderrRedirectPath($value)
+ * @method string getClockTime()
+ * @method $this withClockTime($value)
  * @method string getCommandLine()
  * @method $this withCommandLine($value)
  * @method string getArrayRequest()
  * @method $this withArrayRequest($value)
  * @method string getPackagePath()
  * @method $this withPackagePath($value)
+ * @method string getMem()
+ * @method $this withMem($value)
  * @method string getStdoutRedirectPath()
  * @method $this withStdoutRedirectPath($value)
  * @method string getVariables()
@@ -1207,12 +1339,22 @@ class DescribePrice extends Rpc
  * @method $this withRunasUser($value)
  * @method string getReRunable()
  * @method $this withReRunable($value)
+ * @method string getThread()
+ * @method $this withThread($value)
  * @method string getTemplateId()
  * @method $this withTemplateId($value)
  * @method string getPriority()
  * @method $this withPriority($value)
+ * @method string getGpu()
+ * @method $this withGpu($value)
+ * @method string getNode()
+ * @method $this withNode($value)
+ * @method string getTask()
+ * @method $this withTask($value)
  * @method string getName()
  * @method $this withName($value)
+ * @method string getQueue()
+ * @method $this withQueue($value)
  */
 class EditJobTemplate extends Rpc
 {
@@ -1303,6 +1445,22 @@ class GetGWSConnectTicket extends Rpc
 }
 
 /**
+ * @method string getEndTime()
+ * @method $this withEndTime($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getStartTime()
+ * @method $this withStartTime($value)
+ * @method string getEnableReverse()
+ * @method $this withEnableReverse($value)
+ * @method string getFilter()
+ * @method $this withFilter($value)
+ */
+class GetHealthMonitorLogs extends Rpc
+{
+}
+
+/**
  * @method string getClusterId()
  * @method $this withClusterId($value)
  * @method string getNode()
@@ -1318,6 +1476,32 @@ class GetHybridClusterConfig extends Rpc
  */
 class GetIfEcsTypeSupportHtConfig extends Rpc
 {
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method array getScheduler()
+ */
+class GetSchedulerInfo extends Rpc
+{
+
+    /**
+     * @param array $scheduler
+     *
+     * @return $this
+     */
+	public function withScheduler(array $scheduler)
+	{
+	    $this->data['Scheduler'] = $scheduler;
+		foreach ($scheduler as $depth1 => $depth1Value) {
+			if(isset($depth1Value['SchedName'])){
+				$this->options['query']['Scheduler.' . ($depth1 + 1) . '.SchedName'] = $depth1Value['SchedName'];
+			}
+		}
+
+		return $this;
+    }
 }
 
 /**
@@ -1345,6 +1529,10 @@ class GetVisualServiceStatus extends Rpc
  * @method $this withUserName($value)
  */
 class GetWorkbenchToken extends Rpc
+{
+}
+
+class InitializeEHPC extends Rpc
 {
 }
 
@@ -1391,14 +1579,6 @@ class InvokeShellCommand extends Rpc
 }
 
 /**
- * @method string getClusterId()
- * @method $this withClusterId($value)
- */
-class ListAccountMapping extends Rpc
-{
-}
-
-/**
  * @method string getSpotStrategy()
  * @method $this withSpotStrategy($value)
  * @method string getZoneId()
@@ -1409,10 +1589,6 @@ class ListAccountMapping extends Rpc
  * @method $this withInstanceChargeType($value)
  */
 class ListAvailableEcsTypes extends Rpc
-{
-}
-
-class ListAvailableFileSystemTypes extends Rpc
 {
 }
 
@@ -1515,6 +1691,8 @@ class ListCurrentClientVersion extends Rpc
 }
 
 /**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
  * @method string getImageOwnerAlias()
  * @method $this withImageOwnerAlias($value)
  * @method string getBaseOsTag()
@@ -1631,16 +1809,26 @@ class ListJobTemplates extends Rpc
 /**
  * @method string getRole()
  * @method $this withRole($value)
- * @method string getClusterId()
- * @method $this withClusterId($value)
  * @method string getPageNumber()
  * @method $this withPageNumber($value)
- * @method string getSequence()
- * @method $this withSequence($value)
  * @method string getHostName()
  * @method $this withHostName($value)
  * @method string getPageSize()
  * @method $this withPageSize($value)
+ * @method string getHostNamePrefix()
+ * @method $this withHostNamePrefix($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getHostNameSuffix()
+ * @method $this withHostNameSuffix($value)
+ * @method string getFilter()
+ * @method $this withFilter($value)
+ * @method string getPrivateIpAddress()
+ * @method $this withPrivateIpAddress($value)
+ * @method string getSequence()
+ * @method $this withSequence($value)
+ * @method string getSortBy()
+ * @method $this withSortBy($value)
  */
 class ListNodes extends Rpc
 {
@@ -1701,12 +1889,36 @@ class ListRegions extends Rpc
 }
 
 /**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class ListSecurityGroups extends Rpc
+{
+}
+
+/**
  * @method string getOsTag()
  * @method $this withOsTag($value)
  * @method string getEhpcVersion()
  * @method $this withEhpcVersion($value)
  */
 class ListSoftwares extends Rpc
+{
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
+ * @method string getArchived()
+ * @method $this withArchived($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getTaskId()
+ * @method $this withTaskId($value)
+ */
+class ListTasks extends Rpc
 {
 }
 
@@ -2025,14 +2237,11 @@ class SetAutoScaleConfig extends Rpc
 	{
 	    $this->data['Queues'] = $queues;
 		foreach ($queues as $depth1 => $depth1Value) {
-			if(isset($depth1Value['SpotStrategy'])){
-				$this->options['query']['Queues.' . ($depth1 + 1) . '.SpotStrategy'] = $depth1Value['SpotStrategy'];
-			}
 			if(isset($depth1Value['QueueName'])){
 				$this->options['query']['Queues.' . ($depth1 + 1) . '.QueueName'] = $depth1Value['QueueName'];
 			}
-			if(isset($depth1Value['MinNodesInQueue'])){
-				$this->options['query']['Queues.' . ($depth1 + 1) . '.MinNodesInQueue'] = $depth1Value['MinNodesInQueue'];
+			if(isset($depth1Value['SystemDiskLevel'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.SystemDiskLevel'] = $depth1Value['SystemDiskLevel'];
 			}
 			foreach ($depth1Value['InstanceTypes'] as $depth2 => $depth2Value) {
 				if(isset($depth2Value['SpotStrategy'])){
@@ -2047,18 +2256,9 @@ class SetAutoScaleConfig extends Rpc
 				if(isset($depth2Value['ZoneId'])){
 					$this->options['query']['Queues.' . ($depth1 + 1) . '.InstanceTypes.' . ($depth2 + 1) . '.ZoneId'] = $depth2Value['ZoneId'];
 				}
-				if(isset($depth2Value['HostNamePrefix'])){
-					$this->options['query']['Queues.' . ($depth1 + 1) . '.InstanceTypes.' . ($depth2 + 1) . '.HostNamePrefix'] = $depth2Value['HostNamePrefix'];
-				}
 				if(isset($depth2Value['SpotPriceLimit'])){
 					$this->options['query']['Queues.' . ($depth1 + 1) . '.InstanceTypes.' . ($depth2 + 1) . '.SpotPriceLimit'] = $depth2Value['SpotPriceLimit'];
 				}
-			}
-			if(isset($depth1Value['MaxNodesInQueue'])){
-				$this->options['query']['Queues.' . ($depth1 + 1) . '.MaxNodesInQueue'] = $depth1Value['MaxNodesInQueue'];
-			}
-			if(isset($depth1Value['InstanceType'])){
-				$this->options['query']['Queues.' . ($depth1 + 1) . '.InstanceType'] = $depth1Value['InstanceType'];
 			}
 			if(isset($depth1Value['EnableAutoGrow'])){
 				$this->options['query']['Queues.' . ($depth1 + 1) . '.EnableAutoGrow'] = $depth1Value['EnableAutoGrow'];
@@ -2066,8 +2266,35 @@ class SetAutoScaleConfig extends Rpc
 			if(isset($depth1Value['SpotPriceLimit'])){
 				$this->options['query']['Queues.' . ($depth1 + 1) . '.SpotPriceLimit'] = $depth1Value['SpotPriceLimit'];
 			}
+			if(isset($depth1Value['HostNameSuffix'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.HostNameSuffix'] = $depth1Value['HostNameSuffix'];
+			}
 			if(isset($depth1Value['EnableAutoShrink'])){
 				$this->options['query']['Queues.' . ($depth1 + 1) . '.EnableAutoShrink'] = $depth1Value['EnableAutoShrink'];
+			}
+			if(isset($depth1Value['SpotStrategy'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.SpotStrategy'] = $depth1Value['SpotStrategy'];
+			}
+			if(isset($depth1Value['MinNodesInQueue'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.MinNodesInQueue'] = $depth1Value['MinNodesInQueue'];
+			}
+			if(isset($depth1Value['SystemDiskCategory'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.SystemDiskCategory'] = $depth1Value['SystemDiskCategory'];
+			}
+			if(isset($depth1Value['MaxNodesInQueue'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.MaxNodesInQueue'] = $depth1Value['MaxNodesInQueue'];
+			}
+			if(isset($depth1Value['SystemDiskSize'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.SystemDiskSize'] = $depth1Value['SystemDiskSize'];
+			}
+			if(isset($depth1Value['InstanceType'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.InstanceType'] = $depth1Value['InstanceType'];
+			}
+			if(isset($depth1Value['QueueImageId'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.QueueImageId'] = $depth1Value['QueueImageId'];
+			}
+			if(isset($depth1Value['HostNamePrefix'])){
+				$this->options['query']['Queues.' . ($depth1 + 1) . '.HostNamePrefix'] = $depth1Value['HostNamePrefix'];
 			}
 		}
 
@@ -2086,6 +2313,10 @@ class SetAutoScaleConfig extends Rpc
  * @method $this withClipboard($value)
  * @method string getUsbRedirect()
  * @method $this withUsbRedirect($value)
+ * @method string getAsyncMode()
+ * @method $this withAsyncMode($value)
+ * @method string getUdpPort()
+ * @method $this withUdpPort($value)
  */
 class SetGWSClusterPolicy extends Rpc
 {
@@ -2117,18 +2348,6 @@ class SetGWSInstanceUser extends Rpc
 }
 
 /**
- * @method string getRunasUserPassword()
- * @method $this withRunasUserPassword($value)
- * @method string getRunasUser()
- * @method $this withRunasUser($value)
- * @method string getClusterId()
- * @method $this withClusterId($value)
- */
-class SetJobUser extends Rpc
-{
-}
-
-/**
  * @method string getQueueName()
  * @method $this withQueueName($value)
  * @method string getClusterId()
@@ -2149,6 +2368,99 @@ class SetQueue extends Rpc
 		foreach ($node as $depth1 => $depth1Value) {
 			if(isset($depth1Value['Name'])){
 				$this->options['query']['Node.' . ($depth1 + 1) . '.Name'] = $depth1Value['Name'];
+			}
+		}
+
+		return $this;
+    }
+}
+
+/**
+ * @method array getSlurmInfo()
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method array getScheduler()
+ * @method array getPbsInfo()
+ */
+class SetSchedulerInfo extends Rpc
+{
+
+    /**
+     * @param array $slurmInfo
+     *
+     * @return $this
+     */
+	public function withSlurmInfo(array $slurmInfo)
+	{
+	    $this->data['SlurmInfo'] = $slurmInfo;
+		foreach ($slurmInfo as $depth1 => $depth1Value) {
+			if(isset($depth1Value['SchedInterval'])){
+				$this->options['query']['SlurmInfo.' . ($depth1 + 1) . '.SchedInterval'] = $depth1Value['SchedInterval'];
+			}
+			if(isset($depth1Value['BackfillInterval'])){
+				$this->options['query']['SlurmInfo.' . ($depth1 + 1) . '.BackfillInterval'] = $depth1Value['BackfillInterval'];
+			}
+		}
+
+		return $this;
+    }
+
+    /**
+     * @param array $scheduler
+     *
+     * @return $this
+     */
+	public function withScheduler(array $scheduler)
+	{
+	    $this->data['Scheduler'] = $scheduler;
+		foreach ($scheduler as $depth1 => $depth1Value) {
+			if(isset($depth1Value['SchedName'])){
+				$this->options['query']['Scheduler.' . ($depth1 + 1) . '.SchedName'] = $depth1Value['SchedName'];
+			}
+		}
+
+		return $this;
+    }
+
+    /**
+     * @param array $pbsInfo
+     *
+     * @return $this
+     */
+	public function withPbsInfo(array $pbsInfo)
+	{
+	    $this->data['PbsInfo'] = $pbsInfo;
+		foreach ($pbsInfo as $depth1 => $depth1Value) {
+			if(isset($depth1Value['SchedInterval'])){
+				$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.SchedInterval'] = $depth1Value['SchedInterval'];
+			}
+			foreach ($depth1Value['ResourceLimit'] as $depth2 => $depth2Value) {
+				if(isset($depth2Value['Nodes'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.ResourceLimit.' . ($depth2 + 1) . '.Nodes'] = $depth2Value['Nodes'];
+				}
+				if(isset($depth2Value['Mem'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.ResourceLimit.' . ($depth2 + 1) . '.Mem'] = $depth2Value['Mem'];
+				}
+				if(isset($depth2Value['Cpus'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.ResourceLimit.' . ($depth2 + 1) . '.Cpus'] = $depth2Value['Cpus'];
+				}
+				if(isset($depth2Value['User'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.ResourceLimit.' . ($depth2 + 1) . '.User'] = $depth2Value['User'];
+				}
+				if(isset($depth2Value['Queue'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.ResourceLimit.' . ($depth2 + 1) . '.Queue'] = $depth2Value['Queue'];
+				}
+			}
+			foreach ($depth1Value['AclLimit'] as $depth2 => $depth2Value) {
+				if(isset($depth2Value['AclUsers'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.AclLimit.' . ($depth2 + 1) . '.AclUsers'] = $depth2Value['AclUsers'];
+				}
+				if(isset($depth2Value['Queue'])){
+					$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.AclLimit.' . ($depth2 + 1) . '.Queue'] = $depth2Value['Queue'];
+				}
+			}
+			if(isset($depth1Value['JobHistoryDuration'])){
+				$this->options['query']['PbsInfo.' . ($depth1 + 1) . '.JobHistoryDuration'] = $depth1Value['JobHistoryDuration'];
 			}
 		}
 
@@ -2283,6 +2595,8 @@ class StopVisualService extends Rpc
  * @method $this withStderrRedirectPath($value)
  * @method string getRunasUserPassword()
  * @method $this withRunasUserPassword($value)
+ * @method string getClockTime()
+ * @method $this withClockTime($value)
  * @method string getCommandLine()
  * @method $this withCommandLine($value)
  * @method string getJobQueue()
@@ -2293,6 +2607,8 @@ class StopVisualService extends Rpc
  * @method $this withUnzipCmd($value)
  * @method string getPackagePath()
  * @method $this withPackagePath($value)
+ * @method string getMem()
+ * @method $this withMem($value)
  * @method string getStdoutRedirectPath()
  * @method $this withStdoutRedirectPath($value)
  * @method string getVariables()
@@ -2305,8 +2621,16 @@ class StopVisualService extends Rpc
  * @method $this withClusterId($value)
  * @method string getReRunable()
  * @method $this withReRunable($value)
+ * @method string getThread()
+ * @method $this withThread($value)
  * @method string getPriority()
  * @method $this withPriority($value)
+ * @method string getGpu()
+ * @method $this withGpu($value)
+ * @method string getNode()
+ * @method $this withNode($value)
+ * @method string getTask()
+ * @method $this withTask($value)
  * @method string getInputFileUrl()
  * @method $this withInputFileUrl($value)
  * @method string getName()
@@ -2315,18 +2639,6 @@ class StopVisualService extends Rpc
  * @method $this withContainerId($value)
  */
 class SubmitJob extends Rpc
-{
-}
-
-/**
- * @method string getClusterId()
- * @method $this withClusterId($value)
- * @method string getAccountUid()
- * @method $this withAccountUid($value)
- * @method string getUserName()
- * @method $this withUserName($value)
- */
-class UnbindAccountToClusterUser extends Rpc
 {
 }
 

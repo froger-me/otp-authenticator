@@ -11,21 +11,23 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method CreateProtectionModuleRule createProtectionModuleRule(array $options = [])
  * @method DeleteDomain deleteDomain(array $options = [])
  * @method DeleteInstance deleteInstance(array $options = [])
+ * @method DeleteProtectionModuleRule deleteProtectionModuleRule(array $options = [])
  * @method DescribeCertificates describeCertificates(array $options = [])
  * @method DescribeCertMatchStatus describeCertMatchStatus(array $options = [])
  * @method DescribeDomain describeDomain(array $options = [])
  * @method DescribeDomainAdvanceConfigs describeDomainAdvanceConfigs(array $options = [])
  * @method DescribeDomainBasicConfigs describeDomainBasicConfigs(array $options = [])
+ * @method DescribeDomainList describeDomainList(array $options = [])
  * @method DescribeDomainNames describeDomainNames(array $options = [])
  * @method DescribeDomainRuleGroup describeDomainRuleGroup(array $options = [])
  * @method DescribeInstanceInfo describeInstanceInfo(array $options = [])
- * @method DescribeInstanceInfos describeInstanceInfos(array $options = [])
  * @method DescribeInstanceSpecInfo describeInstanceSpecInfo(array $options = [])
- * @method DescribeProtectionModuleMode describeProtectionModuleMode(array $options = [])
+ * @method DescribeLogServiceStatus describeLogServiceStatus(array $options = [])
+ * @method DescribeProtectionModuleCodeConfig describeProtectionModuleCodeConfig(array $options = [])
  * @method DescribeProtectionModuleRules describeProtectionModuleRules(array $options = [])
  * @method DescribeProtectionModuleStatus describeProtectionModuleStatus(array $options = [])
+ * @method DescribeWafSourceIpSegment describeWafSourceIpSegment(array $options = [])
  * @method ModifyDomain modifyDomain(array $options = [])
- * @method ModifyDomainClusterType modifyDomainClusterType(array $options = [])
  * @method ModifyDomainIpv6Status modifyDomainIpv6Status(array $options = [])
  * @method ModifyLogRetrievalStatus modifyLogRetrievalStatus(array $options = [])
  * @method ModifyLogServiceStatus modifyLogServiceStatus(array $options = [])
@@ -34,6 +36,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ModifyProtectionModuleStatus modifyProtectionModuleStatus(array $options = [])
  * @method ModifyProtectionRuleCacheStatus modifyProtectionRuleCacheStatus(array $options = [])
  * @method ModifyProtectionRuleStatus modifyProtectionRuleStatus(array $options = [])
+ * @method MoveResourceGroup moveResourceGroup(array $options = [])
  * @method SetDomainRuleGroup setDomainRuleGroup(array $options = [])
  */
 class WafOpenapiApiResolver extends ApiResolver
@@ -70,8 +73,6 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
  * @method $this withDomain($value)
  * @method string getCertificateName()
  * @method $this withCertificateName($value)
- * @method string getHttpsCertId()
- * @method $this withHttpsCertId($value)
  */
 class CreateCertificate extends Rpc
 {
@@ -94,6 +95,10 @@ class CreateCertificateByCertificateId extends Rpc
 }
 
 /**
+ * @method string getIpFollowStatus()
+ * @method $this withIpFollowStatus($value)
+ * @method string getSniHost()
+ * @method $this withSniHost($value)
  * @method string getResourceGroupId()
  * @method $this withResourceGroupId($value)
  * @method string getSourceIp()
@@ -104,14 +109,24 @@ class CreateCertificateByCertificateId extends Rpc
  * @method $this withHttp2Port($value)
  * @method string getWriteTime()
  * @method $this withWriteTime($value)
+ * @method string getSniStatus()
+ * @method $this withSniStatus($value)
  * @method string getLang()
  * @method $this withLang($value)
+ * @method string getAccessHeaderMode()
+ * @method $this withAccessHeaderMode($value)
+ * @method string getAccessType()
+ * @method $this withAccessType($value)
  * @method string getLogHeaders()
  * @method $this withLogHeaders($value)
+ * @method string getAccessHeaders()
+ * @method $this withAccessHeaders($value)
  * @method string getConnectionTime()
  * @method $this withConnectionTime($value)
  * @method string getClusterType()
  * @method $this withClusterType($value)
+ * @method string getCloudNativeInstances()
+ * @method $this withCloudNativeInstances($value)
  * @method string getHttpsRedirect()
  * @method $this withHttpsRedirect($value)
  * @method string getInstanceId()
@@ -165,9 +180,6 @@ class CreateProtectionModuleRule extends Rpc
  */
 class DeleteDomain extends Rpc
 {
-
-    /** @var string */
-    public $scheme = 'https';
 }
 
 /**
@@ -181,6 +193,24 @@ class DeleteDomain extends Rpc
  * @method $this withLang($value)
  */
 class DeleteInstance extends Rpc
+{
+}
+
+/**
+ * @method string getDefenseType()
+ * @method $this withDefenseType($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
+ * @method string getSourceIp()
+ * @method $this withSourceIp($value)
+ * @method string getDomain()
+ * @method $this withDomain($value)
+ * @method string getLang()
+ * @method $this withLang($value)
+ * @method string getRuleId()
+ * @method $this withRuleId($value)
+ */
+class DeleteProtectionModuleRule extends Rpc
 {
 }
 
@@ -220,14 +250,14 @@ class DescribeCertMatchStatus extends Rpc
 }
 
 /**
- * @method string getInstanceId()
- * @method $this withInstanceId($value)
  * @method string getSourceIp()
  * @method $this withSourceIp($value)
- * @method string getDomain()
- * @method $this withDomain($value)
  * @method string getLang()
  * @method $this withLang($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
+ * @method string getDomain()
+ * @method $this withDomain($value)
  */
 class DescribeDomain extends Rpc
 {
@@ -260,6 +290,10 @@ class DescribeDomainAdvanceConfigs extends Rpc
  * @method $this withPageSize($value)
  * @method string getLang()
  * @method $this withLang($value)
+ * @method string getAccessType()
+ * @method $this withAccessType($value)
+ * @method string getCloudNativeProductId()
+ * @method $this withCloudNativeProductId($value)
  * @method string getInstanceId()
  * @method $this withInstanceId($value)
  * @method string getDomainKey()
@@ -267,6 +301,42 @@ class DescribeDomainAdvanceConfigs extends Rpc
  */
 class DescribeDomainBasicConfigs extends Rpc
 {
+}
+
+/**
+ * @method array getDomainNames()
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
+ * @method string getResourceGroupId()
+ * @method $this withResourceGroupId($value)
+ * @method string getSourceIp()
+ * @method $this withSourceIp($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getDomainName()
+ * @method $this withDomainName($value)
+ * @method string getIsSub()
+ * @method $this withIsSub($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
+ */
+class DescribeDomainList extends Rpc
+{
+
+    /**
+     * @param array $domainNames
+     *
+     * @return $this
+     */
+	public function withDomainNames(array $domainNames)
+	{
+	    $this->data['DomainNames'] = $domainNames;
+		foreach ($domainNames as $i => $iValue) {
+			$this->options['query']['DomainNames.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
 }
 
 /**
@@ -322,22 +392,6 @@ class DescribeInstanceInfo extends Rpc
  * @method $this withInstanceId($value)
  * @method string getSourceIp()
  * @method $this withSourceIp($value)
- * @method string getInstanceSource()
- * @method $this withInstanceSource($value)
- * @method string getLang()
- * @method $this withLang($value)
- */
-class DescribeInstanceInfos extends Rpc
-{
-}
-
-/**
- * @method string getResourceGroupId()
- * @method $this withResourceGroupId($value)
- * @method string getInstanceId()
- * @method $this withInstanceId($value)
- * @method string getSourceIp()
- * @method $this withSourceIp($value)
  * @method string getLang()
  * @method $this withLang($value)
  */
@@ -346,20 +400,54 @@ class DescribeInstanceSpecInfo extends Rpc
 }
 
 /**
- * @method string getDefenseType()
- * @method $this withDefenseType($value)
+ * @method array getDomainNames()
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
  * @method string getResourceGroupId()
  * @method $this withResourceGroupId($value)
- * @method string getInstanceId()
- * @method $this withInstanceId($value)
  * @method string getSourceIp()
  * @method $this withSourceIp($value)
- * @method string getDomain()
- * @method $this withDomain($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
+ * @method string getRegion()
+ * @method $this withRegion($value)
+ */
+class DescribeLogServiceStatus extends Rpc
+{
+
+    /**
+     * @param array $domainNames
+     *
+     * @return $this
+     */
+	public function withDomainNames(array $domainNames)
+	{
+	    $this->data['DomainNames'] = $domainNames;
+		foreach ($domainNames as $i => $iValue) {
+			$this->options['query']['DomainNames.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
+}
+
+/**
+ * @method string getResourceGroupId()
+ * @method $this withResourceGroupId($value)
+ * @method string getSourceIp()
+ * @method $this withSourceIp($value)
  * @method string getLang()
  * @method $this withLang($value)
+ * @method string getCodeValue()
+ * @method $this withCodeValue($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
+ * @method string getCodeType()
+ * @method $this withCodeType($value)
  */
-class DescribeProtectionModuleMode extends Rpc
+class DescribeProtectionModuleCodeConfig extends Rpc
 {
 }
 
@@ -404,28 +492,54 @@ class DescribeProtectionModuleStatus extends Rpc
 }
 
 /**
+ * @method string getResourceGroupId()
+ * @method $this withResourceGroupId($value)
+ * @method string getInstanceId()
+ * @method $this withInstanceId($value)
  * @method string getSourceIp()
  * @method $this withSourceIp($value)
- * @method string getXffHeaderMode()
- * @method $this withXffHeaderMode($value)
+ * @method string getLang()
+ * @method $this withLang($value)
+ */
+class DescribeWafSourceIpSegment extends Rpc
+{
+}
+
+/**
+ * @method string getIpFollowStatus()
+ * @method $this withIpFollowStatus($value)
+ * @method string getSniHost()
+ * @method $this withSniHost($value)
+ * @method string getHybridCloudType()
+ * @method $this withHybridCloudType($value)
+ * @method string getSourceIp()
+ * @method $this withSourceIp($value)
  * @method string getHttpPort()
  * @method $this withHttpPort($value)
  * @method string getHttp2Port()
  * @method $this withHttp2Port($value)
  * @method string getWriteTime()
  * @method $this withWriteTime($value)
+ * @method string getSniStatus()
+ * @method $this withSniStatus($value)
  * @method string getLang()
  * @method $this withLang($value)
- * @method string getXffHeaders()
- * @method $this withXffHeaders($value)
+ * @method string getAccessHeaderMode()
+ * @method $this withAccessHeaderMode($value)
+ * @method string getAccessType()
+ * @method $this withAccessType($value)
  * @method string getBindingIpv6()
  * @method $this withBindingIpv6($value)
  * @method string getLogHeaders()
  * @method $this withLogHeaders($value)
+ * @method string getAccessHeaders()
+ * @method $this withAccessHeaders($value)
  * @method string getConnectionTime()
  * @method $this withConnectionTime($value)
  * @method string getClusterType()
  * @method $this withClusterType($value)
+ * @method string getCloudNativeInstances()
+ * @method $this withCloudNativeInstances($value)
  * @method string getHttpsRedirect()
  * @method $this withHttpsRedirect($value)
  * @method string getInstanceId()
@@ -446,20 +560,6 @@ class DescribeProtectionModuleStatus extends Rpc
  * @method $this withHttpToUserIp($value)
  */
 class ModifyDomain extends Rpc
-{
-}
-
-/**
- * @method string getClusterType()
- * @method $this withClusterType($value)
- * @method string getInstanceId()
- * @method $this withInstanceId($value)
- * @method string getSourceIp()
- * @method $this withSourceIp($value)
- * @method string getDomain()
- * @method $this withDomain($value)
- */
-class ModifyDomainClusterType extends Rpc
 {
 }
 
@@ -612,8 +712,24 @@ class ModifyProtectionRuleStatus extends Rpc
 }
 
 /**
+ * @method string getResourceGroupId()
+ * @method $this withResourceGroupId($value)
+ * @method string getSourceIp()
+ * @method $this withSourceIp($value)
+ * @method string getResourceId()
+ * @method $this withResourceId($value)
+ * @method string getResourceType()
+ * @method $this withResourceType($value)
+ */
+class MoveResourceGroup extends Rpc
+{
+}
+
+/**
  * @method string getWafVersion()
  * @method $this withWafVersion($value)
+ * @method string getWafAiStatus()
+ * @method $this withWafAiStatus($value)
  * @method string getRuleGroupId()
  * @method $this withRuleGroupId($value)
  * @method string getResourceGroupId()

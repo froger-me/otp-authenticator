@@ -9,11 +9,13 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method FTApiAliasApi fTApiAliasApi(array $options = [])
  * @method FtDynamicAddressDubbo ftDynamicAddressDubbo(array $options = [])
  * @method FtDynamicAddressHsf ftDynamicAddressHsf(array $options = [])
+ * @method FtDynamicAddressHttpVpc ftDynamicAddressHttpVpc(array $options = [])
  * @method FtEagleEye ftEagleEye(array $options = [])
  * @method FtFlowSpecial ftFlowSpecial(array $options = [])
  * @method FtGatedLaunchPolicy4 ftGatedLaunchPolicy4(array $options = [])
  * @method FtIpFlowControl ftIpFlowControl(array $options = [])
  * @method FtParamList ftParamList(array $options = [])
+ * @method TestFlowStrategy01 testFlowStrategy01(array $options = [])
  * @method TestHttpApi testHttpApi(array $options = [])
  */
 class FtApiResolver extends ApiResolver
@@ -81,6 +83,22 @@ class FtDynamicAddressHsf extends Rpc
 }
 
 /**
+ * @method string getP1()
+ * @method $this withP1($value)
+ * @method string getStringValue()
+ * @method $this withStringValue($value)
+ * @method string getOtherParam()
+ * @method $this withOtherParam($value)
+ * @method string getBooleanParam()
+ * @method $this withBooleanParam($value)
+ * @method string getDefaultValue()
+ * @method $this withDefaultValue($value)
+ */
+class FtDynamicAddressHttpVpc extends Rpc
+{
+}
+
+/**
  * @method string getName()
  * @method $this withName($value)
  */
@@ -138,6 +156,29 @@ class FtParamList extends Rpc
 		}
 
 		return $this;
+    }
+}
+
+/**
+ * @method string getNames()
+ */
+class TestFlowStrategy01 extends Rpc
+{
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withNames($value)
+    {
+        $this->data['Names'] = $value;
+        $this->options['form_params']['Names'] = $value;
+
+        return $this;
     }
 }
 

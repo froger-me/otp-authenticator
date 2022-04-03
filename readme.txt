@@ -83,5 +83,10 @@ Help is provided without compensation for general enquiries and bug fixes only: 
 
 == Changelog ==
 
+= 1.1 =
+* Update Alibaba library
+* Add functin `otpa_is_email_gateway`
+* Fix bugs when using email gateway
+
 = 1.0 =
 * First version

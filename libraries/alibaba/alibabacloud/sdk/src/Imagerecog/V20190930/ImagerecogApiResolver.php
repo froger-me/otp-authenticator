@@ -8,11 +8,15 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ClassifyingRubbish classifyingRubbish(array $options = [])
  * @method DetectFruits detectFruits(array $options = [])
  * @method DetectImageElements detectImageElements(array $options = [])
+ * @method EvaluateCertificateQuality evaluateCertificateQuality(array $options = [])
+ * @method GetAsyncJobResult getAsyncJobResult(array $options = [])
+ * @method RecognizeFood recognizeFood(array $options = [])
  * @method RecognizeImageColor recognizeImageColor(array $options = [])
  * @method RecognizeImageStyle recognizeImageStyle(array $options = [])
  * @method RecognizeLogo recognizeLogo(array $options = [])
  * @method RecognizeScene recognizeScene(array $options = [])
  * @method RecognizeVehicleType recognizeVehicleType(array $options = [])
+ * @method TaggingAdImage taggingAdImage(array $options = [])
  * @method TaggingImage taggingImage(array $options = [])
  */
 class ImagerecogApiResolver extends ApiResolver
@@ -89,6 +93,73 @@ class DetectImageElements extends Rpc
     {
         $this->data['Url'] = $value;
         $this->options['form_params']['Url'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getType()
+ * @method string getImageURL()
+ */
+class EvaluateCertificateQuality extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withType($value)
+    {
+        $this->data['Type'] = $value;
+        $this->options['form_params']['Type'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getJobId()
+ * @method $this withJobId($value)
+ * @method string getAsync()
+ * @method $this withAsync($value)
+ */
+class GetAsyncJobResult extends Rpc
+{
+
+    /** @var string */
+    public $method = 'GET';
+}
+
+/**
+ * @method string getImageURL()
+ */
+class RecognizeFood extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
 
         return $this;
     }
@@ -228,9 +299,10 @@ class RecognizeVehicleType extends Rpc
 
 /**
  * @method string getImageType()
+ * @method string getAsync()
  * @method string getImageURL()
  */
-class TaggingImage extends Rpc
+class TaggingAdImage extends Rpc
 {
 
     /**
@@ -242,6 +314,81 @@ class TaggingImage extends Rpc
     {
         $this->data['ImageType'] = $value;
         $this->options['form_params']['ImageType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAsync($value)
+    {
+        $this->data['Async'] = $value;
+        $this->options['form_params']['Async'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getMode()
+ * @method string getImageType()
+ * @method string getAsync()
+ * @method string getImageURL()
+ */
+class TaggingImage extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withMode($value)
+    {
+        $this->data['Mode'] = $value;
+        $this->options['form_params']['Mode'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageType($value)
+    {
+        $this->data['ImageType'] = $value;
+        $this->options['form_params']['ImageType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAsync($value)
+    {
+        $this->data['Async'] = $value;
+        $this->options['form_params']['Async'] = $value;
 
         return $this;
     }

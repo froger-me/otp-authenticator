@@ -117,7 +117,7 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 				$user = get_user_by( 'ID', $user_id );
 			}
 
-			$email = $this->set_user_identifier( $user->user_email );
+			$email = $this->set_user_identifier( $user->user_email, $user->ID );
 		}
 
 		return $email;

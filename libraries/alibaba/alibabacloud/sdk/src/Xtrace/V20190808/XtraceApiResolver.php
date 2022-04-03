@@ -9,6 +9,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method GetTagVal getTagVal(array $options = [])
  * @method GetToken getToken(array $options = [])
  * @method GetTrace getTrace(array $options = [])
+ * @method GetTraceAnalysis getTraceAnalysis(array $options = [])
  * @method ListIpOrHosts listIpOrHosts(array $options = [])
  * @method ListServices listServices(array $options = [])
  * @method ListSpanNames listSpanNames(array $options = [])
@@ -29,9 +30,6 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
 
     /** @var string */
     public $method = 'POST';
-
-    /** @var string */
-    public $serviceCode = 'xtrace';
 }
 
 /**
@@ -67,6 +65,10 @@ class GetTagVal extends Rpc
 /**
  * @method string getAppType()
  * @method $this withAppType($value)
+ * @method string getProxyUserId()
+ * @method $this withProxyUserId($value)
+ * @method string getIsForce()
+ * @method $this withIsForce($value)
  */
 class GetToken extends Rpc
 {
@@ -79,6 +81,18 @@ class GetToken extends Rpc
  * @method $this withAppType($value)
  */
 class GetTrace extends Rpc
+{
+}
+
+/**
+ * @method string getQuery()
+ * @method $this withQuery($value)
+ * @method string getApi()
+ * @method $this withApi($value)
+ * @method string getProxyUserId()
+ * @method $this withProxyUserId($value)
+ */
+class GetTraceAnalysis extends Rpc
 {
 }
 
@@ -122,6 +136,8 @@ class ListSpanNames extends Rpc
  * @method string getStartTime()
  * @method $this withStartTime($value)
  * @method array getFilters()
+ * @method string getProxyUserId()
+ * @method $this withProxyUserId($value)
  * @method array getMeasures()
  * @method string getIntervalInSec()
  * @method $this withIntervalInSec($value)
@@ -145,8 +161,12 @@ class QueryMetric extends Rpc
 	{
 	    $this->data['Filters'] = $filters;
 		foreach ($filters as $depth1 => $depth1Value) {
-			$this->options['query']['Filters.' . ($depth1 + 1) . '.Value'] = $depth1Value['Value'];
-			$this->options['query']['Filters.' . ($depth1 + 1) . '.Key'] = $depth1Value['Key'];
+			if(isset($depth1Value['Value'])){
+				$this->options['query']['Filters.' . ($depth1 + 1) . '.Value'] = $depth1Value['Value'];
+			}
+			if(isset($depth1Value['Key'])){
+				$this->options['query']['Filters.' . ($depth1 + 1) . '.Key'] = $depth1Value['Key'];
+			}
 		}
 
 		return $this;
@@ -218,8 +238,12 @@ class SearchTraces extends Rpc
 	{
 	    $this->data['Tag'] = $tag;
 		foreach ($tag as $depth1 => $depth1Value) {
-			$this->options['query']['Tag.' . ($depth1 + 1) . '.Value'] = $depth1Value['Value'];
-			$this->options['query']['Tag.' . ($depth1 + 1) . '.Key'] = $depth1Value['Key'];
+			if(isset($depth1Value['Value'])){
+				$this->options['query']['Tag.' . ($depth1 + 1) . '.Value'] = $depth1Value['Value'];
+			}
+			if(isset($depth1Value['Key'])){
+				$this->options['query']['Tag.' . ($depth1 + 1) . '.Key'] = $depth1Value['Key'];
+			}
 		}
 
 		return $this;

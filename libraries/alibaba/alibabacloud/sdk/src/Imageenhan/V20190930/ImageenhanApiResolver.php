@@ -9,8 +9,11 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method AssessExposure assessExposure(array $options = [])
  * @method AssessSharpness assessSharpness(array $options = [])
  * @method ChangeImageSize changeImageSize(array $options = [])
+ * @method ColorizeImage colorizeImage(array $options = [])
  * @method EnhanceImageColor enhanceImageColor(array $options = [])
+ * @method ErasePerson erasePerson(array $options = [])
  * @method ExtendImageStyle extendImageStyle(array $options = [])
+ * @method GenerateDynamicImage generateDynamicImage(array $options = [])
  * @method GetAsyncJobResult getAsyncJobResult(array $options = [])
  * @method ImageBlindCharacterWatermark imageBlindCharacterWatermark(array $options = [])
  * @method ImageBlindPicWatermark imageBlindPicWatermark(array $options = [])
@@ -150,6 +153,26 @@ class ChangeImageSize extends Rpc
 }
 
 /**
+ * @method string getImageURL()
+ */
+class ColorizeImage extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getMode()
  * @method string getImageURL()
  * @method string getOutputFormat()
@@ -198,6 +221,40 @@ class EnhanceImageColor extends Rpc
 }
 
 /**
+ * @method string getImageURL()
+ * @method string getUserMask()
+ */
+class ErasePerson extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withUserMask($value)
+    {
+        $this->data['UserMask'] = $value;
+        $this->options['form_params']['UserMask'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getMajorUrl()
  * @method string getStyleUrl()
  */
@@ -226,6 +283,40 @@ class ExtendImageStyle extends Rpc
     {
         $this->data['StyleUrl'] = $value;
         $this->options['form_params']['StyleUrl'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getUrl()
+ * @method string getOperation()
+ */
+class GenerateDynamicImage extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withUrl($value)
+    {
+        $this->data['Url'] = $value;
+        $this->options['form_params']['Url'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withOperation($value)
+    {
+        $this->data['Operation'] = $value;
+        $this->options['form_params']['Operation'] = $value;
 
         return $this;
     }
@@ -514,10 +605,38 @@ class IntelligentComposition extends Rpc
 }
 
 /**
+ * @method string getUpscaleFactor()
+ * @method string getMode()
  * @method string getUrl()
  */
 class MakeSuperResolutionImage extends Rpc
 {
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withUpscaleFactor($value)
+    {
+        $this->data['UpscaleFactor'] = $value;
+        $this->options['form_params']['UpscaleFactor'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withMode($value)
+    {
+        $this->data['Mode'] = $value;
+        $this->options['form_params']['Mode'] = $value;
+
+        return $this;
+    }
 
     /**
      * @param string $value
