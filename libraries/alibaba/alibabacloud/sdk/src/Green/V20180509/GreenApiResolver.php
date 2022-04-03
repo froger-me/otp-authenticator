@@ -29,22 +29,35 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method GetPersons getPersons(array $options = [])
  * @method GetSimilarityImage getSimilarityImage(array $options = [])
  * @method GetSimilarityLibrary getSimilarityLibrary(array $options = [])
+ * @method ImageAsyncManualScan imageAsyncManualScan(array $options = [])
+ * @method ImageAsyncManualScanResults imageAsyncManualScanResults(array $options = [])
  * @method ImageAsyncScan imageAsyncScan(array $options = [])
  * @method ImageAsyncScanResults imageAsyncScanResults(array $options = [])
  * @method ImageScanFeedback imageScanFeedback(array $options = [])
  * @method ImageSyncScan imageSyncScan(array $options = [])
  * @method ListSimilarityImages listSimilarityImages(array $options = [])
  * @method ListSimilarityLibraries listSimilarityLibraries(array $options = [])
+ * @method LiveStreamAsyncScan liveStreamAsyncScan(array $options = [])
+ * @method LiveStreamAsyncScanResults liveStreamAsyncScanResults(array $options = [])
+ * @method LiveStreamCancelScan liveStreamCancelScan(array $options = [])
  * @method SearchPerson searchPerson(array $options = [])
  * @method SetPerson setPerson(array $options = [])
+ * @method TextAsyncManualScan textAsyncManualScan(array $options = [])
+ * @method TextAsyncManualScanResults textAsyncManualScanResults(array $options = [])
  * @method TextFeedback textFeedback(array $options = [])
  * @method TextScan textScan(array $options = [])
  * @method UploadCredentials uploadCredentials(array $options = [])
+ * @method VideoAsyncManualScan videoAsyncManualScan(array $options = [])
+ * @method VideoAsyncManualScanResults videoAsyncManualScanResults(array $options = [])
  * @method VideoAsyncScan videoAsyncScan(array $options = [])
  * @method VideoAsyncScanResults videoAsyncScanResults(array $options = [])
  * @method VideoCancelScan videoCancelScan(array $options = [])
  * @method VideoFeedback videoFeedback(array $options = [])
  * @method VideoSyncScan videoSyncScan(array $options = [])
+ * @method VodAsyncScan vodAsyncScan(array $options = [])
+ * @method VodAsyncScanResults vodAsyncScanResults(array $options = [])
+ * @method VoiceAsyncManualScan voiceAsyncManualScan(array $options = [])
+ * @method VoiceAsyncManualScanResults voiceAsyncManualScanResults(array $options = [])
  * @method VoiceAsyncScan voiceAsyncScan(array $options = [])
  * @method VoiceAsyncScanResults voiceAsyncScanResults(array $options = [])
  * @method VoiceCancelScan voiceCancelScan(array $options = [])
@@ -53,6 +66,10 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method VoiceIdentityStartCheck voiceIdentityStartCheck(array $options = [])
  * @method VoiceIdentityStartRegister voiceIdentityStartRegister(array $options = [])
  * @method VoiceIdentityUnregister voiceIdentityUnregister(array $options = [])
+ * @method VoiceSyncScan voiceSyncScan(array $options = [])
+ * @method WebpageAsyncScan webpageAsyncScan(array $options = [])
+ * @method WebpageAsyncScanResults webpageAsyncScanResults(array $options = [])
+ * @method WebpageSyncScan webpageSyncScan(array $options = [])
  */
 class GreenApiResolver extends ApiResolver
 {
@@ -604,6 +621,50 @@ class GetSimilarityLibrary extends Roa
 /**
  * @method string getClientInfo()
  */
+class ImageAsyncManualScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/image/manual/asyncScan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class ImageAsyncManualScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/image/manual/scan/results';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
 class ImageAsyncScan extends Roa
 {
     /** @var string */
@@ -736,6 +797,72 @@ class ListSimilarityLibraries extends Roa
 /**
  * @method string getClientInfo()
  */
+class LiveStreamAsyncScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/livestream/asyncscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class LiveStreamAsyncScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/livestream/results';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class LiveStreamCancelScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/livestream/cancelscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
 class SearchPerson extends Roa
 {
     /** @var string */
@@ -762,6 +889,50 @@ class SetPerson extends Roa
 {
     /** @var string */
     public $pathPattern = '/green/sface/person/update';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class TextAsyncManualScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/text/manual/asyncScan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class TextAsyncManualScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/text/manual/scan/results';
 
     /**
      * @param string $value
@@ -828,6 +999,50 @@ class UploadCredentials extends Roa
 {
     /** @var string */
     public $pathPattern = '/green/credentials/uploadcredentials';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VideoAsyncManualScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/video/manual/asyncScan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VideoAsyncManualScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/video/manual/scan/results';
 
     /**
      * @param string $value
@@ -938,6 +1153,94 @@ class VideoSyncScan extends Roa
 {
     /** @var string */
     public $pathPattern = '/green/video/syncscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VodAsyncScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/vod/asyncscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VodAsyncScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/vod/results';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VoiceAsyncManualScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/voice/manual/asyncScan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VoiceAsyncManualScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/voice/manual/scan/results';
 
     /**
      * @param string $value
@@ -1114,6 +1417,94 @@ class VoiceIdentityUnregister extends Roa
 {
     /** @var string */
     public $pathPattern = '/green/voice/auth/unregister';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class VoiceSyncScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/voice/syncscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class WebpageAsyncScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/webpage/asyncscan';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class WebpageAsyncScanResults extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/webpage/results';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClientInfo($value)
+    {
+        $this->data['ClientInfo'] = $value;
+        $this->options['query']['ClientInfo'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getClientInfo()
+ */
+class WebpageSyncScan extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/green/webpage/scan';
 
     /**
      * @param string $value

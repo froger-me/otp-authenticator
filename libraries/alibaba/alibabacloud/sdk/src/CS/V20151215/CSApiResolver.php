@@ -10,33 +10,43 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method CancelComponentUpgrade cancelComponentUpgrade(array $options = [])
  * @method CancelWorkflow cancelWorkflow(array $options = [])
  * @method CreateCluster createCluster(array $options = [])
+ * @method CreateClusterNodePool createClusterNodePool(array $options = [])
+ * @method CreateKubernetesTrigger createKubernetesTrigger(array $options = [])
  * @method CreateTemplate createTemplate(array $options = [])
- * @method CreateTriggerHook createTriggerHook(array $options = [])
  * @method DeleteCluster deleteCluster(array $options = [])
+ * @method DeleteClusterNodepool deleteClusterNodepool(array $options = [])
  * @method DeleteClusterNodes deleteClusterNodes(array $options = [])
+ * @method DeleteKubernetesTrigger deleteKubernetesTrigger(array $options = [])
  * @method DeleteTemplate deleteTemplate(array $options = [])
- * @method DeleteTriggerHook deleteTriggerHook(array $options = [])
  * @method DescirbeWorkflow descirbeWorkflow(array $options = [])
  * @method DescribeAddons describeAddons(array $options = [])
- * @method DescribeApiVersion describeApiVersion(array $options = [])
+ * @method DescribeClusterAddonsUpgradeStatus describeClusterAddonsUpgradeStatus(array $options = [])
  * @method DescribeClusterAddonsVersion describeClusterAddonsVersion(array $options = [])
  * @method DescribeClusterAddonUpgradeStatus describeClusterAddonUpgradeStatus(array $options = [])
  * @method DescribeClusterAttachScripts describeClusterAttachScripts(array $options = [])
  * @method DescribeClusterDetail describeClusterDetail(array $options = [])
  * @method DescribeClusterLogs describeClusterLogs(array $options = [])
+ * @method DescribeClusterNodePoolDetail describeClusterNodePoolDetail(array $options = [])
+ * @method DescribeClusterNodePools describeClusterNodePools(array $options = [])
  * @method DescribeClusterNodes describeClusterNodes(array $options = [])
  * @method DescribeClusterResources describeClusterResources(array $options = [])
  * @method DescribeClusters describeClusters(array $options = [])
+ * @method DescribeClustersV1 describeClustersV1(array $options = [])
  * @method DescribeClusterUserKubeconfig describeClusterUserKubeconfig(array $options = [])
  * @method DescribeClusterV2UserKubeconfig describeClusterV2UserKubeconfig(array $options = [])
  * @method DescribeExternalAgent describeExternalAgent(array $options = [])
+ * @method DescribeKubernetesVersionMetadata describeKubernetesVersionMetadata(array $options = [])
+ * @method DescribeTemplateAttribute describeTemplateAttribute(array $options = [])
  * @method DescribeTemplates describeTemplates(array $options = [])
  * @method DescribeUserQuota describeUserQuota(array $options = [])
  * @method DescribeWorkflows describeWorkflows(array $options = [])
+ * @method GetKubernetesTrigger getKubernetesTrigger(array $options = [])
  * @method GetUpgradeStatus getUpgradeStatus(array $options = [])
  * @method InstallClusterAddons installClusterAddons(array $options = [])
  * @method ListTagResources listTagResources(array $options = [])
  * @method ModifyCluster modifyCluster(array $options = [])
+ * @method ModifyClusterConfiguration modifyClusterConfiguration(array $options = [])
+ * @method ModifyClusterNodePool modifyClusterNodePool(array $options = [])
  * @method ModifyClusterTags modifyClusterTags(array $options = [])
  * @method PauseClusterUpgrade pauseClusterUpgrade(array $options = [])
  * @method PauseComponentUpgrade pauseComponentUpgrade(array $options = [])
@@ -45,10 +55,12 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ResumeComponentUpgrade resumeComponentUpgrade(array $options = [])
  * @method ResumeUpgradeCluster resumeUpgradeCluster(array $options = [])
  * @method ScaleCluster scaleCluster(array $options = [])
+ * @method ScaleClusterNodePool scaleClusterNodePool(array $options = [])
  * @method ScaleOutCluster scaleOutCluster(array $options = [])
  * @method StartWorkflow startWorkflow(array $options = [])
  * @method UnInstallClusterAddons unInstallClusterAddons(array $options = [])
  * @method UpdateK8sClusterUserConfigExpire updateK8sClusterUserConfigExpire(array $options = [])
+ * @method UpdateTemplate updateTemplate(array $options = [])
  * @method UpgradeCluster upgradeCluster(array $options = [])
  * @method UpgradeClusterAddons upgradeClusterAddons(array $options = [])
  */
@@ -63,89 +75,19 @@ class Roa extends \AlibabaCloud\Client\Resolver\Roa
 
     /** @var string */
     public $version = '2015-12-15';
-
-    /** @var string */
-    public $method = 'POST';
 }
 
 /**
- * @method string getPassword()
- * @method string getKeepInstanceName()
- * @method string getKeyPair()
- * @method string getCpuPolicy()
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getFormatDisk()
  */
 class AttachInstances extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/attach';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withPassword($value)
-    {
-        $this->data['Password'] = $value;
-        $this->options['form_params']['password'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKeepInstanceName($value)
-    {
-        $this->data['KeepInstanceName'] = $value;
-        $this->options['form_params']['keep_instance_name'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKeyPair($value)
-    {
-        $this->data['KeyPair'] = $value;
-        $this->options['form_params']['key_pair'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCpuPolicy($value)
-    {
-        $this->data['CpuPolicy'] = $value;
-        $this->options['form_params']['cpu_policy'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withFormatDisk($value)
-    {
-        $this->data['FormatDisk'] = $value;
-        $this->options['form_params']['format_disk'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -156,6 +98,9 @@ class CancelClusterUpgrade extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/upgrade/cancel';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -166,6 +111,9 @@ class CancelComponentUpgrade extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[clusterid]/components/[componentid]/cancel';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
@@ -219,586 +167,35 @@ class CancelWorkflow extends Roa
     }
 }
 
-/**
- * @method string getProxyMode()
- * @method string getMasterSystemDiskCategory()
- * @method string getCloudMonitorFlags()
- * @method string getMasterPeriod()
- * @method string getSshFlags()
- * @method string getSecurityGroupId()
- * @method string getContainerCidr()
- * @method string getClusterType()
- * @method string getEndpointPublicAccess()
- * @method string getWorkerAutoRenew()
- * @method string getPlatform()
- * @method string getNodePortRange()
- * @method string getServiceCidr()
- * @method string getLoginPassword()
- * @method string getKubernetesVersion()
- * @method string getMasterPeriodUnit()
- * @method string getMasterSystemDiskSize()
- * @method string getMasterCount()
- * @method string getNumOfNodes()
- * @method string getDeletionProtection()
- * @method string getKeyPair()
- * @method string getWorkerDataDisk()
- * @method string getMasterAutoRenew()
- * @method string getRegionId()
- * @method string getSnatEntry()
- * @method string getWorkerSystemDiskCategory()
- * @method string getRuntime()
- * @method string getWorkerPeriodUnit()
- * @method string getMasterInstanceChargeType()
- * @method string getNodeCidrMask()
- * @method string getWorkerAutoRenewPeriod()
- * @method string getMasterAutoRenewPeriod()
- * @method string getWorkerPeriod()
- * @method string getTimeoutMins()
- * @method string getWorkerSystemDiskSize()
- * @method string getOsType()
- * @method string getCpuPolicy()
- * @method string getVpcid()
- * @method string getName()
- * @method string getDisableRollback()
- * @method string getWorkerInstanceChargeType()
- */
 class CreateCluster extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withProxyMode($value)
-    {
-        $this->data['ProxyMode'] = $value;
-        $this->options['form_params']['proxy_mode'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterSystemDiskCategory($value)
-    {
-        $this->data['MasterSystemDiskCategory'] = $value;
-        $this->options['form_params']['master_system_disk_category'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCloudMonitorFlags($value)
-    {
-        $this->data['CloudMonitorFlags'] = $value;
-        $this->options['form_params']['cloud_monitor_flags'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterPeriod($value)
-    {
-        $this->data['MasterPeriod'] = $value;
-        $this->options['form_params']['master_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withSshFlags($value)
-    {
-        $this->data['SshFlags'] = $value;
-        $this->options['form_params']['ssh_flags'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withSecurityGroupId($value)
-    {
-        $this->data['SecurityGroupId'] = $value;
-        $this->options['form_params']['security_group_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withContainerCidr($value)
-    {
-        $this->data['ContainerCidr'] = $value;
-        $this->options['form_params']['container_cidr'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withClusterType($value)
-    {
-        $this->data['ClusterType'] = $value;
-        $this->options['form_params']['cluster_type'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withEndpointPublicAccess($value)
-    {
-        $this->data['EndpointPublicAccess'] = $value;
-        $this->options['form_params']['endpoint_public_access'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerAutoRenew($value)
-    {
-        $this->data['WorkerAutoRenew'] = $value;
-        $this->options['form_params']['worker_auto_renew'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withPlatform($value)
-    {
-        $this->data['Platform'] = $value;
-        $this->options['form_params']['platform'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withNodePortRange($value)
-    {
-        $this->data['NodePortRange'] = $value;
-        $this->options['form_params']['node_port_range'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withServiceCidr($value)
-    {
-        $this->data['ServiceCidr'] = $value;
-        $this->options['form_params']['service_cidr'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withLoginPassword($value)
-    {
-        $this->data['LoginPassword'] = $value;
-        $this->options['form_params']['login_password'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKubernetesVersion($value)
-    {
-        $this->data['KubernetesVersion'] = $value;
-        $this->options['form_params']['kubernetes_version'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterPeriodUnit($value)
-    {
-        $this->data['MasterPeriodUnit'] = $value;
-        $this->options['form_params']['master_period_unit'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterSystemDiskSize($value)
-    {
-        $this->data['MasterSystemDiskSize'] = $value;
-        $this->options['form_params']['master_system_disk_size'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterCount($value)
-    {
-        $this->data['MasterCount'] = $value;
-        $this->options['form_params']['master_count'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withNumOfNodes($value)
-    {
-        $this->data['NumOfNodes'] = $value;
-        $this->options['form_params']['num_of_nodes'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDeletionProtection($value)
-    {
-        $this->data['DeletionProtection'] = $value;
-        $this->options['form_params']['deletion_protection'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKeyPair($value)
-    {
-        $this->data['KeyPair'] = $value;
-        $this->options['form_params']['key_pair'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerDataDisk($value)
-    {
-        $this->data['WorkerDataDisk'] = $value;
-        $this->options['form_params']['worker_data_disk'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterAutoRenew($value)
-    {
-        $this->data['MasterAutoRenew'] = $value;
-        $this->options['form_params']['master_auto_renew'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withRegionId($value)
-    {
-        $this->data['RegionId'] = $value;
-        $this->options['form_params']['region_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withSnatEntry($value)
-    {
-        $this->data['SnatEntry'] = $value;
-        $this->options['form_params']['snat_entry'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerSystemDiskCategory($value)
-    {
-        $this->data['WorkerSystemDiskCategory'] = $value;
-        $this->options['form_params']['worker_system_disk_category'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withRuntime($value)
-    {
-        $this->data['Runtime'] = $value;
-        $this->options['form_params']['runtime'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerPeriodUnit($value)
-    {
-        $this->data['WorkerPeriodUnit'] = $value;
-        $this->options['form_params']['worker_period_unit'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterInstanceChargeType($value)
-    {
-        $this->data['MasterInstanceChargeType'] = $value;
-        $this->options['form_params']['master_instance_charge_type'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withNodeCidrMask($value)
-    {
-        $this->data['NodeCidrMask'] = $value;
-        $this->options['form_params']['node_cidr_mask'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerAutoRenewPeriod($value)
-    {
-        $this->data['WorkerAutoRenewPeriod'] = $value;
-        $this->options['form_params']['worker_auto_renew_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMasterAutoRenewPeriod($value)
-    {
-        $this->data['MasterAutoRenewPeriod'] = $value;
-        $this->options['form_params']['master_auto_renew_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerPeriod($value)
-    {
-        $this->data['WorkerPeriod'] = $value;
-        $this->options['form_params']['worker_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withTimeoutMins($value)
-    {
-        $this->data['TimeoutMins'] = $value;
-        $this->options['form_params']['timeout_mins'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerSystemDiskSize($value)
-    {
-        $this->data['WorkerSystemDiskSize'] = $value;
-        $this->options['form_params']['worker_system_disk_size'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withOsType($value)
-    {
-        $this->data['OsType'] = $value;
-        $this->options['form_params']['os_type'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCpuPolicy($value)
-    {
-        $this->data['CpuPolicy'] = $value;
-        $this->options['form_params']['cpu_policy'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withVpcid($value)
-    {
-        $this->data['Vpcid'] = $value;
-        $this->options['form_params']['vpcid'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withName($value)
-    {
-        $this->data['Name'] = $value;
-        $this->options['form_params']['name'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDisableRollback($value)
-    {
-        $this->data['DisableRollback'] = $value;
-        $this->options['form_params']['disable_rollback'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerInstanceChargeType($value)
-    {
-        $this->data['WorkerInstanceChargeType'] = $value;
-        $this->options['form_params']['worker_instance_charge_type'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class CreateClusterNodePool extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/nodepools';
+
+    /** @var string */
+    public $method = 'POST';
+}
+
+class CreateKubernetesTrigger extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/triggers';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -811,6 +208,9 @@ class CreateTemplate extends Roa
 {
     /** @var string */
     public $pathPattern = '/templates';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
@@ -867,79 +267,27 @@ class CreateTemplate extends Roa
 
 /**
  * @method string getClusterId()
- * @method string getProjectId()
- * @method string getTriggerUrl()
- * @method string getRegionId()
- */
-class CreateTriggerHook extends Roa
-{
-    /** @var string */
-    public $pathPattern = '/hook/trigger';
-
-    /** @var string */
-    public $method = 'PUT';
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withClusterId($value)
-    {
-        $this->data['ClusterId'] = $value;
-        $this->options['form_params']['cluster_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withProjectId($value)
-    {
-        $this->data['ProjectId'] = $value;
-        $this->options['form_params']['project_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withTriggerUrl($value)
-    {
-        $this->data['TriggerUrl'] = $value;
-        $this->options['form_params']['trigger_url'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withRegionId($value)
-    {
-        $this->data['RegionId'] = $value;
-        $this->options['form_params']['region_id'] = $value;
-
-        return $this;
-    }
-}
-
-/**
- * @method string getClusterId()
  * @method $this withClusterId($value)
  */
 class DeleteCluster extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]';
+
+    /** @var string */
+    public $method = 'DELETE';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getNodepoolId()
+ * @method $this withNodepoolId($value)
+ */
+class DeleteClusterNodepool extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/nodepools/[NodepoolId]';
 
     /** @var string */
     public $method = 'DELETE';
@@ -954,6 +302,9 @@ class DeleteClusterNodes extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/nodes';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
@@ -970,6 +321,19 @@ class DeleteClusterNodes extends Roa
 }
 
 /**
+ * @method string getId()
+ * @method $this withId($value)
+ */
+class DeleteKubernetesTrigger extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/triggers/revoke/[Id]';
+
+    /** @var string */
+    public $method = 'DELETE';
+}
+
+/**
  * @method string getTemplateId()
  * @method $this withTemplateId($value)
  */
@@ -982,12 +346,6 @@ class DeleteTemplate extends Roa
     public $method = 'DELETE';
 }
 
-class DeleteTriggerHook extends Roa
-{
-    /** @var string */
-    public $pathPattern = '/api/v2/hook/trigger';
-}
-
 /**
  * @method string getWorkflowName()
  */
@@ -995,9 +353,6 @@ class DescirbeWorkflow extends Roa
 {
     /** @var string */
     public $pathPattern = '/gs/workflow/[workflowName]';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1021,9 +376,6 @@ class DescribeAddons extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/components/metadata';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1052,13 +404,14 @@ class DescribeAddons extends Roa
     }
 }
 
-class DescribeApiVersion extends Roa
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class DescribeClusterAddonsUpgradeStatus extends Roa
 {
     /** @var string */
-    public $pathPattern = '/version';
-
-    /** @var string */
-    public $method = 'GET';
+    public $pathPattern = '/clusters/[ClusterId]/components/upgradestatus';
 }
 
 /**
@@ -1069,9 +422,6 @@ class DescribeClusterAddonsVersion extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/components/version';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 /**
@@ -1084,9 +434,6 @@ class DescribeClusterAddonUpgradeStatus extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/components/[ComponentId]/upgradestatus';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 /**
@@ -1097,6 +444,9 @@ class DescribeClusterAttachScripts extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/attachscript';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1107,9 +457,6 @@ class DescribeClusterDetail extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 /**
@@ -1120,9 +467,28 @@ class DescribeClusterLogs extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/logs';
+}
 
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getNodepoolId()
+ * @method $this withNodepoolId($value)
+ */
+class DescribeClusterNodePoolDetail extends Roa
+{
     /** @var string */
-    public $method = 'GET';
+    public $pathPattern = '/clusters/[ClusterId]/nodepools/[NodepoolId]';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ */
+class DescribeClusterNodePools extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/nodepools';
 }
 
 /**
@@ -1137,9 +503,6 @@ class DescribeClusterNodes extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/nodes';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1202,9 +565,6 @@ class DescribeClusterResources extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/resources';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 /**
@@ -1215,9 +575,6 @@ class DescribeClusters extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1247,6 +604,70 @@ class DescribeClusters extends Roa
 }
 
 /**
+ * @method string getClusterType()
+ * @method string getPageNumber()
+ * @method string getName()
+ * @method string getPageSize()
+ */
+class DescribeClustersV1 extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/api/v1/clusters';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClusterType($value)
+    {
+        $this->data['ClusterType'] = $value;
+        $this->options['query']['ClusterType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['page_number'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->options['query']['Name'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['page_size'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getPrivateIpAddress()
  * @method string getClusterId()
  * @method $this withClusterId($value)
@@ -1255,9 +676,6 @@ class DescribeClusterUserKubeconfig extends Roa
 {
     /** @var string */
     public $pathPattern = '/k8s/[ClusterId]/user_config';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1283,9 +701,6 @@ class DescribeClusterV2UserKubeconfig extends Roa
     /** @var string */
     public $pathPattern = '/api/v2/k8s/[ClusterId]/user_config';
 
-    /** @var string */
-    public $method = 'GET';
-
     /**
      * @param string $value
      *
@@ -1308,9 +723,94 @@ class DescribeExternalAgent extends Roa
 {
     /** @var string */
     public $pathPattern = '/k8s/[ClusterId]/external/agent/deployment';
+}
 
+/**
+ * @method string getClusterType()
+ * @method string getMultiAZ()
+ * @method string getKubernetesVersion()
+ * @method string getProfile()
+ * @method string getRegion()
+ */
+class DescribeKubernetesVersionMetadata extends Roa
+{
     /** @var string */
-    public $method = 'GET';
+    public $pathPattern = '/api/v1/metadata/versions';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withClusterType($value)
+    {
+        $this->data['ClusterType'] = $value;
+        $this->options['query']['ClusterType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withMultiAZ($value)
+    {
+        $this->data['MultiAZ'] = $value;
+        $this->options['query']['MultiAZ'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withKubernetesVersion($value)
+    {
+        $this->data['KubernetesVersion'] = $value;
+        $this->options['query']['KubernetesVersion'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withProfile($value)
+    {
+        $this->data['Profile'] = $value;
+        $this->options['query']['Profile'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withRegion($value)
+    {
+        $this->data['Region'] = $value;
+        $this->options['query']['Region'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getTemplateId()
+ * @method $this withTemplateId($value)
+ */
+class DescribeTemplateAttribute extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/templates/[TemplateId]';
 }
 
 /**
@@ -1320,9 +820,6 @@ class DescribeTemplates extends Roa
 {
     /** @var string */
     public $pathPattern = '/templates';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1342,18 +839,64 @@ class DescribeUserQuota extends Roa
 {
     /** @var string */
     public $pathPattern = '/quota';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 class DescribeWorkflows extends Roa
 {
     /** @var string */
     public $pathPattern = '/gs/workflows';
+}
 
+/**
+ * @method string getNamespace()
+ * @method string getName()
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getType()
+ */
+class GetKubernetesTrigger extends Roa
+{
     /** @var string */
-    public $method = 'GET';
+    public $pathPattern = '/triggers/[ClusterId]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withNamespace($value)
+    {
+        $this->data['Namespace'] = $value;
+        $this->options['query']['Namespace'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->options['query']['Name'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withType($value)
+    {
+        $this->data['Type'] = $value;
+        $this->options['query']['Type'] = $value;
+
+        return $this;
+    }
 }
 
 /**
@@ -1364,89 +907,19 @@ class GetUpgradeStatus extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/upgrade/status';
-
-    /** @var string */
-    public $method = 'GET';
 }
 
 /**
- * @method string getName()
- * @method string getDisabled()
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getVersion()
- * @method string getConfig()
- * @method string getRequired()
  */
 class InstallClusterAddons extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/components/install';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withName($value)
-    {
-        $this->data['Name'] = $value;
-        $this->options['form_params']['name'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDisabled($value)
-    {
-        $this->data['Disabled'] = $value;
-        $this->options['form_params']['disabled'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withVersion($value)
-    {
-        $this->data['Version'] = $value;
-        $this->options['form_params']['version'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withConfig($value)
-    {
-        $this->data['Config'] = $value;
-        $this->options['form_params']['config'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withRequired($value)
-    {
-        $this->data['Required'] = $value;
-        $this->options['form_params']['required'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1459,9 +932,6 @@ class ListTagResources extends Roa
 {
     /** @var string */
     public $pathPattern = '/tags';
-
-    /** @var string */
-    public $method = 'GET';
 
     /**
      * @param string $value
@@ -1517,14 +987,8 @@ class ListTagResources extends Roa
 }
 
 /**
- * @method string getApiServerEip()
- * @method string getResourceGroupId()
- * @method string getIngressDomainRebinding()
- * @method string getDeletionProtection()
- * @method string getIngressLoadbalancerId()
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getApiServerEipId()
  */
 class ModifyCluster extends Roa
 {
@@ -1533,122 +997,47 @@ class ModifyCluster extends Roa
 
     /** @var string */
     public $method = 'PUT';
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withApiServerEip($value)
-    {
-        $this->data['ApiServerEip'] = $value;
-        $this->options['form_params']['api_server_eip'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withResourceGroupId($value)
-    {
-        $this->data['ResourceGroupId'] = $value;
-        $this->options['form_params']['resource_group_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withIngressDomainRebinding($value)
-    {
-        $this->data['IngressDomainRebinding'] = $value;
-        $this->options['form_params']['ingress_domain_rebinding'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDeletionProtection($value)
-    {
-        $this->data['DeletionProtection'] = $value;
-        $this->options['form_params']['deletion_protection'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withIngressLoadbalancerId($value)
-    {
-        $this->data['IngressLoadbalancerId'] = $value;
-        $this->options['form_params']['ingress_loadbalancer_id'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withApiServerEipId($value)
-    {
-        $this->data['ApiServerEipId'] = $value;
-        $this->options['form_params']['api_server_eip_id'] = $value;
-
-        return $this;
-    }
 }
 
 /**
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getValue()
- * @method string getKey()
+ */
+class ModifyClusterConfiguration extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/configuration';
+
+    /** @var string */
+    public $method = 'PUT';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
+ * @method string getNodepoolId()
+ * @method $this withNodepoolId($value)
+ */
+class ModifyClusterNodePool extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/nodepools/[NodepoolId]';
+
+    /** @var string */
+    public $method = 'PUT';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
  */
 class ModifyClusterTags extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/tags';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withValue($value)
-    {
-        $this->data['Value'] = $value;
-        $this->options['form_params']['value'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKey($value)
-    {
-        $this->data['Key'] = $value;
-        $this->options['form_params']['key'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1659,6 +1048,9 @@ class PauseClusterUpgrade extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/upgrade/pause';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1669,6 +1061,9 @@ class PauseComponentUpgrade extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[clusterid]/components/[componentid]/pause';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
@@ -1698,8 +1093,6 @@ class PauseComponentUpgrade extends Roa
 }
 
 /**
- * @method string getReleaseNode()
- * @method string getDrainNode()
  * @method string getClusterId()
  * @method $this withClusterId($value)
  */
@@ -1708,31 +1101,8 @@ class RemoveClusterNodes extends Roa
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/nodes/remove';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withReleaseNode($value)
-    {
-        $this->data['ReleaseNode'] = $value;
-        $this->options['form_params']['release_node'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDrainNode($value)
-    {
-        $this->data['DrainNode'] = $value;
-        $this->options['form_params']['drain_node'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1769,6 +1139,9 @@ class ResumeComponentUpgrade extends Roa
     /** @var string */
     public $pathPattern = '/clusters/[clusterid]/components/[componentid]/resume';
 
+    /** @var string */
+    public $method = 'POST';
+
     /**
      * @param string $value
      *
@@ -1804,6 +1177,9 @@ class ResumeUpgradeCluster extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/upgrade/resume';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -1820,219 +1196,43 @@ class ScaleCluster extends Roa
 }
 
 /**
- * @method string getWorkerDataDisk()
- * @method string getKeyPair()
- * @method string getCount()
- * @method string getWorkerSystemDiskCategory()
- * @method string getCloudMonitorFlags()
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getWorkerPeriodUnit()
- * @method string getWorkerAutoRenew()
- * @method string getWorkerAutoRenewPeriod()
- * @method string getWorkerPeriod()
- * @method string getLoginPassword()
- * @method string getWorkerSystemDiskSize()
- * @method string getCpuPolicy()
- * @method string getDisableRollback()
- * @method string getWorkerInstanceChargeType()
+ * @method string getNodepoolId()
+ * @method $this withNodepoolId($value)
+ */
+class ScaleClusterNodePool extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/clusters/[ClusterId]/nodepools/[NodepoolId]';
+
+    /** @var string */
+    public $method = 'POST';
+}
+
+/**
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
  */
 class ScaleOutCluster extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerDataDisk($value)
-    {
-        $this->data['WorkerDataDisk'] = $value;
-        $this->options['form_params']['worker_data_disk'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withKeyPair($value)
-    {
-        $this->data['KeyPair'] = $value;
-        $this->options['form_params']['key_pair'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCount($value)
-    {
-        $this->data['Count'] = $value;
-        $this->options['form_params']['count'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerSystemDiskCategory($value)
-    {
-        $this->data['WorkerSystemDiskCategory'] = $value;
-        $this->options['form_params']['worker_system_disk_category'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCloudMonitorFlags($value)
-    {
-        $this->data['CloudMonitorFlags'] = $value;
-        $this->options['form_params']['cloud_monitor_flags'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerPeriodUnit($value)
-    {
-        $this->data['WorkerPeriodUnit'] = $value;
-        $this->options['form_params']['worker_period_unit'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerAutoRenew($value)
-    {
-        $this->data['WorkerAutoRenew'] = $value;
-        $this->options['form_params']['worker_auto_renew'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerAutoRenewPeriod($value)
-    {
-        $this->data['WorkerAutoRenewPeriod'] = $value;
-        $this->options['form_params']['worker_auto_renew_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerPeriod($value)
-    {
-        $this->data['WorkerPeriod'] = $value;
-        $this->options['form_params']['worker_period'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withLoginPassword($value)
-    {
-        $this->data['LoginPassword'] = $value;
-        $this->options['form_params']['login_password'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerSystemDiskSize($value)
-    {
-        $this->data['WorkerSystemDiskSize'] = $value;
-        $this->options['form_params']['worker_system_disk_size'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withCpuPolicy($value)
-    {
-        $this->data['CpuPolicy'] = $value;
-        $this->options['form_params']['cpu_policy'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withDisableRollback($value)
-    {
-        $this->data['DisableRollback'] = $value;
-        $this->options['form_params']['disable_rollback'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withWorkerInstanceChargeType($value)
-    {
-        $this->data['WorkerInstanceChargeType'] = $value;
-        $this->options['form_params']['worker_instance_charge_type'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 class StartWorkflow extends Roa
 {
     /** @var string */
     public $pathPattern = '/gs/workflow';
+
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
- * @method string getName()
  * @method string getClusterId()
  * @method $this withClusterId($value)
  */
@@ -2041,18 +1241,8 @@ class UnInstallClusterAddons extends Roa
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/components/uninstall';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withName($value)
-    {
-        $this->data['Name'] = $value;
-        $this->options['form_params']['name'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
@@ -2063,66 +1253,46 @@ class UpdateK8sClusterUserConfigExpire extends Roa
 {
     /** @var string */
     public $pathPattern = '/k8s/[ClusterId]/user_config/expire';
+
+    /** @var string */
+    public $method = 'POST';
+}
+
+/**
+ * @method string getTemplateId()
+ * @method $this withTemplateId($value)
+ */
+class UpdateTemplate extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/templates/[TemplateId]';
+
+    /** @var string */
+    public $method = 'PUT';
 }
 
 /**
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getVersion()
  */
 class UpgradeCluster extends Roa
 {
     /** @var string */
     public $pathPattern = '/api/v2/clusters/[ClusterId]/upgrade';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withVersion($value)
-    {
-        $this->data['Version'] = $value;
-        $this->options['form_params']['version'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }
 
 /**
- * @method string getComponentName()
  * @method string getClusterId()
  * @method $this withClusterId($value)
- * @method string getVersion()
  */
 class UpgradeClusterAddons extends Roa
 {
     /** @var string */
     public $pathPattern = '/clusters/[ClusterId]/components/upgrade';
 
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withComponentName($value)
-    {
-        $this->data['ComponentName'] = $value;
-        $this->options['form_params']['component_name'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withVersion($value)
-    {
-        $this->data['Version'] = $value;
-        $this->options['form_params']['version'] = $value;
-
-        return $this;
-    }
+    /** @var string */
+    public $method = 'POST';
 }

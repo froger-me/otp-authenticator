@@ -8,17 +8,20 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method AddScdnDomain addScdnDomain(array $options = [])
  * @method BatchDeleteScdnDomainConfigs batchDeleteScdnDomainConfigs(array $options = [])
  * @method BatchSetScdnDomainConfigs batchSetScdnDomainConfigs(array $options = [])
+ * @method BatchStartScdnDomain batchStartScdnDomain(array $options = [])
+ * @method BatchStopScdnDomain batchStopScdnDomain(array $options = [])
  * @method BatchUpdateScdnDomain batchUpdateScdnDomain(array $options = [])
  * @method CheckScdnService checkScdnService(array $options = [])
  * @method DeleteScdnDomain deleteScdnDomain(array $options = [])
  * @method DeleteScdnSpecificConfig deleteScdnSpecificConfig(array $options = [])
+ * @method DescribeScdnCcInfo describeScdnCcInfo(array $options = [])
  * @method DescribeScdnCcQpsInfo describeScdnCcQpsInfo(array $options = [])
  * @method DescribeScdnCcTopIp describeScdnCcTopIp(array $options = [])
  * @method DescribeScdnCcTopUrl describeScdnCcTopUrl(array $options = [])
  * @method DescribeScdnCertificateDetail describeScdnCertificateDetail(array $options = [])
  * @method DescribeScdnCertificateList describeScdnCertificateList(array $options = [])
- * @method DescribeScdnDdosInfo describeScdnDdosInfo(array $options = [])
- * @method DescribeScdnDdosTrafficInfo describeScdnDdosTrafficInfo(array $options = [])
+ * @method DescribeScdnDDoSInfo describeScdnDDoSInfo(array $options = [])
+ * @method DescribeScdnDDoSTrafficInfo describeScdnDDoSTrafficInfo(array $options = [])
  * @method DescribeScdnDomainBpsData describeScdnDomainBpsData(array $options = [])
  * @method DescribeScdnDomainCertificateInfo describeScdnDomainCertificateInfo(array $options = [])
  * @method DescribeScdnDomainCname describeScdnDomainCname(array $options = [])
@@ -50,14 +53,14 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method DescribeScdnService describeScdnService(array $options = [])
  * @method DescribeScdnTopDomainsByFlow describeScdnTopDomainsByFlow(array $options = [])
  * @method DescribeScdnUserDomains describeScdnUserDomains(array $options = [])
+ * @method DescribeScdnUserProtectInfo describeScdnUserProtectInfo(array $options = [])
  * @method DescribeScdnUserQuota describeScdnUserQuota(array $options = [])
  * @method OpenScdnService openScdnService(array $options = [])
  * @method PreloadScdnObjectCaches preloadScdnObjectCaches(array $options = [])
  * @method RefreshScdnObjectCaches refreshScdnObjectCaches(array $options = [])
- * @method SetDomainServerCertificate setDomainServerCertificate(array $options = [])
  * @method SetScdnBotInfo setScdnBotInfo(array $options = [])
  * @method SetScdnCcInfo setScdnCcInfo(array $options = [])
- * @method SetScdnDdosInfo setScdnDdosInfo(array $options = [])
+ * @method SetScdnDDoSInfo setScdnDDoSInfo(array $options = [])
  * @method SetScdnDomainBizInfo setScdnDomainBizInfo(array $options = [])
  * @method SetScdnDomainCertificate setScdnDomainCertificate(array $options = [])
  * @method StartScdnDomain startScdnDomain(array $options = [])
@@ -123,14 +126,38 @@ class BatchDeleteScdnDomainConfigs extends Rpc
  * @method $this withFunctions($value)
  * @method string getDomainNames()
  * @method $this withDomainNames($value)
+ * @method string getSecurityToken()
+ * @method $this withSecurityToken($value)
  * @method string getOwnerAccount()
  * @method $this withOwnerAccount($value)
+ * @method string getOwnerId()
+ * @method $this withOwnerId($value)
+ */
+class BatchSetScdnDomainConfigs extends Rpc
+{
+}
+
+/**
+ * @method string getDomainNames()
+ * @method $this withDomainNames($value)
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
  * @method string getSecurityToken()
  * @method $this withSecurityToken($value)
  */
-class BatchSetScdnDomainConfigs extends Rpc
+class BatchStartScdnDomain extends Rpc
+{
+}
+
+/**
+ * @method string getDomainNames()
+ * @method $this withDomainNames($value)
+ * @method string getOwnerId()
+ * @method $this withOwnerId($value)
+ * @method string getSecurityToken()
+ * @method $this withSecurityToken($value)
+ */
+class BatchStopScdnDomain extends Rpc
 {
 }
 
@@ -163,16 +190,14 @@ class CheckScdnService extends Rpc
 }
 
 /**
+ * @method string getSecurityToken()
+ * @method $this withSecurityToken($value)
  * @method string getOwnerAccount()
  * @method $this withOwnerAccount($value)
  * @method string getDomainName()
  * @method $this withDomainName($value)
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
- * @method string getResourceGroupId()
- * @method $this withResourceGroupId($value)
- * @method string getSecurityToken()
- * @method $this withSecurityToken($value)
  */
 class DeleteScdnDomain extends Rpc
 {
@@ -190,6 +215,17 @@ class DeleteScdnDomain extends Rpc
  */
 class DeleteScdnSpecificConfig extends Rpc
 {
+}
+
+/**
+ * @method string getOwnerId()
+ * @method $this withOwnerId($value)
+ */
+class DescribeScdnCcInfo extends Rpc
+{
+
+    /** @var string */
+    public $method = 'GET';
 }
 
 /**
@@ -279,7 +315,7 @@ class DescribeScdnCertificateList extends Rpc
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
  */
-class DescribeScdnDdosInfo extends Rpc
+class DescribeScdnDDoSInfo extends Rpc
 {
 
     /** @var string */
@@ -296,7 +332,7 @@ class DescribeScdnDdosInfo extends Rpc
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
  */
-class DescribeScdnDdosTrafficInfo extends Rpc
+class DescribeScdnDDoSTrafficInfo extends Rpc
 {
 
     /** @var string */
@@ -355,6 +391,8 @@ class DescribeScdnDomainCname extends Rpc
  * @method $this withOwnerId($value)
  * @method string getSecurityToken()
  * @method $this withSecurityToken($value)
+ * @method string getConfigId()
+ * @method $this withConfigId($value)
  */
 class DescribeScdnDomainConfigs extends Rpc
 {
@@ -657,14 +695,12 @@ class DescribeScdnDomainRegionData extends Rpc
 }
 
 /**
- * @method string getDomainName()
- * @method $this withDomainName($value)
  * @method string getStartTime()
  * @method $this withStartTime($value)
+ * @method string getDomainName()
+ * @method $this withDomainName($value)
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
- * @method string getSecurityToken()
- * @method $this withSecurityToken($value)
  * @method string getSortBy()
  * @method $this withSortBy($value)
  */
@@ -673,14 +709,12 @@ class DescribeScdnDomainTopReferVisit extends Rpc
 }
 
 /**
- * @method string getDomainName()
- * @method $this withDomainName($value)
  * @method string getStartTime()
  * @method $this withStartTime($value)
+ * @method string getDomainName()
+ * @method $this withDomainName($value)
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
- * @method string getSecurityToken()
- * @method $this withSecurityToken($value)
  * @method string getSortBy()
  * @method $this withSortBy($value)
  */
@@ -823,6 +857,17 @@ class DescribeScdnUserDomains extends Rpc
 /**
  * @method string getOwnerId()
  * @method $this withOwnerId($value)
+ */
+class DescribeScdnUserProtectInfo extends Rpc
+{
+
+    /** @var string */
+    public $method = 'GET';
+}
+
+/**
+ * @method string getOwnerId()
+ * @method $this withOwnerId($value)
  * @method string getSecurityToken()
  * @method $this withSecurityToken($value)
  */
@@ -885,28 +930,6 @@ class RefreshScdnObjectCaches extends Rpc
 }
 
 /**
- * @method string getSSLProtocol()
- * @method $this withSSLProtocol($value)
- * @method string getSecurityToken()
- * @method $this withSecurityToken($value)
- * @method string getSSLPri()
- * @method $this withSSLPri($value)
- * @method string getCertName()
- * @method $this withCertName($value)
- * @method string getDomainName()
- * @method $this withDomainName($value)
- * @method string getOwnerId()
- * @method $this withOwnerId($value)
- * @method string getSSLPub()
- * @method $this withSSLPub($value)
- * @method string getRegion()
- * @method $this withRegion($value)
- */
-class SetDomainServerCertificate extends Rpc
-{
-}
-
-/**
  * @method string getEnable()
  * @method $this withEnable($value)
  * @method string getDomainName()
@@ -942,7 +965,7 @@ class SetScdnCcInfo extends Rpc
  * @method string getElasticBandwidth()
  * @method $this withElasticBandwidth($value)
  */
-class SetScdnDdosInfo extends Rpc
+class SetScdnDDoSInfo extends Rpc
 {
 
     /** @var string */
@@ -1017,14 +1040,14 @@ class StopScdnDomain extends Rpc
 /**
  * @method string getSources()
  * @method $this withSources($value)
- * @method string getDomainName()
- * @method $this withDomainName($value)
- * @method string getOwnerId()
- * @method $this withOwnerId($value)
  * @method string getResourceGroupId()
  * @method $this withResourceGroupId($value)
  * @method string getSecurityToken()
  * @method $this withSecurityToken($value)
+ * @method string getDomainName()
+ * @method $this withDomainName($value)
+ * @method string getOwnerId()
+ * @method $this withOwnerId($value)
  */
 class UpdateScdnDomain extends Rpc
 {

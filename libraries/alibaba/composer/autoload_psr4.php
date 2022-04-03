@@ -7,13 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'clagiordano\\weblibs\\configmanager\\' => array($vendorDir . '/clagiordano/weblibs-configmanager/src'),
-    'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
-    'Symfony\\Polyfill\\Php70\\' => array($vendorDir . '/symfony/polyfill-php70'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),
-    'Symfony\\Polyfill\\Intl\\Idn\\' => array($vendorDir . '/symfony/polyfill-intl-idn'),
+    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Stringy\\' => array($vendorDir . '/danielstjules/stringy/src'),
-    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src', $vendorDir . '/psr/http-factory/src'),
+    'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
     'JmesPath\\' => array($vendorDir . '/mtdowling/jmespath.php/src'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),

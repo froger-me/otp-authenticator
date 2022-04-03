@@ -6,6 +6,9 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
 
 /**
  * @method CompileSortScript compileSortScript(array $options = [])
+ * @method CreateABTestExperiment createABTestExperiment(array $options = [])
+ * @method CreateABTestGroup createABTestGroup(array $options = [])
+ * @method CreateABTestScene createABTestScene(array $options = [])
  * @method CreateApp createApp(array $options = [])
  * @method CreateAppGroup createAppGroup(array $options = [])
  * @method CreateDataCollection createDataCollection(array $options = [])
@@ -16,7 +19,16 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method CreateScheduledTask createScheduledTask(array $options = [])
  * @method CreateSecondRank createSecondRank(array $options = [])
  * @method CreateSortScript createSortScript(array $options = [])
+ * @method CreateUserAnalyzer createUserAnalyzer(array $options = [])
+ * @method DeleteABTestExperiment deleteABTestExperiment(array $options = [])
+ * @method DeleteABTestGroup deleteABTestGroup(array $options = [])
+ * @method DeleteABTestScene deleteABTestScene(array $options = [])
+ * @method DeleteModel deleteModel(array $options = [])
  * @method DeleteSortScript deleteSortScript(array $options = [])
+ * @method DeleteSortScriptFile deleteSortScriptFile(array $options = [])
+ * @method DescribeABTestExperiment describeABTestExperiment(array $options = [])
+ * @method DescribeABTestGroup describeABTestGroup(array $options = [])
+ * @method DescribeABTestScene describeABTestScene(array $options = [])
  * @method DescribeApp describeApp(array $options = [])
  * @method DescribeAppGroup describeAppGroup(array $options = [])
  * @method DescribeAppGroupDataReport describeAppGroupDataReport(array $options = [])
@@ -25,42 +37,69 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method DescribeDataCollction describeDataCollction(array $options = [])
  * @method DescribeFirstRank describeFirstRank(array $options = [])
  * @method DescribeInterventionDictionary describeInterventionDictionary(array $options = [])
+ * @method DescribeModel describeModel(array $options = [])
  * @method DescribeQueryProcessor describeQueryProcessor(array $options = [])
  * @method DescribeRegion describeRegion(array $options = [])
  * @method DescribeRegions describeRegions(array $options = [])
  * @method DescribeScheduledTask describeScheduledTask(array $options = [])
  * @method DescribeSecondRank describeSecondRank(array $options = [])
  * @method DescribeSlowQueryStatus describeSlowQueryStatus(array $options = [])
+ * @method DescribeUserAnalyzer describeUserAnalyzer(array $options = [])
  * @method DisableSlowQuery disableSlowQuery(array $options = [])
  * @method EnableSlowQuery enableSlowQuery(array $options = [])
+ * @method GenerateMergedTable generateMergedTable(array $options = [])
+ * @method GetDomain getDomain(array $options = [])
  * @method GetModelProgress getModelProgress(array $options = [])
+ * @method GetModelReport getModelReport(array $options = [])
+ * @method GetScriptFileNames getScriptFileNames(array $options = [])
  * @method GetSortScript getSortScript(array $options = [])
  * @method GetSortScriptFile getSortScriptFile(array $options = [])
+ * @method GetValidationError getValidationError(array $options = [])
+ * @method GetValidationReport getValidationReport(array $options = [])
+ * @method ListABTestExperiments listABTestExperiments(array $options = [])
+ * @method ListABTestFixedFlowDividers listABTestFixedFlowDividers(array $options = [])
+ * @method ListABTestGroups listABTestGroups(array $options = [])
+ * @method ListABTestMetrics listABTestMetrics(array $options = [])
+ * @method ListABTestScenes listABTestScenes(array $options = [])
  * @method ListAppGroupErrors listAppGroupErrors(array $options = [])
  * @method ListAppGroupMetrics listAppGroupMetrics(array $options = [])
  * @method ListAppGroups listAppGroups(array $options = [])
  * @method ListApps listApps(array $options = [])
  * @method ListDataCollections listDataCollections(array $options = [])
+ * @method ListDataSourceTableFields listDataSourceTableFields(array $options = [])
+ * @method ListDataSourceTables listDataSourceTables(array $options = [])
  * @method ListDeployedAlgorithmModels listDeployedAlgorithmModels(array $options = [])
  * @method ListFirstRanks listFirstRanks(array $options = [])
  * @method ListInterventionDictionaries listInterventionDictionaries(array $options = [])
  * @method ListInterventionDictionaryEntries listInterventionDictionaryEntries(array $options = [])
  * @method ListInterventionDictionaryNerResults listInterventionDictionaryNerResults(array $options = [])
  * @method ListInterventionDictionaryRelatedEntities listInterventionDictionaryRelatedEntities(array $options = [])
+ * @method ListModels listModels(array $options = [])
  * @method ListQueryProcessorNers listQueryProcessorNers(array $options = [])
  * @method ListQueryProcessors listQueryProcessors(array $options = [])
+ * @method ListQuotaReviewTasks listQuotaReviewTasks(array $options = [])
+ * @method ListRamRoles listRamRoles(array $options = [])
  * @method ListScheduledTasks listScheduledTasks(array $options = [])
  * @method ListSecondRanks listSecondRanks(array $options = [])
  * @method ListSlowQueryCategories listSlowQueryCategories(array $options = [])
  * @method ListSlowQueryQueries listSlowQueryQueries(array $options = [])
+ * @method ListSortExpressions listSortExpressions(array $options = [])
  * @method ListSortScripts listSortScripts(array $options = [])
+ * @method ListStatisticLogs listStatisticLogs(array $options = [])
+ * @method ListStatisticReport listStatisticReport(array $options = [])
+ * @method ListUserAnalyzerEntries listUserAnalyzerEntries(array $options = [])
+ * @method ListUserAnalyzers listUserAnalyzers(array $options = [])
  * @method ModifyAppGroup modifyAppGroup(array $options = [])
  * @method ModifyAppGroupQuota modifyAppGroupQuota(array $options = [])
  * @method ModifyFirstRank modifyFirstRank(array $options = [])
+ * @method ModifyModel modifyModel(array $options = [])
  * @method ModifyQueryProcessor modifyQueryProcessor(array $options = [])
  * @method ModifyScheduledTask modifyScheduledTask(array $options = [])
  * @method ModifySecondRank modifySecondRank(array $options = [])
+ * @method PreviewModel previewModel(array $options = [])
  * @method PushInterventionDictionaryEntries pushInterventionDictionaryEntries(array $options = [])
+ * @method PushUserAnalyzerEntries pushUserAnalyzerEntries(array $options = [])
+ * @method RankPreviewQuery rankPreviewQuery(array $options = [])
  * @method ReleaseSortScript releaseSortScript(array $options = [])
  * @method RemoveApp removeApp(array $options = [])
  * @method RemoveAppGroup removeAppGroup(array $options = [])
@@ -70,10 +109,18 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method RemoveQueryProcessor removeQueryProcessor(array $options = [])
  * @method RemoveScheduledTask removeScheduledTask(array $options = [])
  * @method RemoveSecondRank removeSecondRank(array $options = [])
+ * @method RemoveUserAnalyzer removeUserAnalyzer(array $options = [])
+ * @method RenewAppGroup renewAppGroup(array $options = [])
  * @method ReplaceAppGroupCommodityCode replaceAppGroupCommodityCode(array $options = [])
  * @method SaveSortScriptFile saveSortScriptFile(array $options = [])
  * @method StartSlowQueryAnalyzer startSlowQueryAnalyzer(array $options = [])
+ * @method TrainModel trainModel(array $options = [])
+ * @method UpdateABTestExperiment updateABTestExperiment(array $options = [])
+ * @method UpdateABTestFixedFlowDividers updateABTestFixedFlowDividers(array $options = [])
+ * @method UpdateABTestGroup updateABTestGroup(array $options = [])
+ * @method UpdateABTestScene updateABTestScene(array $options = [])
  * @method UpdateFetchFields updateFetchFields(array $options = [])
+ * @method UpdateSortScript updateSortScript(array $options = [])
  * @method UpdateSummaries updateSummaries(array $options = [])
  */
 class OpenSearchApiResolver extends ApiResolver
@@ -130,6 +177,123 @@ class CompileSortScript extends Roa
 
         return $this;
     }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class CreateABTestExperiment extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class CreateABTestGroup extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppGroupIdentity()
+ */
+class CreateABTestScene extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
@@ -286,7 +450,7 @@ class CreateInterventionDictionary extends Roa
 class CreateModel extends Roa
 {
     /** @var string */
-    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/simple-models';
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models';
 
     /** @var string */
     public $method = 'POST';
@@ -475,6 +639,213 @@ class CreateSortScript extends Roa
     }
 }
 
+class CreateUserAnalyzer extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers';
+
+    /** @var string */
+    public $method = 'POST';
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getExperimentId()
+ * @method string getAppGroupIdentity()
+ */
+class DeleteABTestExperiment extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments/[experimentId]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withExperimentId($value)
+    {
+        $this->data['ExperimentId'] = $value;
+        $this->pathParameters['experimentId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class DeleteABTestGroup extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class DeleteABTestScene extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class DeleteModel extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
 /**
  * @method string getAppVersionId()
  * @method string getScriptName()
@@ -510,6 +881,223 @@ class DeleteSortScript extends Roa
     {
         $this->data['ScriptName'] = $value;
         $this->pathParameters['scriptName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppVersionId()
+ * @method string getFileName()
+ * @method string getScriptName()
+ * @method string getAppGroupIdentity()
+ */
+class DeleteSortScriptFile extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/files/src/[fileName]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppVersionId($value)
+    {
+        $this->data['AppVersionId'] = $value;
+        $this->pathParameters['appVersionId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withFileName($value)
+    {
+        $this->data['FileName'] = $value;
+        $this->pathParameters['fileName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withScriptName($value)
+    {
+        $this->data['ScriptName'] = $value;
+        $this->pathParameters['scriptName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getExperimentId()
+ * @method string getAppGroupIdentity()
+ */
+class DescribeABTestExperiment extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments/[experimentId]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withExperimentId($value)
+    {
+        $this->data['ExperimentId'] = $value;
+        $this->pathParameters['experimentId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class DescribeABTestGroup extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class DescribeABTestScene extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
 
         return $this;
     }
@@ -803,6 +1391,42 @@ class DescribeInterventionDictionary extends Roa
 }
 
 /**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class DescribeModel extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getAppId()
  * @method string getName()
  * @method string getAppGroupIdentity()
@@ -973,6 +1597,42 @@ class DescribeSlowQueryStatus extends Roa
 }
 
 /**
+ * @method string getWith()
+ * @method string getName()
+ */
+class DescribeUserAnalyzer extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers/[name]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withWith($value)
+    {
+        $this->data['With'] = $value;
+        $this->options['query']['with'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getAppGroupIdentity()
  */
 class DisableSlowQuery extends Roa
@@ -1023,23 +1683,170 @@ class EnableSlowQuery extends Roa
 }
 
 /**
- * @method string getModelId()
- * @method string getAppGroupIdentity()
+ * @method string getSpec()
  */
-class GetModelProgress extends Roa
+class GenerateMergedTable extends Roa
 {
     /** @var string */
-    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/simple-models/[modelId]/progress';
+    public $pathPattern = '/v4/openapi/assist/schema/actions/merge';
+
+    /** @var string */
+    public $method = 'POST';
 
     /**
      * @param string $value
      *
      * @return $this
      */
-    public function withModelId($value)
+    public function withSpec($value)
     {
-        $this->data['ModelId'] = $value;
-        $this->pathParameters['modelId'] = $value;
+        $this->data['Spec'] = $value;
+        $this->options['query']['spec'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getDomainName()
+ * @method string getAppGroupIdentity()
+ */
+class GetDomain extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/domains/[domainName]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withDomainName($value)
+    {
+        $this->data['DomainName'] = $value;
+        $this->pathParameters['domainName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->options['query']['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class GetModelProgress extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]/progress';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class GetModelReport extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]/report';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppVersionId()
+ * @method string getScriptName()
+ * @method string getAppGroupIdentity()
+ */
+class GetScriptFileNames extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/file-names';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppVersionId($value)
+    {
+        $this->data['AppVersionId'] = $value;
+        $this->pathParameters['appVersionId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withScriptName($value)
+    {
+        $this->data['ScriptName'] = $value;
+        $this->pathParameters['scriptName'] = $value;
 
         return $this;
     }
@@ -1110,13 +1917,14 @@ class GetSortScript extends Roa
 
 /**
  * @method string getAppVersionId()
+ * @method string getFileName()
  * @method string getScriptName()
  * @method string getAppGroupIdentity()
  */
 class GetSortScriptFile extends Roa
 {
     /** @var string */
-    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/files/src/UserScorer.cava';
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/files/src/[fileName]';
 
     /**
      * @param string $value
@@ -1136,6 +1944,19 @@ class GetSortScriptFile extends Roa
      *
      * @return $this
      */
+    public function withFileName($value)
+    {
+        $this->data['FileName'] = $value;
+        $this->pathParameters['fileName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
     public function withScriptName($value)
     {
         $this->data['ScriptName'] = $value;
@@ -1143,6 +1964,300 @@ class GetSortScriptFile extends Roa
 
         return $this;
     }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppGroupIdentity()
+ * @method string getErrorCode()
+ */
+class GetValidationError extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/data/validation-error';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withErrorCode($value)
+    {
+        $this->data['ErrorCode'] = $value;
+        $this->options['query']['errorCode'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getType()
+ * @method string getAppGroupIdentity()
+ */
+class GetValidationReport extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/data/validation-report';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withType($value)
+    {
+        $this->data['Type'] = $value;
+        $this->options['query']['type'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class ListABTestExperiments extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getExperimentId()
+ * @method string getAppGroupIdentity()
+ */
+class ListABTestFixedFlowDividers extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments/[experimentId]/fixed-flow-dividers';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withExperimentId($value)
+    {
+        $this->data['ExperimentId'] = $value;
+        $this->pathParameters['experimentId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class ListABTestGroups extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class ListABTestMetrics extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/metrics';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppGroupIdentity()
+ */
+class ListABTestScenes extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes';
 
     /**
      * @param string $value
@@ -1329,6 +2444,7 @@ class ListAppGroupMetrics extends Roa
 }
 
 /**
+ * @method string getResourceGroupId()
  * @method string getInstanceId()
  * @method string getPageSize()
  * @method string getName()
@@ -1340,6 +2456,19 @@ class ListAppGroups extends Roa
 {
     /** @var string */
     public $pathPattern = '/v4/openapi/app-groups';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withResourceGroupId($value)
+    {
+        $this->data['ResourceGroupId'] = $value;
+        $this->options['query']['resourceGroupId'] = $value;
+
+        return $this;
+    }
 
     /**
      * @param string $value
@@ -1521,6 +2650,78 @@ class ListDataCollections extends Roa
 }
 
 /**
+ * @method string getDataSourceType()
+ * @method string getParams()
+ */
+class ListDataSourceTableFields extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/assist/data-sources/[dataSourceType]/fields';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withDataSourceType($value)
+    {
+        $this->data['DataSourceType'] = $value;
+        $this->pathParameters['dataSourceType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withParams($value)
+    {
+        $this->data['Params'] = $value;
+        $this->options['query']['params'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getDataSourceType()
+ * @method string getParams()
+ */
+class ListDataSourceTables extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/assist/data-sources/[dataSourceType]/tables';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withDataSourceType($value)
+    {
+        $this->data['DataSourceType'] = $value;
+        $this->pathParameters['dataSourceType'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withParams($value)
+    {
+        $this->data['Params'] = $value;
+        $this->options['query']['params'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getAlgorithmType()
  * @method string getInServiceOnly()
  * @method string getAppGroupIdentity()
@@ -1658,7 +2859,9 @@ class ListInterventionDictionaries extends Roa
 
 /**
  * @method string getName()
+ * @method string getPageSize()
  * @method string getWord()
+ * @method string getPageNumber()
  */
 class ListInterventionDictionaryEntries extends Roa
 {
@@ -1683,10 +2886,36 @@ class ListInterventionDictionaryEntries extends Roa
      *
      * @return $this
      */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
     public function withWord($value)
     {
         $this->data['Word'] = $value;
         $this->options['query']['word'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
 
         return $this;
     }
@@ -1745,6 +2974,70 @@ class ListInterventionDictionaryRelatedEntities extends Roa
     {
         $this->data['Name'] = $value;
         $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getPageSize()
+ * @method string getType()
+ * @method string getAppGroupIdentity()
+ * @method string getPageNumber()
+ */
+class ListModels extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withType($value)
+    {
+        $this->data['Type'] = $value;
+        $this->options['query']['type'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
 
         return $this;
     }
@@ -1820,6 +3113,62 @@ class ListQueryProcessors extends Roa
 
         return $this;
     }
+}
+
+/**
+ * @method string getPageSize()
+ * @method string getAppGroupIdentity()
+ * @method string getPageNumber()
+ */
+class ListQuotaReviewTasks extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/quota-review-tasks';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
+
+        return $this;
+    }
+}
+
+class ListRamRoles extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/assist/ram/roles';
 }
 
 /**
@@ -1981,6 +3330,42 @@ class ListSlowQueryQueries extends Roa
 }
 
 /**
+ * @method string getAppId()
+ * @method string getAppGroupIdentity()
+ */
+class ListSortExpressions extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appId]/sort-expressions';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppId($value)
+    {
+        $this->data['AppId'] = $value;
+        $this->pathParameters['appId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getAppVersionId()
  * @method string getAppGroupIdentity()
  */
@@ -2011,6 +3396,374 @@ class ListSortScripts extends Roa
     {
         $this->data['AppGroupIdentity'] = $value;
         $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getColumns()
+ * @method string getQuery()
+ * @method string getPageSize()
+ * @method string getModuleName()
+ * @method string getDistinct()
+ * @method string getSortBy()
+ * @method string getStartTime()
+ * @method string getStopTime()
+ * @method string getAppGroupIdentity()
+ * @method string getPageNumber()
+ */
+class ListStatisticLogs extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/statistic-logs/[moduleName]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withColumns($value)
+    {
+        $this->data['Columns'] = $value;
+        $this->options['query']['columns'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withQuery($value)
+    {
+        $this->data['Query'] = $value;
+        $this->options['query']['query'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModuleName($value)
+    {
+        $this->data['ModuleName'] = $value;
+        $this->pathParameters['moduleName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withDistinct($value)
+    {
+        $this->data['Distinct'] = $value;
+        $this->options['query']['distinct'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSortBy($value)
+    {
+        $this->data['SortBy'] = $value;
+        $this->options['query']['sortBy'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withStartTime($value)
+    {
+        $this->data['StartTime'] = $value;
+        $this->options['query']['startTime'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withStopTime($value)
+    {
+        $this->data['StopTime'] = $value;
+        $this->options['query']['stopTime'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getColumns()
+ * @method string getQuery()
+ * @method string getPageSize()
+ * @method string getModuleName()
+ * @method string getEndTime()
+ * @method string getStartTime()
+ * @method string getAppGroupIdentity()
+ * @method string getPageNumber()
+ */
+class ListStatisticReport extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/statistic-report/[moduleName]';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withColumns($value)
+    {
+        $this->data['Columns'] = $value;
+        $this->options['query']['columns'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withQuery($value)
+    {
+        $this->data['Query'] = $value;
+        $this->options['query']['query'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModuleName($value)
+    {
+        $this->data['ModuleName'] = $value;
+        $this->pathParameters['moduleName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withEndTime($value)
+    {
+        $this->data['EndTime'] = $value;
+        $this->options['query']['endTime'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withStartTime($value)
+    {
+        $this->data['StartTime'] = $value;
+        $this->options['query']['startTime'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getName()
+ * @method string getPageSize()
+ * @method string getWord()
+ * @method string getPageNumber()
+ */
+class ListUserAnalyzerEntries extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers/[name]/entries';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withWord($value)
+    {
+        $this->data['Word'] = $value;
+        $this->options['query']['word'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getPageSize()
+ * @method string getPageNumber()
+ */
+class ListUserAnalyzers extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageSize($value)
+    {
+        $this->data['PageSize'] = $value;
+        $this->options['query']['pageSize'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withPageNumber($value)
+    {
+        $this->data['PageNumber'] = $value;
+        $this->options['query']['pageNumber'] = $value;
 
         return $this;
     }
@@ -2115,6 +3868,45 @@ class ModifyFirstRank extends Roa
     {
         $this->data['Name'] = $value;
         $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class ModifyModel extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
 
         return $this;
     }
@@ -2307,6 +4099,56 @@ class ModifySecondRank extends Roa
 }
 
 /**
+ * @method string getModelName()
+ * @method string getQuery()
+ * @method string getAppGroupIdentity()
+ */
+class PreviewModel extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]/actions/preview';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withQuery($value)
+    {
+        $this->data['Query'] = $value;
+        $this->options['query']['query'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getName()
  */
 class PushInterventionDictionaryEntries extends Roa
@@ -2326,6 +4168,70 @@ class PushInterventionDictionaryEntries extends Roa
     {
         $this->data['Name'] = $value;
         $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getName()
+ */
+class PushUserAnalyzerEntries extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers/[name]/entries/actions/bulk';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class RankPreviewQuery extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]/actions/query-rank';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
 
         return $this;
     }
@@ -2711,6 +4617,56 @@ class RemoveSecondRank extends Roa
 }
 
 /**
+ * @method string getName()
+ */
+class RemoveUserAnalyzer extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/user-analyzers/[name]';
+
+    /** @var string */
+    public $method = 'DELETE';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->pathParameters['name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppGroupIdentity()
+ */
+class RenewAppGroup extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/actions/renew';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getAppGroupIdentity()
  */
 class ReplaceAppGroupCommodityCode extends Roa
@@ -2737,13 +4693,14 @@ class ReplaceAppGroupCommodityCode extends Roa
 
 /**
  * @method string getAppVersionId()
+ * @method string getFileName()
  * @method string getScriptName()
  * @method string getAppGroupIdentity()
  */
 class SaveSortScriptFile extends Roa
 {
     /** @var string */
-    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/files/src/UserScorer.cava';
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]/files/src/[fileName]';
 
     /** @var string */
     public $method = 'PUT';
@@ -2757,6 +4714,19 @@ class SaveSortScriptFile extends Roa
     {
         $this->data['AppVersionId'] = $value;
         $this->pathParameters['appVersionId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withFileName($value)
+    {
+        $this->data['FileName'] = $value;
+        $this->pathParameters['fileName'] = $value;
 
         return $this;
     }
@@ -2814,6 +4784,271 @@ class StartSlowQueryAnalyzer extends Roa
 }
 
 /**
+ * @method string getModelName()
+ * @method string getAppGroupIdentity()
+ */
+class TrainModel extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/algorithm/models/[modelName]/actions/train';
+
+    /** @var string */
+    public $method = 'POST';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withModelName($value)
+    {
+        $this->data['ModelName'] = $value;
+        $this->pathParameters['modelName'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getExperimentId()
+ * @method string getAppGroupIdentity()
+ */
+class UpdateABTestExperiment extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments/[experimentId]';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withExperimentId($value)
+    {
+        $this->data['ExperimentId'] = $value;
+        $this->pathParameters['experimentId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getExperimentId()
+ * @method string getAppGroupIdentity()
+ */
+class UpdateABTestFixedFlowDividers extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]/experiments/[experimentId]/fixed-flow-dividers';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withExperimentId($value)
+    {
+        $this->data['ExperimentId'] = $value;
+        $this->pathParameters['experimentId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getGroupId()
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class UpdateABTestGroup extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]/groups/[groupId]';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupId($value)
+    {
+        $this->data['GroupId'] = $value;
+        $this->pathParameters['groupId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getSceneId()
+ * @method string getAppGroupIdentity()
+ */
+class UpdateABTestScene extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/scenes/[sceneId]';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSceneId($value)
+    {
+        $this->data['SceneId'] = $value;
+        $this->pathParameters['sceneId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getDryRun()
  * @method string getAppId()
  * @method string getAppGroupIdentity()
@@ -2848,6 +5083,59 @@ class UpdateFetchFields extends Roa
     {
         $this->data['AppId'] = $value;
         $this->pathParameters['appId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppGroupIdentity($value)
+    {
+        $this->data['AppGroupIdentity'] = $value;
+        $this->pathParameters['appGroupIdentity'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAppVersionId()
+ * @method string getScriptName()
+ * @method string getAppGroupIdentity()
+ */
+class UpdateSortScript extends Roa
+{
+    /** @var string */
+    public $pathPattern = '/v4/openapi/app-groups/[appGroupIdentity]/apps/[appVersionId]/sort-scripts/[scriptName]';
+
+    /** @var string */
+    public $method = 'PUT';
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAppVersionId($value)
+    {
+        $this->data['AppVersionId'] = $value;
+        $this->pathParameters['appVersionId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withScriptName($value)
+    {
+        $this->data['ScriptName'] = $value;
+        $this->pathParameters['scriptName'] = $value;
 
         return $this;
     }

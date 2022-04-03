@@ -5,6 +5,7 @@ namespace AlibabaCloud\Ocr\V20191230;
 use AlibabaCloud\Client\Resolver\ApiResolver;
 
 /**
+ * @method DetectCardScreenshot detectCardScreenshot(array $options = [])
  * @method GetAsyncJobResult getAsyncJobResult(array $options = [])
  * @method RecognizeAccountPage recognizeAccountPage(array $options = [])
  * @method RecognizeBankCard recognizeBankCard(array $options = [])
@@ -17,14 +18,20 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method RecognizeIdentityCard recognizeIdentityCard(array $options = [])
  * @method RecognizeLicensePlate recognizeLicensePlate(array $options = [])
  * @method RecognizePassportMRZ recognizePassportMRZ(array $options = [])
+ * @method RecognizePDF recognizePDF(array $options = [])
+ * @method RecognizePoiName recognizePoiName(array $options = [])
  * @method RecognizeQrCode recognizeQrCode(array $options = [])
+ * @method RecognizeQuotaInvoice recognizeQuotaInvoice(array $options = [])
  * @method RecognizeStamp recognizeStamp(array $options = [])
  * @method RecognizeTable recognizeTable(array $options = [])
  * @method RecognizeTakeoutOrder recognizeTakeoutOrder(array $options = [])
  * @method RecognizeTaxiInvoice recognizeTaxiInvoice(array $options = [])
+ * @method RecognizeTicketInvoice recognizeTicketInvoice(array $options = [])
  * @method RecognizeTrainTicket recognizeTrainTicket(array $options = [])
  * @method RecognizeVATInvoice recognizeVATInvoice(array $options = [])
  * @method RecognizeVerificationcode recognizeVerificationcode(array $options = [])
+ * @method RecognizeVideoCastCrewList recognizeVideoCastCrewList(array $options = [])
+ * @method RecognizeVideoCharacter recognizeVideoCharacter(array $options = [])
  * @method RecognizeVINCode recognizeVINCode(array $options = [])
  * @method TrimDocument trimDocument(array $options = [])
  */
@@ -45,6 +52,26 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
 
     /** @var string */
     public $serviceCode = 'ocr';
+}
+
+/**
+ * @method string getImageURL()
+ */
+class DetectCardScreenshot extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
 }
 
 /**
@@ -218,13 +245,32 @@ class RecognizeBusinessLicense extends Rpc
 }
 
 /**
+ * @method string getFormatResultToJson()
+ * @method $this withFormatResultToJson($value)
+ * @method string getMinHeight()
+ * @method string getOssFile()
+ * @method $this withOssFile($value)
  * @method string getImageType()
+ * @method string getRequestProxyBy()
+ * @method $this withRequestProxyBy($value)
  * @method string getOutputProbability()
  * @method string getImageURL()
- * @method string getMinHeight()
  */
 class RecognizeCharacter extends Rpc
 {
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withMinHeight($value)
+    {
+        $this->data['MinHeight'] = $value;
+        $this->options['form_params']['MinHeight'] = $value;
+
+        return $this;
+    }
 
     /**
      * @param string $value
@@ -261,19 +307,6 @@ class RecognizeCharacter extends Rpc
     {
         $this->data['ImageURL'] = $value;
         $this->options['form_params']['ImageURL'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function withMinHeight($value)
-    {
-        $this->data['MinHeight'] = $value;
-        $this->options['form_params']['MinHeight'] = $value;
 
         return $this;
     }
@@ -498,7 +531,53 @@ class RecognizePassportMRZ extends Rpc
 }
 
 /**
+ * @method string getFileURL()
+ */
+class RecognizePDF extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withFileURL($value)
+    {
+        $this->data['FileURL'] = $value;
+        $this->options['form_params']['FileURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getImageURL()
+ */
+class RecognizePoiName extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getFormatResultToJson()
+ * @method $this withFormatResultToJson($value)
+ * @method string getOssFile()
+ * @method $this withOssFile($value)
  * @method array getTasks()
+ * @method string getRequestProxyBy()
+ * @method $this withRequestProxyBy($value)
  */
 class RecognizeQrCode extends Rpc
 {
@@ -512,10 +591,32 @@ class RecognizeQrCode extends Rpc
 	{
 	    $this->data['Tasks'] = $tasks;
 		foreach ($tasks as $depth1 => $depth1Value) {
-			$this->options['form_params']['Tasks.' . ($depth1 + 1) . '.ImageURL'] = $depth1Value['ImageURL'];
+			if(isset($depth1Value['ImageURL'])){
+				$this->options['form_params']['Tasks.' . ($depth1 + 1) . '.ImageURL'] = $depth1Value['ImageURL'];
+			}
 		}
 
 		return $this;
+    }
+}
+
+/**
+ * @method string getImageURL()
+ */
+class RecognizeQuotaInvoice extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
     }
 }
 
@@ -712,6 +813,26 @@ class RecognizeTaxiInvoice extends Rpc
 }
 
 /**
+ * @method string getImageURL()
+ */
+class RecognizeTicketInvoice extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withImageURL($value)
+    {
+        $this->data['ImageURL'] = $value;
+        $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getImageType()
  * @method string getImageURL()
  */
@@ -794,6 +915,102 @@ class RecognizeVerificationcode extends Rpc
     {
         $this->data['ImageURL'] = $value;
         $this->options['form_params']['ImageURL'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getParams()
+ * @method string getAsync()
+ * @method string getRegisterUrl()
+ * @method string getVideoUrl()
+ */
+class RecognizeVideoCastCrewList extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withParams($value)
+    {
+        $this->data['Params'] = $value;
+        $this->options['form_params']['Params'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAsync($value)
+    {
+        $this->data['Async'] = $value;
+        $this->options['form_params']['Async'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withRegisterUrl($value)
+    {
+        $this->data['RegisterUrl'] = $value;
+        $this->options['form_params']['RegisterUrl'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withVideoUrl($value)
+    {
+        $this->data['VideoUrl'] = $value;
+        $this->options['form_params']['VideoUrl'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method string getAsync()
+ * @method string getVideoURL()
+ */
+class RecognizeVideoCharacter extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withAsync($value)
+    {
+        $this->data['Async'] = $value;
+        $this->options['form_params']['Async'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withVideoURL($value)
+    {
+        $this->data['VideoURL'] = $value;
+        $this->options['form_params']['VideoURL'] = $value;
 
         return $this;
     }

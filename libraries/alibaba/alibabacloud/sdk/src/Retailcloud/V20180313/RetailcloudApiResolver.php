@@ -6,11 +6,15 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
 
 /**
  * @method AddClusterNode addClusterNode(array $options = [])
+ * @method AllocatePodConfig allocatePodConfig(array $options = [])
  * @method BatchAddServers batchAddServers(array $options = [])
+ * @method BindGroup bindGroup(array $options = [])
  * @method BindNodeLabel bindNodeLabel(array $options = [])
  * @method CloseDeployOrder closeDeployOrder(array $options = [])
  * @method CreateAccount createAccount(array $options = [])
  * @method CreateApp createApp(array $options = [])
+ * @method CreateAppGroup createAppGroup(array $options = [])
+ * @method CreateAppMonitors createAppMonitors(array $options = [])
  * @method CreateAppResourceAlloc createAppResourceAlloc(array $options = [])
  * @method CreateCluster createCluster(array $options = [])
  * @method CreateDb createDb(array $options = [])
@@ -23,6 +27,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method CreateSlbAP createSlbAP(array $options = [])
  * @method DeleteAppDetail deleteAppDetail(array $options = [])
  * @method DeleteAppEnvironment deleteAppEnvironment(array $options = [])
+ * @method DeleteAppGroup deleteAppGroup(array $options = [])
  * @method DeleteAppResourceAlloc deleteAppResourceAlloc(array $options = [])
  * @method DeleteCluster deleteCluster(array $options = [])
  * @method DeleteDatabase deleteDatabase(array $options = [])
@@ -36,9 +41,14 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method DeployApp deployApp(array $options = [])
  * @method DescribeAppDetail describeAppDetail(array $options = [])
  * @method DescribeAppEnvironmentDetail describeAppEnvironmentDetail(array $options = [])
+ * @method DescribeAppMonitorMetric describeAppMonitorMetric(array $options = [])
  * @method DescribeAppResourceAlloc describeAppResourceAlloc(array $options = [])
+ * @method DescribeClusterDetail describeClusterDetail(array $options = [])
  * @method DescribeDatabases describeDatabases(array $options = [])
  * @method DescribeDeployOrderDetail describeDeployOrderDetail(array $options = [])
+ * @method DescribeEventMonitorList describeEventMonitorList(array $options = [])
+ * @method DescribeJobLog describeJobLog(array $options = [])
+ * @method DescribePodContainerLogList describePodContainerLogList(array $options = [])
  * @method DescribePodEvents describePodEvents(array $options = [])
  * @method DescribePodLog describePodLog(array $options = [])
  * @method DescribeRdsAccounts describeRdsAccounts(array $options = [])
@@ -50,6 +60,8 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ListApp listApp(array $options = [])
  * @method ListAppCmsGroups listAppCmsGroups(array $options = [])
  * @method ListAppEnvironment listAppEnvironment(array $options = [])
+ * @method ListAppGroup listAppGroup(array $options = [])
+ * @method ListAppGroupMapping listAppGroupMapping(array $options = [])
  * @method ListAppInstance listAppInstance(array $options = [])
  * @method ListAppResourceAllocs listAppResourceAllocs(array $options = [])
  * @method ListAvailableClusterNode listAvailableClusterNode(array $options = [])
@@ -57,6 +69,7 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ListClusterNode listClusterNode(array $options = [])
  * @method ListDeployConfig listDeployConfig(array $options = [])
  * @method ListDeployOrders listDeployOrders(array $options = [])
+ * @method ListJobHistories listJobHistories(array $options = [])
  * @method ListNodeLabelBindings listNodeLabelBindings(array $options = [])
  * @method ListNodeLabels listNodeLabels(array $options = [])
  * @method ListPersistentVolume listPersistentVolume(array $options = [])
@@ -68,14 +81,19 @@ use AlibabaCloud\Client\Resolver\ApiResolver;
  * @method ModifyService modifyService(array $options = [])
  * @method ModifySlbAP modifySlbAP(array $options = [])
  * @method QueryClusterDetail queryClusterDetail(array $options = [])
+ * @method RebuildAppInstance rebuildAppInstance(array $options = [])
  * @method RemoveClusterNode removeClusterNode(array $options = [])
  * @method ResetAccountPassword resetAccountPassword(array $options = [])
  * @method ResourceStatusNotify resourceStatusNotify(array $options = [])
  * @method ResumeDeploy resumeDeploy(array $options = [])
  * @method ScaleApp scaleApp(array $options = [])
  * @method SetDeployPauseType setDeployPauseType(array $options = [])
+ * @method SubmitInfo submitInfo(array $options = [])
+ * @method SyncPodInfo syncPodInfo(array $options = [])
+ * @method UnbindGroup unbindGroup(array $options = [])
  * @method UnbindNodeLabel unbindNodeLabel(array $options = [])
  * @method UpdateApp updateApp(array $options = [])
+ * @method UpdateAppMonitors updateAppMonitors(array $options = [])
  * @method UpdateDeployConfig updateDeployConfig(array $options = [])
  * @method UpdateEnvironment updateEnvironment(array $options = [])
  */
@@ -93,9 +111,6 @@ class Rpc extends \AlibabaCloud\Client\Resolver\Rpc
 
     /** @var string */
     public $method = 'POST';
-
-    /** @var string */
-    public $serviceCode = 'retailcloud';
 }
 
 /**
@@ -123,6 +138,18 @@ class AddClusterNode extends Rpc
 }
 
 /**
+ * @method string getRequestId()
+ * @method $this withRequestId($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ */
+class AllocatePodConfig extends Rpc
+{
+}
+
+/**
  * @method string getInstanceId()
  * @method $this withInstanceId($value)
  * @method string getVpcId()
@@ -131,6 +158,18 @@ class AddClusterNode extends Rpc
  * @method $this withSign($value)
  */
 class BatchAddServers extends Rpc
+{
+}
+
+/**
+ * @method string getBizCode()
+ * @method $this withBizCode($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getName()
+ * @method $this withName($value)
+ */
+class BindGroup extends Rpc
 {
 }
 
@@ -224,6 +263,7 @@ class CreateAccount extends Rpc
  * @method string getDescription()
  * @method string getLanguage()
  * @method string getTitle()
+ * @method string getGroupName()
  * @method array getMiddleWareIdList()
  * @method string getStateType()
  * @method string getServiceType()
@@ -295,6 +335,19 @@ class CreateApp extends Rpc
     {
         $this->data['Title'] = $value;
         $this->options['form_params']['Title'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withGroupName($value)
+    {
+        $this->data['GroupName'] = $value;
+        $this->options['form_params']['GroupName'] = $value;
 
         return $this;
     }
@@ -387,6 +440,70 @@ class CreateApp extends Rpc
         $this->options['form_params']['Namespace'] = $value;
 
         return $this;
+    }
+}
+
+/**
+ * @method string getBizCode()
+ * @method string getName()
+ */
+class CreateAppGroup extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withBizCode($value)
+    {
+        $this->data['BizCode'] = $value;
+        $this->options['form_params']['BizCode'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withName($value)
+    {
+        $this->data['Name'] = $value;
+        $this->options['form_params']['Name'] = $value;
+
+        return $this;
+    }
+}
+
+/**
+ * @method array getAppIds()
+ * @method string getMainUserId()
+ * @method $this withMainUserId($value)
+ * @method string getEnvType()
+ * @method $this withEnvType($value)
+ * @method string getAlarmTemplateId()
+ * @method $this withAlarmTemplateId($value)
+ * @method string getSilenceTime()
+ * @method $this withSilenceTime($value)
+ */
+class CreateAppMonitors extends Rpc
+{
+
+    /**
+     * @param array $appIds
+     *
+     * @return $this
+     */
+	public function withAppIds(array $appIds)
+	{
+	    $this->data['AppIds'] = $appIds;
+		foreach ($appIds as $i => $iValue) {
+			$this->options['form_params']['AppIds.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
     }
 }
 
@@ -537,6 +654,8 @@ class CreateDb extends Rpc
  * @method string getName()
  * @method $this withName($value)
  * @method array getSecretList()
+ * @method string getCronJob()
+ * @method $this withCronJob($value)
  * @method string getDeployment()
  * @method $this withDeployment($value)
  */
@@ -585,6 +704,8 @@ class CreateDeployConfig extends Rpc
  * @method $this withEnvType($value)
  * @method string getAppSchemaId()
  * @method $this withAppSchemaId($value)
+ * @method string getClusterId()
+ * @method $this withClusterId($value)
  * @method string getRegion()
  * @method $this withRegion($value)
  */
@@ -852,6 +973,16 @@ class DeleteAppEnvironment extends Rpc
 }
 
 /**
+ * @method string getGroupId()
+ * @method $this withGroupId($value)
+ * @method string getForce()
+ * @method $this withForce($value)
+ */
+class DeleteAppGroup extends Rpc
+{
+}
+
+/**
  * @method string getAppEnvId()
  * @method $this withAppEnvId($value)
  */
@@ -1020,25 +1151,61 @@ class DeleteSlbAP extends Rpc
 }
 
 /**
- * @method string getDeployPacketId()
- * @method $this withDeployPacketId($value)
  * @method string getDeployPacketUrl()
  * @method $this withDeployPacketUrl($value)
  * @method string getTotalPartitions()
  * @method $this withTotalPartitions($value)
- * @method string getName()
- * @method $this withName($value)
  * @method string getDescription()
  * @method $this withDescription($value)
  * @method string getEnvId()
  * @method $this withEnvId($value)
+ * @method string getUpdateStrategyType()
+ * @method $this withUpdateStrategyType($value)
  * @method string getPauseType()
  * @method $this withPauseType($value)
+ * @method string getDeployPacketId()
+ * @method $this withDeployPacketId($value)
+ * @method array getContainerImageList()
+ * @method string getName()
+ * @method $this withName($value)
+ * @method array getInitContainerImageList()
+ * @method string getDefaultPacketOfAppGroup()
+ * @method $this withDefaultPacketOfAppGroup($value)
  * @method string getArmsFlag()
  * @method $this withArmsFlag($value)
  */
 class DeployApp extends Rpc
 {
+
+    /**
+     * @param array $containerImageList
+     *
+     * @return $this
+     */
+	public function withContainerImageList(array $containerImageList)
+	{
+	    $this->data['ContainerImageList'] = $containerImageList;
+		foreach ($containerImageList as $i => $iValue) {
+			$this->options['query']['ContainerImageList.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
+
+    /**
+     * @param array $initContainerImageList
+     *
+     * @return $this
+     */
+	public function withInitContainerImageList(array $initContainerImageList)
+	{
+	    $this->data['InitContainerImageList'] = $initContainerImageList;
+		foreach ($initContainerImageList as $i => $iValue) {
+			$this->options['query']['InitContainerImageList.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
 }
 
 /**
@@ -1063,6 +1230,28 @@ class DescribeAppEnvironmentDetail extends Rpc
 }
 
 /**
+ * @method string getDeployOrderId()
+ * @method $this withDeployOrderId($value)
+ * @method string getMetric()
+ * @method $this withMetric($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getPodName()
+ * @method $this withPodName($value)
+ * @method string getEndTime()
+ * @method $this withEndTime($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ * @method string getStartTime()
+ * @method $this withStartTime($value)
+ * @method string getType()
+ * @method $this withType($value)
+ */
+class DescribeAppMonitorMetric extends Rpc
+{
+}
+
+/**
  * @method string getAppEnvId()
  * @method $this withAppEnvId($value)
  */
@@ -1071,6 +1260,14 @@ class DescribeAppResourceAlloc extends Rpc
 
     /** @var string */
     public $method = 'GET';
+}
+
+/**
+ * @method string getClusterInstanceId()
+ * @method $this withClusterInstanceId($value)
+ */
+class DescribeClusterDetail extends Rpc
+{
 }
 
 /**
@@ -1089,6 +1286,59 @@ class DescribeDatabases extends Rpc
  * @method $this withDeployOrderId($value)
  */
 class DescribeDeployOrderDetail extends Rpc
+{
+}
+
+/**
+ * @method string getEventLevel()
+ * @method $this withEventLevel($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getPodName()
+ * @method $this withPodName($value)
+ * @method string getEndTime()
+ * @method $this withEndTime($value)
+ * @method string getEventType()
+ * @method $this withEventType($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ * @method string getStartTime()
+ * @method $this withStartTime($value)
+ * @method string getPageNum()
+ * @method $this withPageNum($value)
+ */
+class DescribeEventMonitorList extends Rpc
+{
+}
+
+/**
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getPodName()
+ * @method $this withPodName($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ */
+class DescribeJobLog extends Rpc
+{
+
+    /** @var string */
+    public $method = 'GET';
+}
+
+/**
+ * @method string getLine()
+ * @method $this withLine($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getPodName()
+ * @method $this withPodName($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ */
+class DescribePodContainerLogList extends Rpc
 {
 }
 
@@ -1401,6 +1651,32 @@ class ListAppEnvironment extends Rpc
 }
 
 /**
+ * @method string getBizCode()
+ * @method $this withBizCode($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
+ */
+class ListAppGroup extends Rpc
+{
+}
+
+/**
+ * @method string getBizCode()
+ * @method $this withBizCode($value)
+ * @method string getName()
+ * @method $this withName($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
+ */
+class ListAppGroupMapping extends Rpc
+{
+}
+
+/**
  * @method string getAppId()
  * @method string getPageSize()
  * @method string getEnvId()
@@ -1614,6 +1890,25 @@ class ListDeployOrders extends Rpc
 
 		return $this;
     }
+}
+
+/**
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getPageSize()
+ * @method $this withPageSize($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ * @method string getPageNumber()
+ * @method $this withPageNumber($value)
+ * @method string getStatus()
+ * @method $this withStatus($value)
+ */
+class ListJobHistories extends Rpc
+{
+
+    /** @var string */
+    public $method = 'GET';
 }
 
 /**
@@ -1896,6 +2191,18 @@ class QueryClusterDetail extends Rpc
 }
 
 /**
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getEnvId()
+ * @method $this withEnvId($value)
+ * @method string getAppInstanceId()
+ * @method $this withAppInstanceId($value)
+ */
+class RebuildAppInstance extends Rpc
+{
+}
+
+/**
  * @method array getEcsInstanceIdList()
  * @method string getClusterInstanceId()
  * @method $this withClusterInstanceId($value)
@@ -1996,6 +2303,8 @@ class ResumeDeploy extends Rpc
 }
 
 /**
+ * @method string getTotalPartitions()
+ * @method $this withTotalPartitions($value)
  * @method string getReplicas()
  * @method $this withReplicas($value)
  * @method string getEnvId()
@@ -2012,6 +2321,87 @@ class ScaleApp extends Rpc
  * @method $this withDeployOrderId($value)
  */
 class SetDeployPauseType extends Rpc
+{
+}
+
+/**
+ * @method string getRequestId()
+ * @method $this withRequestId($value)
+ * @method string getMainUserId()
+ * @method $this withMainUserId($value)
+ * @method array getEcsDescList()
+ * @method string getCallerUid()
+ * @method $this withCallerUid($value)
+ */
+class SubmitInfo extends Rpc
+{
+
+    /**
+     * @param array $ecsDescList
+     *
+     * @return $this
+     */
+	public function withEcsDescList(array $ecsDescList)
+	{
+	    $this->data['EcsDescList'] = $ecsDescList;
+		foreach ($ecsDescList as $depth1 => $depth1Value) {
+			if(isset($depth1Value['ResourceId'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.ResourceId'] = $depth1Value['ResourceId'];
+			}
+			if(isset($depth1Value['BussinessDesc'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.BussinessDesc'] = $depth1Value['BussinessDesc'];
+			}
+			if(isset($depth1Value['MiddleWareDesc'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.MiddleWareDesc'] = $depth1Value['MiddleWareDesc'];
+			}
+			if(isset($depth1Value['OtherMiddleWareDesc'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.OtherMiddleWareDesc'] = $depth1Value['OtherMiddleWareDesc'];
+			}
+			if(isset($depth1Value['BussinessType'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.BussinessType'] = $depth1Value['BussinessType'];
+			}
+			if(isset($depth1Value['AppType'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.AppType'] = $depth1Value['AppType'];
+			}
+			if(isset($depth1Value['EnvType'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.EnvType'] = $depth1Value['EnvType'];
+			}
+			if(isset($depth1Value['UserId'])){
+				$this->options['form_params']['EcsDescList.' . ($depth1 + 1) . '.UserId'] = $depth1Value['UserId'];
+			}
+		}
+
+		return $this;
+    }
+}
+
+/**
+ * @method string getReason()
+ * @method $this withReason($value)
+ * @method string getRequestId()
+ * @method $this withRequestId($value)
+ * @method string getPodName()
+ * @method $this withPodName($value)
+ * @method string getSideCarType()
+ * @method $this withSideCarType($value)
+ * @method string getTaskId()
+ * @method $this withTaskId($value)
+ * @method string getStatus()
+ * @method $this withStatus($value)
+ */
+class SyncPodInfo extends Rpc
+{
+}
+
+/**
+ * @method string getBizCode()
+ * @method $this withBizCode($value)
+ * @method string getAppId()
+ * @method $this withAppId($value)
+ * @method string getName()
+ * @method $this withName($value)
+ */
+class UnbindGroup extends Rpc
 {
 }
 
@@ -2160,6 +2550,70 @@ class UpdateApp extends Rpc
 }
 
 /**
+ * @method string getMainUserId()
+ * @method string getSilenceTime()
+ * @method array getMonitorIds()
+ * @method string getTemplateId()
+ */
+class UpdateAppMonitors extends Rpc
+{
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withMainUserId($value)
+    {
+        $this->data['MainUserId'] = $value;
+        $this->options['form_params']['MainUserId'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withSilenceTime($value)
+    {
+        $this->data['SilenceTime'] = $value;
+        $this->options['form_params']['SilenceTime'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param array $monitorIds
+     *
+     * @return $this
+     */
+	public function withMonitorIds(array $monitorIds)
+	{
+	    $this->data['MonitorIds'] = $monitorIds;
+		foreach ($monitorIds as $i => $iValue) {
+			$this->options['form_params']['MonitorIds.' . ($i + 1)] = $iValue;
+		}
+
+		return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function withTemplateId($value)
+    {
+        $this->data['TemplateId'] = $value;
+        $this->options['form_params']['TemplateId'] = $value;
+
+        return $this;
+    }
+}
+
+/**
  * @method string getCodePath()
  * @method $this withCodePath($value)
  * @method array getConfigMapList()
@@ -2172,6 +2626,8 @@ class UpdateApp extends Rpc
  * @method array getSecretList()
  * @method string getId()
  * @method $this withId($value)
+ * @method string getCronJob()
+ * @method $this withCronJob($value)
  * @method string getDeployment()
  * @method $this withDeployment($value)
  */

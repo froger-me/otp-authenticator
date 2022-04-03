@@ -128,3 +128,6 @@
 	<input type="text" id="otpa_otp_identifier" name="otp_identifier" value="<?php echo esc_attr( $identifier ); ?>" class="input"/>
 </p>
 <?php endif; ?>
+<?php if ( otpa_is_email_gateway() ) : ?>
+	<input type="hidden" id="otpa_otp_identifier" name="otp_identifier" value="<?php echo esc_attr( $user->user_email ); ?>" class="input"/>
+<?php endif; ?>
