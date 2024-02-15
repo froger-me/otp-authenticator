@@ -16,7 +16,7 @@ Add Two-Factor Authentication, Passwordless Authentication and Account Validatio
 This plugin adds the following major features to WordPress:
 
 * **3 One-Time Password modes**: Two-Factor Authentication, Passwordless Authentication and Account Validation.
-* **3 Authentication Gateways for OTP Verification Codes:** WordPress Email, Twilio SMS, Alibaba Cloud SMS ; all with option to use a sandbox mode.
+* **3 Authentication Gateways for OTP Verification Codes:** WordPress Email, Twilio SMS, Alibaba Cloud SMS, TunisieSMS ; all with option to use a sandbox mode.
 * **Two-Factor Authentication:** allow (or force) users to authenticate with a second factor on top of their password.
 * **Passwordless Authentication:** allow users to login simply with their username, an identifier, and an OTP Verification Code (identifier depending on the Authentication Gateway - email or phone number supported with the default gateways).
 * **Account Validation:** force users to validate their account by entering an OTP Verification Code at first login, on a set regular basis at login, or at each login.
