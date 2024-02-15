@@ -225,7 +225,7 @@ class Otpa {
 	}
 
 	public function handle_api_request() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW );
 
 		if ( ! wp_verify_nonce( $nonce, 'otpa_nonce' ) ) {
 			wp_send_json_error(
@@ -235,8 +235,8 @@ class Otpa {
 			);
 		}
 
-		$otp_type      = filter_input( INPUT_POST, 'otpType', FILTER_SANITIZE_STRING );
-		$handler       = filter_input( INPUT_POST, 'handler', FILTER_SANITIZE_STRING );
+		$otp_type      = filter_input( INPUT_POST, 'otpType', FILTER_UNSAFE_RAW );
+		$handler       = filter_input( INPUT_POST, 'handler', FILTER_UNSAFE_RAW );
 		$valid_handler = apply_filters(
 			'otpa_otp_api_valid_callback',
 			method_exists( $this, $this->sanitizer_api_handler( $handler ) ),
@@ -260,7 +260,7 @@ class Otpa {
 		);
 		$args     = apply_filters(
 			'otpa_otp_api_callback_args',
-			filter_input( INPUT_POST, 'payload', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY ),
+			filter_input( INPUT_POST, 'payload', FILTER_UNSAFE_RAW, FILTER_REQUIRE_ARRAY ),
 			$handler,
 			$otp_type
 		);
