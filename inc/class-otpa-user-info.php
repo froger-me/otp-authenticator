@@ -49,7 +49,7 @@ class Otpa_User_Info {
 	public function registration_form_validate( $errors, $sanitized_user_login, $user_email ) {
 
 		if ( is_admin() ) {
-			$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+			$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW );
 			$errors     = $this->validate_default_otp_info( $identifier, $errors );
 		}
 
@@ -67,7 +67,7 @@ class Otpa_User_Info {
 	}
 
 	public function registration_form_alter() {
-		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW );
 
 		echo $this->get_otp_info_markup( $identifier ); // @codingStandardsIgnoreLine
 	}
@@ -79,7 +79,7 @@ class Otpa_User_Info {
 	}
 
 	public function save_user_info( $user_id, $old_user_data = false ) {
-		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_DEFAULT );
 
 		if ( is_a( $old_user_data, 'WP_User' ) ) {
 
