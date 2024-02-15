@@ -403,7 +403,7 @@ function otpa_is_identifier_synced() {
  * @return bool whether the OTP gateway is the WordPress User email
  */
 function otpa_is_email_gateway() {
-	return 'Otpa_WP_Email_Gateway' !== otpa_get_active_gateway_class_name();
+	return 'Otpa_WP_Email_Gateway' === otpa_get_active_gateway_class_name(); 
 }
 
 /**
