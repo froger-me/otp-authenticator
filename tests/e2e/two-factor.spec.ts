@@ -53,6 +53,16 @@ test('two-factor login accepts the emailed code and restores the requested page'
 
     await page.waitForURL(/\/my-account\/?$/);
     await expect(page.locator('body')).toContainText(displayName);
+
+    const postVerificationStatus = await page.evaluate(async () => {
+      const response = await fetch('/my-account/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'otpa_security_probe=1',
+      });
+      return response.status;
+    });
+    expect(postVerificationStatus).not.toBe(403);
   } finally {
     await closeContext(context);
   }
@@ -70,6 +80,29 @@ test('two-factor login keeps protected pages blocked after an incorrect code', a
 
   try {
     await signIn(page);
+
+    const blockedStatuses = await page.evaluate(async () => {
+      const requests = [
+        fetch('/wp-json/wp/v2/users/me', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: 'must not be saved' }),
+        }),
+        fetch('/wp-admin/admin-ajax.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'action=heartbeat',
+        }),
+        fetch('/my-account/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'otpa_security_probe=1',
+        }),
+      ];
+      return Promise.all(requests.map(async request => (await request).status));
+    });
+    expect(blockedStatuses).toEqual([403, 403, 403]);
+
     await fillAndEnable(page.locator('#otpa_id_widget'), email);
     await page.locator('#otpa_send_code').click();
     await waitForOtpCode(request, email);

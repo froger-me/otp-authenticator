@@ -6,6 +6,9 @@ const login = 'otpa_validation_e2e';
 const password = 'OTPA-Test-Password-2026!';
 const email = 'otpa-validation@example.test';
 const displayName = 'OTP Validation Test User';
+const combinedLogin = 'otpa_both_e2e';
+const combinedEmail = 'otpa-both@example.test';
+const combinedName = 'OTP Combined Security Test User';
 
 function baseUrl(): string {
   const value = process.env.ANYAPE_WP_TEST_TOOLS_E2E_BASE_URL;
@@ -53,6 +56,45 @@ test('account validation accepts the emailed code once and restores the requeste
     await page.reload();
     await expect(page).toHaveURL(/\/my-account\/?$/);
     await expect(page.locator('#otpa_otp_form[data-otp_form_type="account_validation"]')).toHaveCount(0);
+  } finally {
+    await closeContext(context);
+  }
+});
+
+test('two-factor authentication and account validation require separate codes', async ({ browser, request }) => {
+  await ensureOtpFixtures(request);
+  await clearMailpit(request);
+  const context = await browser.newContext({
+    baseURL: baseUrl(),
+    ignoreHTTPSErrors: true,
+    storageState: { cookies: [], origins: [] },
+  });
+  const page = await context.newPage();
+
+  try {
+    await page.goto('/wp-login.php?redirect_to=%2Fmy-account%2F');
+    await page.locator('#user_login').fill(combinedLogin);
+    await page.locator('#user_pass').fill(password);
+    await page.locator('#wp-submit').click();
+    await expect(page.locator('#otpa_otp_form[data-otp_form_type="2fa"]')).toBeVisible();
+
+    await fillAndEnable(page.locator('#otpa_id_widget'), combinedEmail);
+    await page.locator('#otpa_send_code').click();
+    const twoFactorCode = await waitForOtpCode(request, combinedEmail);
+    await fillAndEnable(page.locator('#otpa_code_widget'), twoFactorCode);
+    await page.locator('#otpa_submit').click();
+    await expect(page.locator('#otpa_otp_form[data-otp_form_type="account_validation"]')).toBeVisible();
+    await expect(page.locator('body')).not.toContainText(combinedName);
+
+    await clearMailpit(request);
+    await fillAndEnable(page.locator('#otpa_id_widget'), combinedEmail);
+    await page.locator('#otpa_send_code').click();
+    const validationCode = await waitForOtpCode(request, combinedEmail);
+    await fillAndEnable(page.locator('#otpa_code_widget'), validationCode);
+    await page.locator('#otpa_submit').click();
+
+    await page.waitForURL(/\/my-account\/?$/);
+    await expect(page.locator('body')).toContainText(combinedName);
   } finally {
     await closeContext(context);
   }

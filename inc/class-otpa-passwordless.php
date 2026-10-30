@@ -5,9 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Otpa_Passwordless {
-	const REQUEST_COOKIE = 'otpa_passwordless_request';
+	const REQUEST_COOKIE       = 'otpa_passwordless_request';
+	const NONCE_SESSION_COOKIE = 'otpa_passwordless_nonce_session';
+	const NONCE_ACTION         = 'otpa_passwordless_nonce';
 
 	protected $otpa;
+	protected $nonce_session = '';
 
 	public function __construct( $otpa, $init_hooks = false ) {
 		$this->otpa = $otpa;
@@ -19,7 +22,7 @@ class Otpa_Passwordless {
 			add_action( 'login_enqueue_scripts', array( $this, 'add_login_scripts' ), 99, 1 );
 
 			add_filter( 'otpa_page_endpoints', array( $this, 'add_page_endpoint' ), 10, 1 );
-			add_filter( 'nonce_user_logged_out', array( $this, 'noncefield_from_ip' ), 10, 2 );
+			add_filter( 'nonce_user_logged_out', array( $this, 'nonce_user_logged_out' ), 10, 2 );
 		}
 	}
 
@@ -88,9 +91,12 @@ class Otpa_Passwordless {
 	}
 
 	public function set_otp_form_vars( $vars ) {
+		$this->ensure_nonce_session();
+
 		$vars['otp_form_type']      = $this->get_otp_type();
 		$vars['otp_form_title']     = __( 'Passwordless Authentication', 'otpa' );
 		$vars['otp_footer_message'] = $this->get_back_markup();
+		$vars['otp_nonce_action']   = self::NONCE_ACTION;
 
 		return $vars;
 	}
@@ -119,7 +125,8 @@ class Otpa_Passwordless {
 	}
 
 	public function request_otp_code( $payload ) {
-		$user = $this->otpa->find_user( wp_get_current_user(), $payload );
+		$payload['otp_purpose'] = Otpa::OTP_PURPOSE_PASSWORDLESS;
+		$user                   = $this->otpa->find_user( wp_get_current_user(), $payload );
 
 		if ( ! $user instanceof WP_User || ! $user->ID ) {
 			return Otpa::get_wp_error(
@@ -186,12 +193,16 @@ class Otpa_Passwordless {
 
 		$verification_payload = $payload;
 		unset( $verification_payload['identifier'] );
+		$verification_payload['otp_purpose'] = Otpa::OTP_PURPOSE_PASSWORDLESS;
 
 		$previous_user_id = get_current_user_id();
 		wp_set_current_user( $user->ID );
 		$result = $this->otpa->verify_otp_code( $verification_payload );
 		wp_set_current_user( $previous_user_id );
-		$this->clear_request_binding();
+
+		if ( ! is_wp_error( $result ) || 'OTPA_INVALID_CODE' !== $result->get_error_code() ) {
+			$this->clear_request_binding();
+		}
 
 		if ( ! is_wp_error( $result ) ) {
 			clean_user_cache( $user );
@@ -210,18 +221,70 @@ class Otpa_Passwordless {
 		return $result;
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies both arguments to this filter callback.
-	public function noncefield_from_ip( $uid, $action ) {
-		$forwarded_address = filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_VALIDATE_IP );
-		$remote_address    = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+	public function nonce_user_logged_out( $user_id, $action ) {
 
-		return $forwarded_address ? $forwarded_address : (string) $remote_address;
+		if ( self::NONCE_ACTION !== $action ) {
+
+			return $user_id;
+		}
+
+		$session = $this->get_nonce_session_cookie();
+
+		return $session
+			? hash_hmac( 'sha256', $session, wp_salt( 'nonce' ) )
+			: $user_id;
 	}
 
 	// Protected methods.
 
 	protected function get_otp_type() {
 		return str_replace( 'otpa_', '', strtolower( get_class( $this ) ) );
+	}
+
+	protected function ensure_nonce_session() {
+		$session = $this->get_nonce_session_cookie();
+
+		if ( $session ) {
+
+			return $session;
+		}
+
+		$session = wp_generate_password( 64, false, false );
+
+		if ( $this->set_nonce_session_cookie( $session, time() + DAY_IN_SECONDS ) ) {
+			$this->nonce_session = $session;
+
+			return $session;
+		}
+
+		return '';
+	}
+
+	protected function set_nonce_session_cookie( $session, $expires ) {
+		return ! headers_sent() && setcookie(
+			self::NONCE_SESSION_COOKIE,
+			$session,
+			array(
+				'expires'  => $expires,
+				'path'     => '/',
+				'domain'   => defined( 'COOKIE_DOMAIN' ) ? (string) COOKIE_DOMAIN : '',
+				'secure'   => is_ssl(),
+				'httponly' => true,
+				'samesite' => 'Lax',
+			)
+		);
+	}
+
+	protected function get_nonce_session_cookie() {
+
+		if ( $this->nonce_session ) {
+
+			return $this->nonce_session;
+		}
+
+		$session = sanitize_text_field( (string) filter_input( INPUT_COOKIE, self::NONCE_SESSION_COOKIE, FILTER_UNSAFE_RAW ) );
+
+		return preg_match( '/^[A-Za-z0-9]{64}$/D', $session ) ? $session : '';
 	}
 
 	protected function set_request_cookie( $request_token, $expires ) {

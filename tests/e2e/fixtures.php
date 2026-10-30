@@ -1,19 +1,22 @@
 <?php
 /**
  * Repeatable browser-test data for OTP Authenticator.
+ *
+ * @package Otpa
  */
 
 $otpa_e2e_direct_request = ! defined( 'ABSPATH' );
 
 if ( $otpa_e2e_direct_request ) {
 	require_once dirname( __DIR__, 5 ) . '/wp-load.php';
+	$otpa_e2e_request_method = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
 
 	if (
 		! defined( 'ANYAPE_WP_TEST_TOOLS_E2E' ) ||
 		! ANYAPE_WP_TEST_TOOLS_E2E ||
 		! is_user_logged_in() ||
 		! current_user_can( 'manage_options' ) ||
-		'POST' !== strtoupper( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' )
+		'POST' !== $otpa_e2e_request_method
 	) {
 		wp_send_json_error(
 			array( 'message' => 'Browser-test fixture preparation is unavailable.' ),
@@ -44,6 +47,13 @@ $otpa_e2e_users = array(
 		'display_name' => 'OTP Validation Test User',
 		'role'         => 'subscriber',
 	),
+	array(
+		'user_login'   => 'otpa_both_e2e',
+		'user_pass'    => 'OTPA-Test-Password-2026!',
+		'user_email'   => 'otpa-both@example.test',
+		'display_name' => 'OTP Combined Security Test User',
+		'role'         => 'subscriber',
+	),
 );
 
 foreach ( $otpa_e2e_users as $otpa_e2e_user_data ) {
@@ -57,7 +67,7 @@ foreach ( $otpa_e2e_users as $otpa_e2e_user_data ) {
 	}
 
 	if ( is_wp_error( $otpa_e2e_user_id ) ) {
-		throw new RuntimeException( $otpa_e2e_user_id->get_error_message() );
+		throw new RuntimeException( esc_html( $otpa_e2e_user_id->get_error_message() ) );
 	}
 
 	update_user_meta( $otpa_e2e_user_id, 'otpa_mail', $otpa_e2e_user_data['user_email'] );
@@ -65,8 +75,10 @@ foreach ( $otpa_e2e_users as $otpa_e2e_user_data ) {
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_otp_attempts' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_2fa_checked' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_need_2fa_check' );
+	delete_user_meta( $otpa_e2e_user_id, 'otpa_2fa_redirect' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_force_account_validation' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_account_validation_redirect' );
+	delete_user_meta( $otpa_e2e_user_id, 'otpa_otp_request_wait' );
 
 	if ( 'otpa_two_factor_e2e' === $otpa_e2e_user_data['user_login'] ) {
 		update_user_meta( $otpa_e2e_user_id, 'otpa_2fa_active', true );
@@ -81,6 +93,10 @@ foreach ( $otpa_e2e_users as $otpa_e2e_user_data ) {
 		delete_user_meta( $otpa_e2e_user_id, 'otpa_need_account_validation' );
 	} elseif ( 'otpa_validation_e2e' === $otpa_e2e_user_data['user_login'] ) {
 		update_user_meta( $otpa_e2e_user_id, 'otpa_2fa_active', false );
+		delete_user_meta( $otpa_e2e_user_id, 'otpa_validated' );
+		update_user_meta( $otpa_e2e_user_id, 'otpa_need_account_validation', true );
+	} elseif ( 'otpa_both_e2e' === $otpa_e2e_user_data['user_login'] ) {
+		update_user_meta( $otpa_e2e_user_id, 'otpa_2fa_active', true );
 		delete_user_meta( $otpa_e2e_user_id, 'otpa_validated' );
 		update_user_meta( $otpa_e2e_user_id, 'otpa_need_account_validation', true );
 	} else {

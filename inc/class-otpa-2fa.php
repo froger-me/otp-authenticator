@@ -27,13 +27,14 @@ class Otpa_2FA {
 			add_action( 'admin_init', array( $this, 'admin_redirect' ), 10, 0 );
 			add_action( 'init', array( $this, 'check_2fa' ), 10, 0 );
 			add_action( 'wp_login', array( $this, 'set_need_2fa_check' ), 10, 2 );
-			add_action( 'otpa_otp_code_verified', array( $this, 'do_2fa' ), 10, 1 );
+			add_action( 'otpa_otp_code_verified', array( $this, 'do_2fa' ), 10, 2 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'add_current_user_2fa_button_switch_scripts' ), 10, 0 );
 			add_action( 'otpa_api_2fa', array( $this, 'handle_api_request' ), 10, 0 );
 
 			add_filter( 'login_redirect', array( $this, 'login_redirect' ), 10, 3 );
 			add_filter( 'show_admin_bar', array( $this, 'hide_admin_bar' ) );
 			add_filter( 'otpa_api_endpoints', array( $this, 'add_api_endpoints' ), 10, 1 );
+			add_filter( 'authenticate', array( $this, 'deny_xmlrpc_authentication' ), 99, 3 );
 		}
 	}
 
@@ -60,6 +61,16 @@ class Otpa_2FA {
 		$user = wp_get_current_user();
 
 		if ( $this->need_2fa_check( $user ) ) {
+
+			if ( wp_doing_ajax() ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
+					),
+					403
+				);
+			}
+
 			update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
 			wp_safe_redirect( home_url() );
 
@@ -68,7 +79,7 @@ class Otpa_2FA {
 	}
 
 	public function hide_admin_bar( $show ) {
-		return $show && $this->need_2fa_check();
+		return $show && ! $this->need_2fa_check();
 	}
 
 	public function handle_api_request() {
@@ -136,19 +147,24 @@ class Otpa_2FA {
 
 	public function check_2fa() {
 
-		if ( $this->otpa->allow_template_redirect() && $this->need_2fa_check() ) {
+		if ( $this->need_2fa_check() ) {
 			$user = wp_get_current_user();
 
 			if ( ! metadata_exists( 'user', $user->ID, 'otpa_2fa_redirect' ) ) {
 				update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
 			}
 
-			add_action( 'template_redirect', array( $this->otpa, 'otp_form_page' ), PHP_INT_MIN, 0 );
+			add_action( 'parse_request', array( $this, 'deny_state_changing_request' ), PHP_INT_MIN, 1 );
 
-			add_filter( 'rest_post_dispatch', array( $this, 'deny_rest' ), 10, 3 );
-			add_filter( 'otpa_otp_form_vars', array( $this, 'set_otp_form_vars' ), 10, 1 );
-			add_filter( 'otpa_otp_api_valid_callback', array( $this, 'otp_api_valid_callback' ), 10, 3 );
-			add_filter( 'otpa_otp_api_callback', array( $this, 'otp_api_callback' ), 10, 3 );
+			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
+
+			if ( $this->otpa->allow_template_redirect() ) {
+				add_action( 'template_redirect', array( $this->otpa, 'otp_form_page' ), PHP_INT_MIN, 0 );
+
+				add_filter( 'otpa_otp_form_vars', array( $this, 'set_otp_form_vars' ), 10, 1 );
+				add_filter( 'otpa_otp_api_valid_callback', array( $this, 'otp_api_valid_callback' ), 10, 3 );
+				add_filter( 'otpa_otp_api_callback', array( $this, 'otp_api_callback' ), 10, 3 );
+			}
 		}
 	}
 
@@ -183,29 +199,59 @@ class Otpa_2FA {
 		return $checked;
 	}
 
-	public function deny_rest( $wp_http_response, $wp_rest_server, $wp_rest_request ) {
+	public function deny_rest( $result, $wp_rest_server, $wp_rest_request ) {
 		$deny = apply_filters(
 			'otpa_2fa_deny_rest',
 			true,
-			$wp_http_response,
+			$result,
 			$wp_rest_server,
 			$wp_rest_request
 		);
 
 		if ( $deny ) {
-			$wp_http_response->set_status( 403 );
-			$wp_http_response->set_data(
+			return new WP_Error(
+				'otpa_rest_denied',
+				__( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
 				array(
-					'code'    => 'otpa_rest_denied',
-					'message' => __( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
-					'data'    => array(
-						'status' => 403,
-					),
+					'status' => 403,
 				)
 			);
 		}
 
-		return $wp_http_response;
+		return $result;
+	}
+
+	public function deny_state_changing_request( $wp ) {
+		$is_otp_endpoint = (
+			isset( $wp->query_vars['__otpa_api'], $wp->query_vars['action'] ) &&
+			'otp' === $wp->query_vars['action']
+		);
+		$request_method  = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+
+		if ( ! $is_otp_endpoint && in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
+			wp_die(
+				esc_html__( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
+				esc_html__( 'Access denied', 'otpa' ),
+				array( 'response' => 403 )
+			);
+		}
+	}
+
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies credentials to this authentication filter.
+	public function deny_xmlrpc_authentication( $user, $username, $password ) {
+		if (
+			defined( 'XMLRPC_REQUEST' ) &&
+			XMLRPC_REQUEST &&
+			$user instanceof WP_User &&
+			$this->need_2fa_check( $user )
+		) {
+			return new WP_Error(
+				'otpa_2fa_required',
+				__( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' )
+			);
+		}
+
+		return $user;
 	}
 
 	public function is_user_2fa_active( $user = false ) {
@@ -228,7 +274,7 @@ class Otpa_2FA {
 		return (
 			( $this->is_user_2fa_active( $user ) || $force_2fa_check ) &&
 			$need_2fa_check &&
-			! $this->is_user_2fa_checked()
+			! $this->is_user_2fa_checked( $user )
 		);
 	}
 
@@ -268,13 +314,20 @@ class Otpa_2FA {
 		}
 	}
 
-	public function do_2fa( $user_id ) {
+	public function do_2fa( $user_id, $purpose ) {
+
+		if ( '2fa' !== $purpose ) {
+
+			return;
+		}
+
 		update_user_meta( $user_id, 'otpa_2fa_checked', true );
 		delete_user_meta( $user_id, 'otpa_need_2fa_check' );
 	}
 
 	public function verify_otp_code( $payload ) {
-		$result = $this->otpa->verify_otp_code( $payload );
+		$payload['otp_purpose'] = '2fa';
+		$result                 = $this->otpa->verify_otp_code( $payload );
 
 		if ( ! is_wp_error( $result ) ) {
 			$user               = wp_get_current_user();

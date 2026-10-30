@@ -313,11 +313,15 @@ class Otpa_User_Info {
 		$user_id = filter_input( INPUT_POST, 'user_id', FILTER_VALIDATE_INT );
 		$user    = get_user_by( 'ID', $user_id );
 
-		if ( ! $user instanceof WP_User ) {
+		if (
+			! $user instanceof WP_User ||
+			! $this->can_toggle_user_validation( $user )
+		) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Error: unauthorized access - please reload the page and try again.', 'otpa' ),
-				)
+				),
+				403
 			);
 		}
 
@@ -350,11 +354,15 @@ class Otpa_User_Info {
 		$user_id = filter_input( INPUT_POST, 'user_id', FILTER_VALIDATE_INT );
 		$user    = get_user_by( 'ID', $user_id );
 
-		if ( ! $user instanceof WP_User ) {
+		if (
+			! $user instanceof WP_User ||
+			! $this->can_toggle_user_2fa( $user )
+		) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Error: unauthorized access - please reload the page and try again.', 'otpa' ),
-				)
+				),
+				403
 			);
 		}
 
@@ -401,6 +409,26 @@ class Otpa_User_Info {
 	}
 
 	// Protected methods.
+
+	protected function can_toggle_user_validation( $user ) {
+		return (
+			$user instanceof WP_User &&
+			current_user_can( 'delete_users' ) &&
+			current_user_can( 'edit_user', $user->ID ) &&
+			$this->otpa_settings->get_option( 'enable_validation' ) &&
+			0 !== $this->otpa_settings->get_option( 'validation_expiry' )
+		);
+	}
+
+	protected function can_toggle_user_2fa( $user ) {
+		return (
+			$user instanceof WP_User &&
+			current_user_can( 'edit_users' ) &&
+			current_user_can( 'edit_user', $user->ID ) &&
+			$this->otpa_settings->get_option( 'enable_2fa' ) &&
+			! $this->otpa_settings->get_option( 'force_2fa' )
+		);
+	}
 
 	protected function get_posted_identifier() {
 		return sanitize_text_field( (string) filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW ) );

@@ -7,6 +7,7 @@
 /** @var string $otp_form_title The form title supplied through WordPress query variables. */
 /** @var string $otp_widget The gateway form fields supplied through WordPress query variables. */
 /** @var string $otp_footer_message The footer markup supplied through WordPress query variables. */
+/** @var string $otp_nonce_action The WordPress one-use request token action supplied through WordPress query variables. */
 
 ?>
 <!doctype html>
@@ -23,7 +24,7 @@
 					<h1><?php echo esc_html( $otp_form_title ); ?></h1>
 					<?php do_action( 'otpa_before_otp_form', $otp_form_type ); ?>
 					<form>
-						<?php wp_nonce_field( 'otpa_nonce', 'otpa_nonce' ); ?>
+						<?php wp_nonce_field( $otp_nonce_action, 'otpa_nonce' ); ?>
 						<?php do_action( 'otpa_before_otp_widget', $otp_form_type ); ?>
 						<div class='otpa-widget'>
 							<?php echo $otp_widget; // @codingStandardsIgnoreLine ?>

@@ -19,7 +19,7 @@ class Otpa_Account_Validation {
 			add_action( 'admin_init', array( $this, 'admin_redirect' ), 10, 0 );
 			add_action( 'init', array( $this, 'account_validation' ), 10, 0 );
 			add_action( 'wp_login', array( $this, 'set_need_account_validation' ), 10, 2 );
-			add_action( 'otpa_otp_code_verified', array( $this, 'validate_account' ), 10, 1 );
+			add_action( 'otpa_otp_code_verified', array( $this, 'validate_account' ), 10, 2 );
 			add_action( 'otpa_identifier_updated', array( $this, 'set_force_validation' ), 10, 3 );
 
 			if ( self::VALIDATION_LOGOUT_EXPIRY === $this->otpa_settings->get_option( 'validation_expiry' ) ) {
@@ -28,6 +28,7 @@ class Otpa_Account_Validation {
 
 			add_filter( 'login_redirect', array( $this, 'login_redirect' ), 10, 3 );
 			add_filter( 'show_admin_bar', array( $this, 'hide_admin_bar' ) );
+			add_filter( 'authenticate', array( $this, 'deny_xmlrpc_authentication' ), 99, 3 );
 		}
 	}
 
@@ -48,6 +49,16 @@ class Otpa_Account_Validation {
 		$user = wp_get_current_user();
 
 		if ( $this->need_account_validation( $user ) ) {
+
+			if ( wp_doing_ajax() ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'OTP Authenticator: Account Validation required.', 'otpa' ),
+					),
+					403
+				);
+			}
+
 			update_user_meta( $user->ID, 'otpa_account_validation_redirect', otpa_get_current_url() );
 			wp_safe_redirect( home_url() );
 
@@ -56,24 +67,35 @@ class Otpa_Account_Validation {
 	}
 
 	public function hide_admin_bar( $show ) {
-		return $show && $this->need_account_validation();
+		return $show && ! $this->need_account_validation();
 	}
 
 	public function account_validation() {
 
-		if ( $this->otpa->allow_template_redirect() && $this->need_account_validation() ) {
-			$user = wp_get_current_user();
+		if ( $this->need_account_validation() ) {
+			$user       = wp_get_current_user();
+			$two_factor = new Otpa_2FA( $this->otpa );
+
+			if ( $two_factor->need_2fa_check( $user ) ) {
+
+				return;
+			}
 
 			if ( ! metadata_exists( 'user', $user->ID, 'otpa_account_validation_redirect' ) ) {
 				update_user_meta( $user->ID, 'otpa_account_validation_redirect', otpa_get_current_url() );
 			}
 
-			add_action( 'template_redirect', array( $this->otpa, 'otp_form_page' ), PHP_INT_MIN, 0 );
+			add_action( 'parse_request', array( $this, 'deny_state_changing_request' ), PHP_INT_MIN, 1 );
 
-			add_filter( 'rest_post_dispatch', array( $this, 'deny_rest' ), 10, 3 );
-			add_filter( 'otpa_otp_form_vars', array( $this, 'set_otp_form_vars' ), 10, 1 );
-			add_filter( 'otpa_otp_api_valid_callback', array( $this, 'otp_api_valid_callback' ), 10, 3 );
-			add_filter( 'otpa_otp_api_callback', array( $this, 'otp_api_callback' ), 10, 3 );
+			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
+
+			if ( $this->otpa->allow_template_redirect() ) {
+				add_action( 'template_redirect', array( $this->otpa, 'otp_form_page' ), PHP_INT_MIN, 0 );
+
+				add_filter( 'otpa_otp_form_vars', array( $this, 'set_otp_form_vars' ), 10, 1 );
+				add_filter( 'otpa_otp_api_valid_callback', array( $this, 'otp_api_valid_callback' ), 10, 3 );
+				add_filter( 'otpa_otp_api_callback', array( $this, 'otp_api_callback' ), 10, 3 );
+			}
 		}
 	}
 
@@ -93,29 +115,59 @@ class Otpa_Account_Validation {
 		return ( 'verify_otp_code' === $handler ) ? array( $this, $handler ) : $callback;
 	}
 
-	public function deny_rest( $wp_http_response, $wp_rest_server, $wp_rest_request ) {
+	public function deny_rest( $result, $wp_rest_server, $wp_rest_request ) {
 		$deny = apply_filters(
 			'otpa_account_validation_deny_rest',
 			true,
-			$wp_http_response,
+			$result,
 			$wp_rest_server,
 			$wp_rest_request
 		);
 
 		if ( $deny ) {
-			$wp_http_response->set_status( 403 );
-			$wp_http_response->set_data(
+			return new WP_Error(
+				'otpa_rest_denied',
+				__( 'OTP Authenticator: Account Validation required.', 'otpa' ),
 				array(
-					'code'    => 'otpa_rest_denied',
-					'message' => __( 'OTP Authenticator: Account Validation required.', 'otpa' ),
-					'data'    => array(
-						'status' => 403,
-					),
+					'status' => 403,
 				)
 			);
 		}
 
-		return $wp_http_response;
+		return $result;
+	}
+
+	public function deny_state_changing_request( $wp ) {
+		$is_otp_endpoint = (
+			isset( $wp->query_vars['__otpa_api'], $wp->query_vars['action'] ) &&
+			'otp' === $wp->query_vars['action']
+		);
+		$request_method  = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+
+		if ( ! $is_otp_endpoint && in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
+			wp_die(
+				esc_html__( 'OTP Authenticator: Account Validation required.', 'otpa' ),
+				esc_html__( 'Access denied', 'otpa' ),
+				array( 'response' => 403 )
+			);
+		}
+	}
+
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies credentials to this authentication filter.
+	public function deny_xmlrpc_authentication( $user, $username, $password ) {
+		if (
+			defined( 'XMLRPC_REQUEST' ) &&
+			XMLRPC_REQUEST &&
+			$user instanceof WP_User &&
+			$this->need_account_validation( $user )
+		) {
+			return new WP_Error(
+				'otpa_account_validation_required',
+				__( 'OTP Authenticator: Account Validation required.', 'otpa' )
+			);
+		}
+
+		return $user;
 	}
 
 	public function is_user_validated( $user = false, $force_check = false ) {
@@ -169,7 +221,7 @@ class Otpa_Account_Validation {
 			$force_validation = false;
 		}
 
-		return ( $need_validation && ! $this->is_user_validated() ) || $force_validation;
+		return ( $need_validation && ! $this->is_user_validated( $user ) ) || $force_validation;
 	}
 
 	public function set_need_account_validation( $user_login = false, $user = false, $force = false ) {
@@ -219,7 +271,13 @@ class Otpa_Account_Validation {
 		update_user_meta( $user_id, 'otpa_force_account_validation', true );
 	}
 
-	public function validate_account( $user_id ) {
+	public function validate_account( $user_id, $purpose ) {
+
+		if ( 'account_validation' !== $purpose ) {
+
+			return;
+		}
+
 		$validation_expiry = $this->otpa_settings->get_option( 'validation_expiry' );
 		$meta              = array(
 			'status'            => true,
@@ -232,7 +290,8 @@ class Otpa_Account_Validation {
 	}
 
 	public function verify_otp_code( $payload ) {
-		$result = $this->otpa->verify_otp_code( $payload );
+		$payload['otp_purpose'] = 'account_validation';
+		$result                 = $this->otpa->verify_otp_code( $payload );
 
 		if ( ! is_wp_error( $result ) ) {
 			$user               = wp_get_current_user();

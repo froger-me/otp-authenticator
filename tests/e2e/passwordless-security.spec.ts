@@ -37,6 +37,12 @@ test('passwordless request hides the code and binds login to the requested accou
 
   try {
     await page.goto('/otpa/passwordless-login');
+    const nonceSessionCookie = (await context.cookies()).find(
+      cookie => cookie.name === 'otpa_passwordless_nonce_session',
+    );
+    expect(nonceSessionCookie?.httpOnly).toBe(true);
+    expect(nonceSessionCookie?.sameSite).toBe('Lax');
+    expect(nonceSessionCookie?.secure).toBe(true);
     await fillAndEnable(page.locator('#otpa_id_widget'), requestedEmail);
 
     const requestResponsePromise = page.waitForResponse(response =>
@@ -58,6 +64,16 @@ test('passwordless request hides the code and binds login to the requested accou
     expect(requestCookie?.sameSite).toBe('Lax');
     expect(requestCookie?.path).toBe('/');
     expect(requestCookie?.secure).toBe(true);
+
+    await fillAndEnable(page.locator('#otpa_code_widget'), 'WRONG1');
+    const wrongResponsePromise = page.waitForResponse(response =>
+      response.url().includes('/otpa-api/otp')
+        && response.request().postData()?.includes('handler=verify_otp_code') === true,
+    );
+    await page.locator('#otpa_submit').click();
+    const wrongBody = await (await wrongResponsePromise).json() as { success: boolean };
+    expect(wrongBody.success).toBe(false);
+    expect((await context.cookies()).some(cookie => cookie.name === 'otpa_passwordless_request')).toBe(true);
 
     await fillAndEnable(page.locator('#otpa_code_widget'), code);
     await page.locator('#otpa_id').evaluate(
@@ -125,6 +141,9 @@ test('passwordless verification without the matching request cookie is rejected'
 
   try {
     await requestingPage.goto('/otpa/passwordless-login');
+    const requestingNonceCookie = (await requestingContext.cookies()).find(
+      cookie => cookie.name === 'otpa_passwordless_nonce_session',
+    );
     await fillAndEnable(requestingPage.locator('#otpa_id_widget'), requestedEmail);
     await requestingPage.locator('#otpa_send_code').click();
     const code = await waitForOtpCode(request, requestedEmail);
@@ -137,6 +156,12 @@ test('passwordless verification without the matching request cookie is rejected'
     const page = await context.newPage();
     try {
       await page.goto('/otpa/passwordless-login');
+      const separateNonceCookie = (await context.cookies()).find(
+        cookie => cookie.name === 'otpa_passwordless_nonce_session',
+      );
+      expect(requestingNonceCookie?.value).toBeTruthy();
+      expect(separateNonceCookie?.value).toBeTruthy();
+      expect(separateNonceCookie?.value).not.toBe(requestingNonceCookie?.value);
       await fillAndEnable(page.locator('#otpa_code_widget'), code);
       const responsePromise = page.waitForResponse(response =>
         response.url().includes('/otpa-api/otp')

@@ -12,6 +12,13 @@ final class Otpa_Test_Passwordless extends Otpa_Passwordless {
 
 		return true;
 	}
+
+	protected function set_nonce_session_cookie( $session, $expires ) {
+		unset( $expires );
+		$this->nonce_session = $session;
+
+		return true;
+	}
 }
 
 final class PasswordlessSecurityTest extends IntegrationTestCase {
@@ -53,12 +60,12 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$this->passwordless      = new Otpa_Test_Passwordless( $this->otpa );
 
 		wp_set_current_user( 0 );
-		unset( $_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ] );
+		unset( $_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ], $_COOKIE[ Otpa_Passwordless::NONCE_SESSION_COOKIE ] );
 	}
 
 	protected function tearDown(): void {
 		$this->delete_passwordless_transients();
-		unset( $_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ] );
+		unset( $_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ], $_COOKIE[ Otpa_Passwordless::NONCE_SESSION_COOKIE ] );
 		wp_set_current_user( 0 );
 		parent::tearDown();
 	}
@@ -76,6 +83,10 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$this->assertSame(
 			array( 'user_id' => $this->requested_user_id ),
 			array_values( $bindings )[0]
+		);
+		$this->assertSame(
+			Otpa::OTP_PURPOSE_PASSWORDLESS,
+			get_user_meta( $this->requested_user_id, 'otpa_verification_code', true )['purpose']
 		);
 	}
 
@@ -112,7 +123,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 	public function test_missing_malformed_and_unknown_tokens_are_rejected( $request_token ): void {
 		$login_count = 0;
 		$listener    = static function () use ( &$login_count ): void {
-			$login_count++;
+			++$login_count;
 		};
 
 		if ( null !== $request_token ) {
@@ -144,7 +155,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 	}
 
 	public function test_expired_binding_is_rejected(): void {
-		$request_token = str_repeat( 'C', 64 );
+		$request_token                                = str_repeat( 'C', 64 );
 		$_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ] = $request_token;
 		$this->save_code( $this->requested_user_id );
 
@@ -165,7 +176,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$this->bind_token( $request_token, $this->requested_user_id );
 		$this->save_code( $this->requested_user_id );
 
-		$first_result = $this->passwordless->verify_otp_code(
+		$first_result                                 = $this->passwordless->verify_otp_code(
 			array(
 				'identifier' => $this->requested_user->user_email,
 				'code'       => 'ABC123',
@@ -185,7 +196,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$this->assertSame( 'OTPA_CODE_NOT_FOUND', $second_result->get_error_code() );
 	}
 
-	public function test_failed_verification_consumes_binding(): void {
+	public function test_failed_verification_preserves_binding_for_retry(): void {
 		$request_token = str_repeat( 'E', 64 );
 		$storage_key   = $this->bind_token( $request_token, $this->requested_user_id );
 		$this->save_code( $this->requested_user_id );
@@ -199,8 +210,32 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 
 		$this->assertWPError( $result );
 		$this->assertSame( 'OTPA_INVALID_CODE', $result->get_error_code() );
+		$this->assertSame( array( 'user_id' => $this->requested_user_id ), get_transient( $storage_key ) );
+		$this->assertArrayHasKey( Otpa_Passwordless::REQUEST_COOKIE, $_COOKIE );
+
+		$retry_result = $this->passwordless->verify_otp_code(
+			array(
+				'identifier' => $this->requested_user->user_email,
+				'code'       => 'ABC123',
+			)
+		);
+
+		$this->assertNotWPError( $retry_result );
 		$this->assertFalse( get_transient( $storage_key ) );
 		$this->assertArrayNotHasKey( Otpa_Passwordless::REQUEST_COOKIE, $_COOKIE );
+	}
+
+	public function test_passwordless_nonce_uses_a_private_browser_session(): void {
+		$first_vars  = $this->passwordless->set_otp_form_vars( array() );
+		$first_value = $this->passwordless->nonce_user_logged_out( 0, Otpa_Passwordless::NONCE_ACTION );
+		$second      = new Otpa_Test_Passwordless( $this->otpa );
+		$second->set_otp_form_vars( array() );
+		$second_value = $second->nonce_user_logged_out( 0, Otpa_Passwordless::NONCE_ACTION );
+
+		$this->assertSame( Otpa_Passwordless::NONCE_ACTION, $first_vars['otp_nonce_action'] );
+		$this->assertNotSame( 0, $first_value );
+		$this->assertNotSame( $first_value, $second_value );
+		$this->assertSame( 27, $this->passwordless->nonce_user_logged_out( 27, 'unrelated_action' ) );
 	}
 
 	public function test_unknown_identifier_returns_error_without_changing_user(): void {
@@ -214,7 +249,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 	}
 
 	private function bind_token( $request_token, $user_id ) {
-		$storage_key = $this->storage_key( $request_token );
+		$storage_key                                  = $this->storage_key( $request_token );
 		$_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ] = $request_token;
 		set_transient(
 			$storage_key,
@@ -238,6 +273,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 			array(
 				'otp_code' => 'ABC123',
 				'expiry'   => time() + 5 * MINUTE_IN_SECONDS,
+				'purpose'  => Otpa::OTP_PURPOSE_PASSWORDLESS,
 			)
 		);
 	}
@@ -256,7 +292,7 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$bindings     = array();
 
 		foreach ( $option_names as $option_name ) {
-			$transient_name = substr( $option_name, strlen( '_transient_' ) );
+			$transient_name              = substr( $option_name, strlen( '_transient_' ) );
 			$bindings[ $transient_name ] = get_transient( $transient_name );
 		}
 
