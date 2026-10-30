@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 class Otpa_Abstract_Gateway {
@@ -26,7 +26,7 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * The object used to render the setting fields.
 	 *
-	 * @var Otpa_Settings_Renderer
+	 * @var Otpa_Settings_Renderer|false
 	 */
 	protected $settings_renderer;
 	/**
@@ -57,7 +57,7 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Constructor
 	 *
-	 * @param bool $init_hooks Whether to add WordPress action and filter hooks on object creation ; default `false`.
+	 * @param bool                        $init_hooks Whether to add WordPress action and filter hooks on object creation ; default `false`.
 	 * @param Otpa_Settings_Renderer|bool $settings_renderer The object used to render the setting fields.
 	 */
 	public function __construct( $init_hooks = false, $settings_renderer = false ) {
@@ -81,16 +81,15 @@ class Otpa_Abstract_Gateway {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
+
 
 	/**
 	 * Get a gateway class name from a string (file name or gateway_id)
 	 *
-	 * @param string $data The string describing a gateway class.
-	 * @param string The type of string (`gateway_id`and `filename` supported by default ; default`gateway_id`)
-	 * @return string the gateway class name or `$gateway_string` if not found
+	 * @param string $gateway_string The string describing a gateway class.
+	 * @param string $type           The input type: gateway ID or filename.
+	 * @return string The gateway class name, or the supplied string if no class is found.
 	 */
 	public static function get_gateway_class_name( $gateway_string, $type = 'gateway_id' ) {
 
@@ -160,12 +159,12 @@ class Otpa_Abstract_Gateway {
 	 *
 	 * @param string $key The option key.
 	 * @param string $gateway_id The gateway ID.
-	 * @param mixed $default A default value if the option is not found.
+	 * @param mixed  $_default A default value if the option is not found.
 	 * @return mixed the option value
 	 */
-	public static function get_gateway_option( $key, $gateway_id, $default = false ) {
+	public static function get_gateway_option( $key, $gateway_id, $_default = false ) {
 		$options = self::get_gateway_options( $gateway_id );
-		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $default;
+		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $_default;
 
 		return apply_filters( $gateway_id . '_option', $value, $key );
 	}
@@ -173,7 +172,7 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Sanitize the specified gateway settings of a specified gateway ID.
 	 *
-	 * @param array $settings The settings to sanitize.
+	 * @param array  $settings The settings to sanitize.
 	 * @param string $gateway_id The gateway ID.
 	 * @return array the sanitized gateway settings
 	 */
@@ -206,7 +205,6 @@ class Otpa_Abstract_Gateway {
 	 *
 	 * @return array the gateway options
 	 */
-
 	public function get_options() {
 		return self::get_gateway_options( $this->get_gateway_id() );
 	}
@@ -215,20 +213,21 @@ class Otpa_Abstract_Gateway {
 	 * Get a gateway option for a specified option key.
 	 *
 	 * @param string $key The option key.
-	 * @param mixed $default A default value if the option is not found.
+	 * @param mixed  $_default A default value if the option is not found.
 	 * @return mixed the option value
 	 */
-	public function get_option( $key, $default = false ) {
-		return self::get_gateway_option( $key, $this->get_gateway_id(), $default );
+	public function get_option( $key, $_default = false ) {
+		return self::get_gateway_option( $key, $this->get_gateway_id(), $_default );
 	}
 
 	/**
 	 * Sanitize the specified gateway settings.
 	 *
 	 * @param array $settings The settings to sanitize.
-	 * @param array $settings The settings value before sanitization.
+	 * @param array $old_settings The settings value before sanitization.
 	 * @return array the sanitized gateway settings
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the old option value to this filter callback.
 	public function sanitize_settings( $settings, $old_settings = array() ) {
 		return self::sanitize_gateway_settings( $settings, $this->get_gateway_id() );
 	}
@@ -279,8 +278,11 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Validate the gateway settings.
 	 *
-	 * @return bool whether the gateway settings are valid
+	 * @param bool  $valid    Whether the settings are valid so far.
+	 * @param array $settings The complete plugin settings.
+	 * @return bool Whether the gateway settings are valid.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Child gateways use the settings argument in this shared filter callback.
 	public function validate_settings( $valid, $settings ) {
 		return $valid;
 	}
@@ -306,7 +308,7 @@ class Otpa_Abstract_Gateway {
 			)
 		);
 
-		if ( is_object( $this->settings_renderer ) ) {
+		if ( $this->settings_renderer instanceof Otpa_Settings_Renderer ) {
 			$this->settings_renderer->register_settings( $this->settings_fields, $this->get_gateway_id() );
 		}
 	}
@@ -314,22 +316,23 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Initialize the gateway settings with default values if necessary.
 	 *
-	 * @param $default mixed The default value to return if the option does not exist in the database
-	 * @param $option string Option name.
-	 * @param $passed_default bool whether get_option() was passed a default value
-	 * @return mixed the default value to return if the option does not exist in the database
+	 * @param mixed  $_default      The default value to return if the option does not exist.
+	 * @param string $option        The option name.
+	 * @param bool   $passed_default Whether get_option() was passed a default value.
+	 * @return mixed The default value to return if the option does not exist.
 	 */
-	public function maybe_init_settings( $default, $option, $passed_default ) {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies all three default-option filter arguments.
+	public function maybe_init_settings( $_default, $option, $passed_default ) {
 
-		if ( ! is_array( $default ) ) {
-			$default = array();
+		if ( ! is_array( $_default ) ) {
+			$_default = array();
 		}
 
 		remove_filter( 'default_option_' . $this->get_gateway_id() . '_settings', array( $this, 'maybe_init_settings' ), 10 );
-		update_option( $this->get_gateway_id() . '_settings', $default );
+		update_option( $this->get_gateway_id() . '_settings', $_default );
 		add_filter( 'default_option_' . $this->get_gateway_id() . '_settings', array( $this, 'maybe_init_settings' ), 10, 3 );
 
-		return $default;
+		return $_default;
 	}
 
 	/**
@@ -348,10 +351,10 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Request an OTP Verification Code.
 	 *
-	 * @param $identifier string The OTP user identifier
-	 * @param $error_handler mixed An error handler method - params: string $error_code, array $data, string $message, WP_Error|bool $wp_error
-	 * @param $sandbox bool whether to use sandbox mode - default `false`
-	 * @return array|WP_Error the result of the request
+	 * @param string   $identifier    The OTP user identifier.
+	 * @param callable $error_handler The error handler callback.
+	 * @param bool     $sandbox       Whether to use sandbox mode.
+	 * @return array|WP_Error The result of the request.
 	 */
 	public function request_code( $identifier, $error_handler, $sandbox = false ) {
 		$loaded = $this->load_library();
@@ -434,8 +437,8 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Get the user's OTP identifier.
 	 *
-	 * @param $user_id int The user ID - if falsey, will try to use the current user ; default `false`
-	 * @return string the user's OTP identifier
+	 * @param int|false $user_id The user ID, or false to use the current user.
+	 * @return string The user's OTP identifier.
 	 */
 	public function get_user_identifier( $user_id = false ) {
 
@@ -452,9 +455,9 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Set the user's OTP identifier.
 	 *
-	 * @param $identifier string The OTP identifier to set for the user
-	 * @param $user_id int The user ID - if falsey, will try to use the current user ; default `false`
-	 * @return bool|string false on failure, the new identifier on success
+	 * @param string    $identifier The OTP identifier to set for the user.
+	 * @param int|false $user_id    The user ID, or false to use the current user.
+	 * @return bool|string False on failure, the new identifier on success.
 	 */
 	public function set_user_identifier( $identifier, $user_id = false ) {
 
@@ -492,8 +495,8 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Get a user by OTP identifier if exists.
 	 *
-	 * @param $identifier string The OTP identifier to get a user by.
-	 * @return bool|WP_User false on failure, the user on success
+	 * @param string $identifier The OTP identifier to get a user by.
+	 * @return bool|WP_User False on failure, the user on success.
 	 */
 	public function get_user_by_identifier( $identifier ) {
 		$user = false;
@@ -501,7 +504,9 @@ class Otpa_Abstract_Gateway {
 		if ( ! empty( $identifier ) ) {
 			$user_query = new WP_User_Query(
 				array(
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- The configured user metadata field is the identifier's source of truth.
 					'meta_key'   => $this->identifier_meta,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Identifier lookup must match the configured user metadata value.
 					'meta_value' => $this->sanitize_user_identifier( $identifier ),
 				)
 			);
@@ -519,13 +524,14 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Synchronize the metadata holding the OTP identifier with a metadata if such a key was specified in the `sync_metakey` gateway settings.
 	 *
-	 * @param $check mixed|null null if continue saving the value into the database
-	 * @param $object_id int ID of the object metadata is for
-	 * @param $meta_key string Metadata key
-	 * @param $meta_value mixed Metadata value. Must be serializable if non-scalar.
-	 * @param $prev_value mixed The previous metadata value.
-	 * @return $check mixed|null null if continue saving the value into the database
+	 * @param mixed|null $check      Null to continue saving the value into the database.
+	 * @param int        $object_id  ID of the object the metadata belongs to.
+	 * @param string     $meta_key   Metadata key.
+	 * @param mixed      $meta_value Metadata value.
+	 * @param mixed      $prev_value Previous metadata value.
+	 * @return mixed|null Null to continue saving, or false to stop the update.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the previous value to this metadata filter callback.
 	public function sync_meta( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
 
 		if ( $this->get_option( 'sync_metakey' ) === $meta_key ) {
@@ -547,11 +553,12 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Sanitize the OTP identifier metadata before saving in the database
 	 *
-	 * @param $meta_value mixed Metadata value to sanitize.
-	 * @param $meta_key string Metadata key.
-	 * @param $object_type string Type of object metadata is for - 'user' here
-	 * @return mixed the sanitized OTP identifier metadata
+	 * @param mixed  $meta_value  Metadata value to sanitize.
+	 * @param string $meta_key    Metadata key.
+	 * @param string $object_type Type of object the metadata belongs to.
+	 * @return mixed The sanitized OTP identifier metadata.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the key and object type to this metadata filter callback.
 	public function sanitize_meta( $meta_value, $meta_key, $object_type ) {
 		return $this->sanitize_user_identifier( $meta_value );
 	}
@@ -559,10 +566,11 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Sanitize the OTP identifier
 	 *
-	 * @param $identifier string The OTP identifier to sanitize.
-	 * @param $user_id int The user ID - if falsey, should try to use the current user ; default `false`
-	 * @return string the sanitized OTP identifier
+	 * @param string    $identifier The OTP identifier to sanitize.
+	 * @param int|false $user_id    The user ID, or false if it is not needed.
+	 * @return string The sanitized OTP identifier.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Child gateways may use the user ID in this shared method signature.
 	public function sanitize_user_identifier( $identifier, $user_id = false ) {
 		return $identifier;
 	}
@@ -570,9 +578,10 @@ class Otpa_Abstract_Gateway {
 	/**
 	 * Check whether an OTP identifier is valid
 	 *
-	 * @param $identifier string The OTP identifier to check.
-	 * @return bool whether the OTP identifier is valid
+	 * @param string $identifier The OTP identifier to check.
+	 * @return bool Whether the OTP identifier is valid.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Child gateways use the identifier in this shared method signature.
 	public function is_valid_identifier( $identifier ) {
 		return true;
 	}
@@ -586,9 +595,8 @@ class Otpa_Abstract_Gateway {
 		return $this->can_change_identifier;
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
+
 
 	/**
 	 * Get gateway's default settings
@@ -635,7 +643,7 @@ class Otpa_Abstract_Gateway {
 	 * Add the JavaScript script associated with the One-Time Password HTML Widget to display on the OTP form for the gateway
 	 *
 	 * @param string $ext the extension of the script to add
-	 * @param bool $debug whether to add debug JavaScript script
+	 * @param bool   $debug whether to add debug JavaScript script
 	 * @param string $script_name the name to register - default `'otpa-default-gateway'`
 	 * @param string $localisation_object the name of the JavaScript object used for localization - default `'OTPA_default_gateway'`
 	 */
@@ -664,7 +672,7 @@ class Otpa_Abstract_Gateway {
 	 * Add the CSS style associated with the One-Time Password HTML Widget to display on the OTP form for the gateway
 	 *
 	 * @param string $ext the extension of the style to add
-	 * @param bool $debug whether to add debug CSS style
+	 * @param bool   $debug whether to add debug CSS style
 	 * @param string $style_name the name to register - default `'otpa-default-gateway'`
 	 */
 	protected function add_otp_widget_css( $ext, $debug, $style_name = 'otpa-default-gateway' ) {
@@ -745,6 +753,7 @@ class Otpa_Abstract_Gateway {
 	 * @param string $message the message to send
 	 * @return array the result of the request ; keys: (bool) 'status', (string) message', (string) 'code'
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Child gateways send the message in this shared method signature.
 	protected function send_request( $identifier, $message ) {
 		return array(
 			'status'  => true,

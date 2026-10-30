@@ -16,11 +16,22 @@ class Otpa_Integration {
 		),
 	);
 
+	/** @var Otpa_Settings */
 	protected $otpa_settings;
+
+	/** @var Otpa_Abstract_Gateway */
 	protected $gateway;
+
+	/** @var Otpa */
 	protected $otpa;
+
+	/** @var Otpa_Passwordless */
 	protected $otpa_passwordless;
+
+	/** @var Otpa_2FA */
 	protected $otpa_2fa;
+
+	/** @var Otpa_Account_Validation */
 	protected $otpa_account_validation;
 
 	public function __construct( $init_hooks = false ) {
@@ -59,23 +70,35 @@ class Otpa_Integration {
 	}
 
 	public function run( $otpa_objects ) {
-		extract( $otpa_objects ); // @codingStandardsIgnoreLine
+		if (
+			! isset(
+				$otpa_objects['settings'],
+				$otpa_objects['gateway'],
+				$otpa_objects['otpa'],
+				$otpa_objects['otpa_passwordless'],
+				$otpa_objects['otpa_2fa'],
+				$otpa_objects['otpa_account_validation']
+			) ||
+			! $otpa_objects['settings'] instanceof Otpa_Settings ||
+			! $otpa_objects['gateway'] instanceof Otpa_Abstract_Gateway ||
+			! $otpa_objects['otpa'] instanceof Otpa ||
+			! $otpa_objects['otpa_passwordless'] instanceof Otpa_Passwordless ||
+			! $otpa_objects['otpa_2fa'] instanceof Otpa_2FA ||
+			! $otpa_objects['otpa_account_validation'] instanceof Otpa_Account_Validation
+		) {
+			return;
+		}
 
-		$this->otpa_settings           = isset( $settings ) ? $settings : false;
-		$this->gateway                 = isset( $gateway ) ? $gateway : false;
-		$this->otpa                    = isset( $otpa ) ? $otpa : false;
-		$this->otpa_passwordless       = isset( $otpa_passwordless ) ? $otpa_passwordless : false;
-		$this->otpa_2fa                = isset( $otpa_2fa ) ? $otpa_2fa : false;
-		$this->otpa_account_validation = isset( $otpa_account_validation ) ? $otpa_account_validation : false;
+		$this->otpa_settings           = $otpa_objects['settings'];
+		$this->gateway                 = $otpa_objects['gateway'];
+		$this->otpa                    = $otpa_objects['otpa'];
+		$this->otpa_passwordless       = $otpa_objects['otpa_passwordless'];
+		$this->otpa_2fa                = $otpa_objects['otpa_2fa'];
+		$this->otpa_account_validation = $otpa_objects['otpa_account_validation'];
 
 		$this->init_hooks();
 		do_action( 'otpa_integration_run', $this );
 	}
 
 	public function init_hooks() {}
-
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
-
 }

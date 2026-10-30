@@ -1,5 +1,9 @@
 # OTP Authenticator - One-Time Password Authentication for WordPress
 
+- Current release: 1.2
+- Requires PHP: 8.4
+- Tested with WordPress: 7.1
+
 * [General Description](#user-content-general-description)
     * [Overview](#user-content-overview)
     * [Adding an Authentication Gateway](#user-content-adding-an-authentication-gateway)

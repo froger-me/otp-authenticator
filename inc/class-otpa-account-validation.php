@@ -31,9 +31,7 @@ class Otpa_Account_Validation {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function login_redirect( $redirect_to, $requested_redirect_to, $user ) {
 
@@ -90,6 +88,7 @@ class Otpa_Account_Validation {
 		return $valid && $otp_type === $this->get_otp_type();
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The filter supplies the OTP type as its third argument.
 	public function otp_api_callback( $callback, $handler, $otp_type ) {
 		return ( 'verify_otp_code' === $handler ) ? array( $this, $handler ) : $callback;
 	}
@@ -208,6 +207,7 @@ class Otpa_Account_Validation {
 		}
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The action supplies both identifier values as part of its public callback signature.
 	public function set_force_validation( $user_id = 0, $identifier = '', $old_identifier = '' ) {
 
 		if ( ! $user_id ) {
@@ -297,12 +297,9 @@ class Otpa_Account_Validation {
 		}
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected function get_otp_type() {
-		return str_replace( 'otpa_', '', strtolower( get_class() ) );
+		return str_replace( 'otpa_', '', strtolower( get_class( $this ) ) );
 	}
-
 }

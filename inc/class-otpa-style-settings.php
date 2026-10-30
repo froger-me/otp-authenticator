@@ -7,8 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Otpa_Style_Settings {
 	protected static $settings;
 
+	/** @var Otpa_Settings_Renderer|false */
 	protected $settings_renderer;
 	protected $settings_fields;
+	/** @var Otpa|false */
 	protected $otpa;
 
 	public function __construct( $otpa = false, $settings_renderer = false, $init_hooks = false ) {
@@ -24,14 +26,12 @@ class Otpa_Style_Settings {
 			add_filter( 'otpa_page_endpoints', array( $this, 'add_page_endpoint' ), 10, 1 );
 			add_action( 'otpa_page_form_preview', array( $this, 'form_preview' ), 10, 0 );
 
-			add_filter( 'pre_update_option_otpa_style_settings', array( get_class(), 'sanitize_settings' ), 10, 2 );
+			add_filter( 'pre_update_option_otpa_style_settings', array( self::class, 'sanitize_settings' ), 10, 2 );
 			add_filter( 'default_option_otpa_style_settings', array( $this, 'maybe_init_settings' ), 10, 3 );
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public static function get_options() {
 		self::$settings = wp_cache_get( 'otpa_style_settings', 'otpa' );
@@ -47,32 +47,33 @@ class Otpa_Style_Settings {
 		return self::$settings;
 	}
 
-	public static function get_option( $key, $default = false ) {
+	public static function get_option( $key, $_default = false ) {
 		$options = self::$settings;
-		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $default;
+		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $_default;
 
 		return apply_filters( 'otpa_style_option', $value, $key );
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the old option value to this filter callback.
 	public static function sanitize_settings( $settings, $old_settings = array() ) {
 
 		if ( ! is_array( $settings ) ) {
 			$settings = array();
 		}
 
-		$default  = self::get_default_settings();
-		$settings = array_merge( $default, $settings );
+		$_default = self::get_default_settings();
+		$settings = array_merge( $_default, $settings );
 
 		if ( empty( $settings['submit_button_background_color'] ) ) {
-			$settings['submit_button_background_color'] = $default['submit_button_background_color'];
+			$settings['submit_button_background_color'] = $_default['submit_button_background_color'];
 		}
 
 		if ( empty( $settings['submit_button_text_color'] ) ) {
-			$settings['submit_button_text_color'] = $default['submit_button_text_color'];
+			$settings['submit_button_text_color'] = $_default['submit_button_text_color'];
 		}
 
 		if ( empty( $settings['link_text_color'] ) ) {
-			$settings['link_text_color'] = $default['link_text_color'];
+			$settings['link_text_color'] = $_default['link_text_color'];
 		}
 
 		return apply_filters( 'otpa_sanitize_style_settings', $settings );
@@ -86,12 +87,16 @@ class Otpa_Style_Settings {
 
 	public function form_preview() {
 
-		if ( current_user_can( 'manage_options' ) && $this->otpa ) {
+		if ( current_user_can( 'manage_options' ) && $this->otpa instanceof Otpa ) {
 			add_action( 'template_redirect', array( $this, 'form_preview_page' ), PHP_INT_MIN, 0 );
 		}
 	}
 
 	public function form_preview_page() {
+		if ( ! $this->otpa instanceof Otpa ) {
+			return;
+		}
+
 		remove_all_actions( 'wp_footer' );
 		add_action( 'wp_footer', 'wp_print_footer_scripts', 20 );
 		$this->otpa->add_frontend_scripts();
@@ -128,11 +133,11 @@ class Otpa_Style_Settings {
 			'otpa_style',
 			'otpa_style_settings',
 			array(
-				'sanitize_callback' => array( get_class(), 'sanitize_settings' ),
+				'sanitize_callback' => array( self::class, 'sanitize_settings' ),
 			)
 		);
 
-		if ( is_object( $this->settings_renderer ) ) {
+		if ( $this->settings_renderer instanceof Otpa_Settings_Renderer ) {
 			$this->settings_renderer->register_settings( $this->settings_fields, 'otpa_style' );
 		}
 	}
@@ -161,17 +166,18 @@ class Otpa_Style_Settings {
 		echo ob_get_clean(); // @codingStandardsIgnoreLine
 	}
 
-	public function maybe_init_settings( $default, $option, $passed_default ) {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies all three default-option filter arguments.
+	public function maybe_init_settings( $_default, $option, $passed_default ) {
 
-		if ( ! is_array( $default ) ) {
-			$default = array();
+		if ( ! is_array( $_default ) ) {
+			$_default = array();
 		}
 
 		remove_filter( 'default_option_otpa_style_settings', array( $this, 'maybe_init_settings' ), 10 );
-		update_option( 'otpa_style_settings', $default );
+		update_option( 'otpa_style_settings', $_default );
 		add_filter( 'default_option_otpa_style_settings', array( $this, 'maybe_init_settings' ), 10, 3 );
 
-		return $default;
+		return $_default;
 	}
 
 	public function init_settings_definition() {
@@ -217,9 +223,7 @@ class Otpa_Style_Settings {
 		$this->settings_fields = apply_filters( 'otpa_style_settings_fields', $this->settings_fields );
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected static function get_default_settings() {
 		$default_settings = array(
@@ -235,5 +239,4 @@ class Otpa_Style_Settings {
 	protected function get_preview_footer_markup() {
 		return '<a class="otpa-cancel-link" onclick="return false;"" href="#">' . __( 'Hyperlink', 'otpa' ) . '</a>';
 	}
-
 }

@@ -7,11 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Otpa_Woocommerce_Integration extends Otpa_Integration {
 	protected $sync_metakey;
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function init_hooks() {
+		if ( ! $this->gateway instanceof Otpa_Abstract_Gateway ) {
+			return;
+		}
+
 		add_action( 'woocommerce_login_form_end', array( $this, 'auth_link' ), 0, 0 );
 
 		$this->sync_metakey = $this->gateway->get_option( 'sync_metakey' );
@@ -39,9 +41,14 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 
 					if ( $this->sync_metakey === $meta_key ) {
 
-						$user_id                      = filter_input( INPUT_GET, 'user_id', FILTER_VALIDATE_INT );
-						$user                         = get_user_by( 'ID', $user_id );
-						$current_user                 = wp_get_current_user();
+						$user_id      = filter_input( INPUT_GET, 'user_id', FILTER_VALIDATE_INT );
+						$user         = get_user_by( 'ID', $user_id );
+						$current_user = wp_get_current_user();
+
+						if ( ! $user instanceof WP_User ) {
+							continue;
+						}
+
 						$user_validation_info         = otpa_get_user_account_validation_info( $user->ID );
 						$current_user_validation_info = otpa_get_user_account_validation_info( $current_user->ID );
 
@@ -99,7 +106,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 			}
 
 			if ( $this->otpa_settings->get_option( 'enable_validation' ) && is_user_logged_in() && ! otpa_is_user_account_validation_excluded( $user->ID ) ) {
- 
+
 				if ( ! empty( $description ) ) {
 					$description .= '<br/>';
 				}
@@ -195,9 +202,11 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 				$display = true;
 			}
 
-			$class = 'otpa-passwordless-woocommerce-' . str_replace( '_', '-', current_filter() );
+			$_class = 'otpa-passwordless-woocommerce-' . str_replace( '_', '-', current_filter() );
 
-			$this->otpa_passwordless->auth_link( true, $class );
+			if ( $this->otpa_passwordless instanceof Otpa_Passwordless ) {
+				$this->otpa_passwordless->auth_link( true, $_class );
+			}
 		}
 	}
 
@@ -216,7 +225,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 
 	public function validate_address_update( $user_id, $load_address, $address, $customer ) {
 		$post_key     = ( $this->sync_metakey ) ? $this->sync_metakey : 'otp_identifier';
-		$posted_value = filter_input( INPUT_POST, $post_key, FILTER_SANITIZE_STRING );
+		$posted_value = $this->get_posted_value( $post_key );
 		$error        = false;
 
 		if ( $posted_value ) {
@@ -240,7 +249,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 	public function account_form_alter() {
 		$user                   = wp_get_current_user();
 		$label                  = apply_filters( 'otpa_otp_identifier_field_label', __( 'One-Time Password Identifier', 'otpa' ) );
-		$value                  = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$value                  = $this->get_posted_value( 'otp_identifier' );
 		$identifier_description = '';
 		$show_identifier_field  = ( ! $this->sync_metakey );
 		$required               = (
@@ -270,12 +279,16 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 		<?php if ( $can_change_2fa ) : ?>
 		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 			<?php
-				echo $this->otpa_2fa->get_user_2fa_button_switch( // @codingStandardsIgnoreLine
-					apply_filters( 'otpa_2fa_woocommerce_switch_button_label', '' ),
-					apply_filters( 'otpa_2fa_woocommerce_switch_button_on_text', '' ),
-					apply_filters( 'otpa_2fa_woocommerce_switch_button_off_text', '' ),
-					apply_filters( 'otpa_2fa_woocommerce_switch_button_class', '' )
+			if ( $this->otpa_2fa instanceof Otpa_2FA ) {
+				echo wp_kses_post(
+					$this->otpa_2fa->get_user_2fa_button_switch(
+						apply_filters( 'otpa_2fa_woocommerce_switch_button_label', '' ),
+						apply_filters( 'otpa_2fa_woocommerce_switch_button_on_text', '' ),
+						apply_filters( 'otpa_2fa_woocommerce_switch_button_off_text', '' ),
+						apply_filters( 'otpa_2fa_woocommerce_switch_button_class', '' )
+					)
 				);
+			}
 			?>
 		</p>
 		<?php endif; ?>
@@ -290,7 +303,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 			<?php if ( $identifier_editable ) : ?>
 				<input type="text" class="woocommerce-Input woocommerce-Input--text input-text otpa-otp-identifier" name="otp_identifier" id="otp_identifier" value="<?php echo esc_attr( $value ); ?>" />
 				<?php if ( ! empty( $identifier_description ) ) : ?>
-					<span class="description opta-warning"><em><?php echo $identifier_description; // @codingStandardsIgnoreLine ?></em></span>
+						<span class="description opta-warning"><em><?php echo wp_kses_post( $identifier_description ); ?></em></span>
 				<?php endif; ?>
 			<?php else : ?>
 				<span class="otpa-otp-identifier" name="otp_identifier" id="otp_identifier"><?php echo esc_html( $value ); ?></span>
@@ -300,13 +313,15 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 		<?php
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
-	protected function validate_account_details( $errors, $user_id = false, $identifer_required = false ) {
+	protected function get_posted_value( $key ) {
+		return sanitize_text_field( (string) filter_input( INPUT_POST, $key, FILTER_UNSAFE_RAW ) );
+	}
+
+	protected function validate_account_details( $errors, $user_id = false, $identifier_required = false ) {
 		$post_key     = ( $this->sync_metakey ) ? $this->sync_metakey : 'otp_identifier';
-		$posted_value = filter_input( INPUT_POST, $post_key, FILTER_SANITIZE_STRING );
+		$posted_value = $this->get_posted_value( $post_key );
 		$error        = false;
 
 		if ( $posted_value ) {
@@ -326,7 +341,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 			} elseif ( ! $this->gateway->is_valid_identifier( $sanitized_identifier ) ) {
 				$error = $this->otpa->get_wp_error( 'OTPA_INVALID_IDENTIFIER' );
 			}
-		} elseif ( $required && ! $this->sync_metakey ) {
+		} elseif ( $identifier_required && ! $this->sync_metakey ) {
 			$label = apply_filters( 'otpa_otp_identifier_field_label', __( 'OTP Identifier', 'otpa' ) );
 			// translators: %s is the identifier's label
 			$message = sprintf( __( 'The %s is required.', 'otpa' ), $label );
@@ -335,7 +350,7 @@ class Otpa_Woocommerce_Integration extends Otpa_Integration {
 
 		if ( $error ) {
 			$errors->add(
-				$sync_metakey,
+				$post_key,
 				__( '<strong>Error</strong>: ', 'otpa' ) . $error->get_error_message()
 			);
 		}

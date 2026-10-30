@@ -10,10 +10,10 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 	protected $can_change_identifier = false;
 	protected $identifier_meta       = 'otpa_mail';
 
-	public function __construct( $init_hooks = false, $settings_renderer = false, $otpa_settings = false ) {
+	public function __construct( $init_hooks = false, $settings_renderer = false ) {
 		$this->name = __( 'WordPress Email', 'otpa' );
 
-		parent::__construct( $init_hooks, $settings_renderer, $otpa_settings );
+		parent::__construct( $init_hooks, $settings_renderer );
 
 		if ( $init_hooks ) {
 			add_action( 'otpa_before_otp_form', array( $this, 'print_form_hint' ), 10, 1 );

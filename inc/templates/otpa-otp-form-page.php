@@ -2,6 +2,12 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var string $otp_form_type The form type supplied through WordPress query variables. */
+/** @var string $otp_logo_url The logo URL supplied through WordPress query variables. */
+/** @var string $otp_form_title The form title supplied through WordPress query variables. */
+/** @var string $otp_widget The gateway form fields supplied through WordPress query variables. */
+/** @var string $otp_footer_message The footer markup supplied through WordPress query variables. */
+
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>

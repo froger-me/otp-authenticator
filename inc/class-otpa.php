@@ -7,7 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Otpa {
 	protected static $authorized_api_handlers;
 
+	/** @var Otpa_Settings */
 	protected $otpa_settings;
+
+	/** @var Otpa_Abstract_Gateway */
 	protected $gateway;
 	protected $authorised_api_endpoints;
 	protected $authorised_page_endpoints;
@@ -26,7 +29,7 @@ class Otpa {
 		);
 
 		if ( $init_hooks ) {
-			add_action( 'init', array( $this, 'add_endpoints' ), 0, 0 );
+			add_action( 'init', array( $this, 'add_endpoints' ), 2, 0 );
 			add_action( 'parse_request', array( $this, 'parse_request' ), 10, 0 );
 			add_action( 'otpa_api_otp', array( $this, 'handle_api_request' ), 10, 0 );
 
@@ -44,9 +47,7 @@ class Otpa {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public static function activate() {
 		$result = Otpa_Logger::install();
@@ -152,6 +153,10 @@ class Otpa {
 		return $this->otpa_settings;
 	}
 
+	public function get_setting( $key ) {
+		return $this->otpa_settings->get_option( $key );
+	}
+
 	public function add_query_vars( $vars ) {
 		$vars[] = '__otpa_api';
 		$vars[] = '__otpa_page';
@@ -225,7 +230,11 @@ class Otpa {
 	}
 
 	public function handle_api_request() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$request = filter_input_array( INPUT_POST, FILTER_UNSAFE_RAW );
+		$request = is_array( $request ) ? $request : array();
+		$nonce   = isset( $request['nonce'] ) && is_string( $request['nonce'] )
+			? sanitize_text_field( $request['nonce'] )
+			: '';
 
 		if ( ! wp_verify_nonce( $nonce, 'otpa_nonce' ) ) {
 			wp_send_json_error(
@@ -235,8 +244,12 @@ class Otpa {
 			);
 		}
 
-		$otp_type      = filter_input( INPUT_POST, 'otpType', FILTER_SANITIZE_STRING );
-		$handler       = filter_input( INPUT_POST, 'handler', FILTER_SANITIZE_STRING );
+		$otp_type      = isset( $request['otpType'] ) && is_string( $request['otpType'] )
+			? sanitize_key( $request['otpType'] )
+			: '';
+		$handler       = isset( $request['handler'] ) && is_string( $request['handler'] )
+			? sanitize_key( $request['handler'] )
+			: '';
 		$valid_handler = apply_filters(
 			'otpa_otp_api_valid_callback',
 			method_exists( $this, $this->sanitizer_api_handler( $handler ) ),
@@ -260,7 +273,9 @@ class Otpa {
 		);
 		$args     = apply_filters(
 			'otpa_otp_api_callback_args',
-			filter_input( INPUT_POST, 'payload', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY ),
+			isset( $request['payload'] ) && is_array( $request['payload'] )
+				? map_deep( $request['payload'], 'sanitize_text_field' )
+				: array(),
 			$handler,
 			$otp_type
 		);
@@ -359,7 +374,7 @@ class Otpa {
 	}
 
 	public function get_otp_widget() {
-		return $this->gateway->get_otp_widget();
+		return $this->gateway instanceof Otpa_Abstract_Gateway ? $this->gateway->get_otp_widget() : '';
 	}
 
 	public function add_frontend_scripts() {
@@ -409,6 +424,7 @@ class Otpa {
 	public function is_identifier_required( $user_id ) {
 		$required = (
 			$user_id &&
+			$this->gateway instanceof Otpa_Abstract_Gateway &&
 			empty( $this->gateway->get_user_identifier( $user_id ) ) &&
 			(
 				$this->otpa_settings->get_option( 'enable_2fa' ) ||
@@ -432,7 +448,7 @@ class Otpa {
 
 	public function login_redirect( $redirect_to, $requested_redirect_to, $user ) {
 
-		if ( ! is_wp_error( $user ) && $this->is_identifier_required( $user->ID ) ) {
+		if ( $user instanceof WP_User && $this->is_identifier_required( $user->ID ) ) {
 			update_user_meta( $user->ID, 'otpa_set_otp_redirect', $requested_redirect_to );
 
 			$redirect_to = home_url();
@@ -460,6 +476,7 @@ class Otpa {
 	}
 
 	public function request_otp_code( $payload ) {
+		$result = false;
 
 		if ( isset( $payload['identifier'] ) ) {
 			$identifier = $payload['identifier'];
@@ -471,7 +488,10 @@ class Otpa {
 			);
 
 			if ( ! $throttled ) {
-				setcookie( 'otpa_otp_request_wait', $wait, $wait, '/', COOKIE_DOMAIN );
+
+				if ( ! headers_sent() ) {
+					setcookie( 'otpa_otp_request_wait', $wait, $wait, '/', COOKIE_DOMAIN );
+				}
 
 				if ( $user->ID ) {
 					$blocked = $this->is_otp_blocked( $user->ID );
@@ -487,7 +507,7 @@ class Otpa {
 						) {
 							$result   = $this->gateway->request_code(
 								$identifier,
-								array( get_class(), 'get_wp_error' ),
+								array( self::class, 'get_wp_error' ),
 								$this->otpa_settings->get_option( 'sandbox' )
 							);
 							$otp_code = ( is_array( $result ) && isset( $result['otp_code'] ) ) ? $result['otp_code'] : false;
@@ -564,6 +584,15 @@ class Otpa {
 			);
 		}
 
+		if ( ! is_wp_error( $result ) && is_array( $result ) && ! empty( $result['status'] ) ) {
+			$result = array(
+				'status'  => true,
+				'message' => isset( $result['message'] )
+					? wp_kses_post( $result['message'] )
+					: __( 'A verification code has been sent.', 'otpa' ),
+			);
+		}
+
 		return $result;
 	}
 
@@ -584,8 +613,7 @@ class Otpa {
 				$result = self::get_wp_error(
 					'OTPA_CODE_PERSIST_FAILURE',
 					array(
-						'method'   => __METHOD__,
-						'otp_code' => $otp_code,
+						'method' => __METHOD__,
 					)
 				);
 			} else {
@@ -605,6 +633,7 @@ class Otpa {
 	}
 
 	public function verify_otp_code( $payload ) {
+		$result = false;
 
 		if ( isset( $payload['code'] ) ) {
 			$input_code = $payload['code'];
@@ -752,8 +781,8 @@ class Otpa {
 				$result = self::get_wp_error(
 					'OTPA_INVALID_USER',
 					array(
-						'method'   => __METHOD__,
-						'otp_code' => $otp_code,
+						'method'     => __METHOD__,
+						'identifier' => $identifier,
 					)
 				);
 			}
@@ -778,6 +807,9 @@ class Otpa {
 	}
 
 	public function find_user( $user, $payload ) {
+		if ( ! $user instanceof WP_User ) {
+			$user = wp_get_current_user();
+		}
 
 		if ( ! $user->ID && isset( $payload['identifier'] ) && ! empty( $payload['identifier'] ) ) {
 			$result = $this->gateway->get_user_by_identifier( $payload['identifier'] );
@@ -815,9 +847,7 @@ class Otpa {
 		return array();
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected function get_otp_type() {
 		return 'default';
@@ -844,7 +874,7 @@ class Otpa {
 				$meta = $this->get_otp_attempts_meta( $user_id );
 
 				if ( $meta['verify_count'] < $max_verify ) {
-					$meta['verify_count']++;
+					++$meta['verify_count'];
 
 					update_user_meta( $user_id, 'otpa_otp_attempts', $meta );
 				}
@@ -864,7 +894,7 @@ class Otpa {
 			$meta = $this->get_otp_attempts_meta( $user_id );
 
 			if ( $meta['request_count'] < $max_request ) {
-				$meta['request_count']++;
+				++$meta['request_count'];
 
 				update_user_meta( $user_id, 'otpa_otp_attempts', $meta );
 			}
@@ -899,8 +929,8 @@ class Otpa {
 		if (
 			! $meta ||
 			! is_array( $meta ) ||
-			isset( $meta['track_expiry'] ) && $meta['track_expiry'] < time() ||
-			isset( $meta['block_expiry'] ) && 0 < $meta['block_expiry'] && $meta['block_expiry'] < time()
+			( isset( $meta['track_expiry'] ) && $meta['track_expiry'] < time() ) ||
+			( isset( $meta['block_expiry'] ) && 0 < $meta['block_expiry'] && $meta['block_expiry'] < time() )
 		) {
 
 			return $this->reset_otp_attempts( $user_id );
@@ -929,8 +959,8 @@ class Otpa {
 
 		if (
 			(
-				0 < $max_verify && $max_verify <= $meta['verify_count'] ||
-				0 < $max_request && $max_request <= $meta['request_count']
+				( 0 < $max_verify && $max_verify <= $meta['verify_count'] ) ||
+				( 0 < $max_request && $max_request <= $meta['request_count'] )
 			) &&
 			$meta['block_expiry'] < $now
 		) {
@@ -1007,5 +1037,4 @@ class Otpa {
 
 		include get_query_template( '404' );
 	}
-
 }

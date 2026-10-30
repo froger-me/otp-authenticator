@@ -2,6 +2,26 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var bool $show_admin_otp_section Whether the complete administrator section should be displayed. */
+/** @var string $title The administrator section title. */
+/** @var bool $show_identifier_field Whether the identifier field should be displayed. */
+/** @var string $identifier_field_label The identifier field label. */
+/** @var bool $identifier_field_editable Whether the identifier can be changed. */
+/** @var string|false $identifier_field_description The identifier field description. */
+/** @var string $identifier The user's one-time-password identifier. */
+/** @var WP_User $user The user whose information is displayed. */
+/** @var bool $otpa_validation_enabled Whether account validation is enabled. */
+/** @var string $validation_status The readable validation status. */
+/** @var string $validation_exluded Whether the user's role is excluded from validation. */
+/** @var string $validation_needed Whether validation is needed. */
+/** @var string $validation_forced Whether an identifier change forced validation. */
+/** @var string $validation_expiry The readable validation expiry. */
+/** @var bool $show_admin_validation_button Whether the validation button should be displayed. */
+/** @var array $validation_info The user's validation information. */
+/** @var bool $show_admin_2fa_button Whether the two-factor button should be displayed. */
+/** @var bool $user_2fa_active Whether two-factor authentication is active for the user. */
+/** @var string $label The identifier label used outside the administrator area. */
+
 ?>
 <?php if ( is_admin() && $show_admin_otp_section ) : ?>
 <h3><?php echo esc_html( $title ); ?></h3>

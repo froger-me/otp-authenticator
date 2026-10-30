@@ -85,22 +85,22 @@ function otpa_mask_phone( $phone, $char_front = 3, $char_back = 3, $prefix = '' 
 /**
  * Mask a string with "*"
  *
- * @param string  $string The string to mask
+ * @param string  $_string The string to mask
  * @param int $char_front The number of leading characters to leave unmasked
  * @param int $char_back The number of trailing characters to leave unmasked
  * @return string the masked string
  */
-function otpa_mask_string( $string, $char_front = 1, $char_back = 1 ) {
-	$len = strlen( $string );
+function otpa_mask_string( $_string, $char_front = 1, $char_back = 1 ) {
+	$len = strlen( $_string );
 
 	if ( $len <= $char_front || $len <= $char_front || $len === $char_front + $char_back ) {
 		$char_front = 0;
 		$char_back  = 0;
 	}
 
-	$masked_string  = substr( $string, 0, $char_front );
+	$masked_string  = substr( $_string, 0, $char_front );
 	$masked_string .= str_repeat( '*', $len - $char_front - $char_back );
-	$masked_string .= substr( $string, $len - $char_back, $char_back );
+	$masked_string .= substr( $_string, $len - $char_back, $char_back );
 
 	return $masked_string;
 }
@@ -229,6 +229,8 @@ function otpa_human_timing( $timestamp ) {
 	} elseif ( 0 < $seconds ) {
 		// translators: %s number of seconds
 		$timing = sprintf( _n( '%s second', '%s seconds', $seconds, 'otpa' ), $seconds );
+	} else {
+		$timing = '';
 	}
 
 	return $timing;
@@ -238,7 +240,7 @@ function otpa_human_timing( $timestamp ) {
  * Log an expression with optional information in log file
  *
  * @param mixed $expression The expression to log
- * @param string $extended Additional information - default empty
+ * @param string $extend Additional information - default empty
  */
 function otpa_log( $expression, $extend = '' ) {
 	Otpa_Logger::log( $expression, $extend );
@@ -366,7 +368,7 @@ function otpa_get_user_2fa_info( $user_id = false ) {
 	$otpa_2fa      = new Otpa_2FA( $otpa );
 
 	return array(
-		'active' => $otpa_2fa->is_user_2fa_active( $user, true ),
+		'active' => $otpa_2fa->is_user_2fa_active( $user ),
 	);
 }
 
@@ -435,7 +437,7 @@ function otpa_get_user_by_identifier( $identifier ) {
 /**
  * Check whether the specified OTP identifier is a valid identifier
  *
- * @param string the specified OTP identifier
+ * @param string $identifier the specified OTP identifier
  * @return bool whether the specified OTP identifier is a valid identifier
  */
 function otpa_is_valid_identifier( $identifier ) {
@@ -448,7 +450,7 @@ function otpa_is_valid_identifier( $identifier ) {
 /**
  * Sanitize specified OTP identifier
  *
- * @param string the specified OTP identifier
+ * @param string $identifier the specified OTP identifier
  * @return string the sanitized OTP identifier
  */
 function otpa_sanitize_user_identifier( $identifier ) {
@@ -461,8 +463,8 @@ function otpa_sanitize_user_identifier( $identifier ) {
 /**
  * Set a user's OTP identifier
  *
- * @param string the OTP identifier
- * @param int the user ID
+ * @param string $identifier the OTP identifier
+ * @param int $user_id the user ID
  * @return bool|string false on failure, the new identifier on success
  */
 function otpa_set_user_identifier( $identifier, $user_id ) {

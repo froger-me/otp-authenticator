@@ -1,0 +1,34 @@
+{
+    "name": "froger-me/otp-authenticator",
+    "description": "Composer-managed service libraries for OTP Authenticator.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=8.4",
+        "alibabacloud/dysmsapi-20170525": "^4.6.0",
+        "twilio/sdk": "^8.13.0"
+    },
+    "replace": {
+        "clue/block-react": "*",
+        "ratchet/pawl": "*",
+        "ratchet/rfc6455": "*"
+    },
+    "extra": {
+        "dependency-note": "OTP Authenticator uses Alibaba Cloud SMS over HTTPS only. These replacements omit Alibaba's unused WebSocket packages, including the abandoned clue/block-react package."
+    },
+    "config": {
+        "allow-plugins": false,
+        "audit": {
+            "abandoned": "fail"
+        },
+        "classmap-authoritative": true,
+        "discard-changes": true,
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.4.0"
+        },
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "vendor-dir": "libraries/vendor"
+    }
+}

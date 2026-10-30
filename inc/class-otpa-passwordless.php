@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Otpa_Passwordless {
+	const REQUEST_COOKIE = 'otpa_passwordless_request';
+
 	protected $otpa;
 
 	public function __construct( $otpa, $init_hooks = false ) {
@@ -21,9 +23,7 @@ class Otpa_Passwordless {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function add_page_endpoint( $endpoints ) {
 		$endpoints['passwordless_login'] = 'passwordless-login';
@@ -51,19 +51,19 @@ class Otpa_Passwordless {
 		}
 	}
 
-	public function auth_link( $output = true, $class = '', $target = '' ) {
+	public function auth_link( $output = true, $_class = '', $target = '' ) {
 
 		if ( get_current_user_id() ) {
 
 			return;
 		}
 
-		$class    = ( 'login_footer' === current_filter() ) ? 'otpa-passwordless-login-form-link' : $class;
+		$_class   = ( 'login_footer' === current_filter() ) ? 'otpa-passwordless-login-form-link' : $_class;
 		$url      = home_url( 'otpa/passwordless-login' );
-		$redirect = filter_input( INPUT_GET, 'redirect_to', FILTER_SANITIZE_STRING );
+		$redirect = wp_http_validate_url( (string) filter_input( INPUT_GET, 'redirect_to', FILTER_UNSAFE_RAW ) );
 		$url      = ( ! empty( $redirect ) ) ? add_query_arg( 'redirect_to', rawurlencode( $redirect ), $url ) : $url;
 
-		set_query_var( 'class', $class );
+		set_query_var( 'class', $_class );
 		set_query_var( 'target', $target );
 		set_query_var( 'link_text', apply_filters( 'otpa_passwordless_auth_link_text', __( 'Passwordless Authentication', 'otpa' ) ) );
 		set_query_var( 'url', $url );
@@ -99,6 +99,7 @@ class Otpa_Passwordless {
 		return $valid && $otp_type === $this->get_otp_type();
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The filter supplies the OTP type as its third argument.
 	public function otp_api_callback( $callback, $handler, $otp_type ) {
 
 		if ( in_array( $handler, array( 'verify_otp_code', 'request_otp_code' ), true ) ) {
@@ -108,6 +109,7 @@ class Otpa_Passwordless {
 		return $callback;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies the hook name to this action callback.
 	public function add_login_scripts( $hook ) {
 		$debug   = apply_filters( 'otpa_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 		$css_ext = ( $debug ) ? '.css' : '.min.css';
@@ -119,24 +121,86 @@ class Otpa_Passwordless {
 	public function request_otp_code( $payload ) {
 		$user = $this->otpa->find_user( wp_get_current_user(), $payload );
 
-		wp_set_current_user( $user->ID );
+		if ( ! $user instanceof WP_User || ! $user->ID ) {
+			return Otpa::get_wp_error(
+				'OTPA_INVALID_USER',
+				array(
+					'method' => __METHOD__,
+				)
+			);
+		}
 
-		return $this->otpa->request_otp_code( $payload );
+		$previous_user_id = get_current_user_id();
+		wp_set_current_user( $user->ID );
+		$result = $this->otpa->request_otp_code( $payload );
+		wp_set_current_user( $previous_user_id );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$this->clear_request_binding();
+
+		$request_token = wp_generate_password( 64, false, false );
+		$storage_key   = $this->get_storage_key( $request_token );
+		$lifetime      = max( MINUTE_IN_SECONDS, absint( $this->otpa->get_setting( 'otp_expiry' ) ) * MINUTE_IN_SECONDS );
+		$expires       = time() + $lifetime;
+
+		set_transient(
+			$storage_key,
+			array( 'user_id' => (int) $user->ID ),
+			$lifetime
+		);
+
+		if ( ! $this->set_request_cookie( $request_token, $expires ) ) {
+			delete_transient( $storage_key );
+
+			return Otpa::get_wp_error(
+				'OTPA_UNKNOWN_ERROR',
+				array(
+					'method' => __METHOD__,
+				)
+			);
+		}
+
+		return $result;
 	}
 
 	public function verify_otp_code( $payload ) {
-		$user = $this->otpa->find_user( wp_get_current_user(), $payload );
+		$request_token = $this->get_request_token();
+		$binding       = $request_token ? get_transient( $this->get_storage_key( $request_token ) ) : false;
+		$user          = is_array( $binding ) && ! empty( $binding['user_id'] )
+			? get_user_by( 'ID', absint( $binding['user_id'] ) )
+			: false;
 
+		if ( ! $user instanceof WP_User || ! $user->ID ) {
+			$this->clear_request_binding();
+
+			return Otpa::get_wp_error(
+				'OTPA_CODE_NOT_FOUND',
+				array(
+					'method' => __METHOD__,
+				)
+			);
+		}
+
+		$verification_payload = $payload;
+		unset( $verification_payload['identifier'] );
+
+		$previous_user_id = get_current_user_id();
 		wp_set_current_user( $user->ID );
-
-		$result = $this->otpa->verify_otp_code( $payload );
+		$result = $this->otpa->verify_otp_code( $verification_payload );
+		wp_set_current_user( $previous_user_id );
+		$this->clear_request_binding();
 
 		if ( ! is_wp_error( $result ) ) {
 			clean_user_cache( $user );
 			do_action( 'wp_login', $user->user_login, $user );
 			wp_set_auth_cookie( $user->ID );
 
-			$redirect              = isset( $payload['redirect'] ) ? filter_var( $payload['redirect'], FILTER_VALIDATE_URL ) : false;
+			$redirect              = isset( $payload['redirect'] ) && is_string( $payload['redirect'] )
+				? wp_http_validate_url( $payload['redirect'] )
+				: false;
 			$redirect_to           = ( $redirect ) ? $redirect : home_url();
 			$requested_redirect_to = $redirect;
 			$result['message']     = __( 'Welcome!', 'otpa' ) . '<br/>' . __( 'Redirecting...', 'otpa' );
@@ -146,16 +210,73 @@ class Otpa_Passwordless {
 		return $result;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies both arguments to this filter callback.
 	public function noncefield_from_ip( $uid, $action ) {
-		return isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$forwarded_address = filter_input( INPUT_SERVER, 'HTTP_X_FORWARDED_FOR', FILTER_VALIDATE_IP );
+		$remote_address    = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+
+		return $forwarded_address ? $forwarded_address : (string) $remote_address;
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected function get_otp_type() {
-		return str_replace( 'otpa_', '', strtolower( get_class() ) );
+		return str_replace( 'otpa_', '', strtolower( get_class( $this ) ) );
+	}
+
+	protected function set_request_cookie( $request_token, $expires ) {
+		return ! headers_sent() && setcookie(
+			self::REQUEST_COOKIE,
+			$request_token,
+			array(
+				'expires'  => $expires,
+				'path'     => '/',
+				'domain'   => defined( 'COOKIE_DOMAIN' ) ? (string) COOKIE_DOMAIN : '',
+				'secure'   => is_ssl(),
+				'httponly' => true,
+				'samesite' => 'Lax',
+			)
+		);
+	}
+
+	protected function get_request_token() {
+
+		if ( ! isset( $_COOKIE[ self::REQUEST_COOKIE ] ) || ! is_string( $_COOKIE[ self::REQUEST_COOKIE ] ) ) {
+			return '';
+		}
+
+		$request_token = sanitize_text_field( wp_unslash( $_COOKIE[ self::REQUEST_COOKIE ] ) );
+
+		return preg_match( '/^[A-Za-z0-9]{64}$/D', $request_token ) ? $request_token : '';
+	}
+
+	protected function get_storage_key( $request_token ) {
+		return 'otpa_passwordless_' . hash_hmac( 'sha256', $request_token, wp_salt( 'auth' ) );
+	}
+
+	protected function clear_request_binding() {
+		$request_token = $this->get_request_token();
+
+		if ( $request_token ) {
+			delete_transient( $this->get_storage_key( $request_token ) );
+		}
+
+		if ( ! headers_sent() ) {
+			setcookie(
+				self::REQUEST_COOKIE,
+				'',
+				array(
+					'expires'  => time() - YEAR_IN_SECONDS,
+					'path'     => '/',
+					'domain'   => defined( 'COOKIE_DOMAIN' ) ? (string) COOKIE_DOMAIN : '',
+					'secure'   => is_ssl(),
+					'httponly' => true,
+					'samesite' => 'Lax',
+				)
+			);
+		}
+
+		unset( $_COOKIE[ self::REQUEST_COOKIE ] );
 	}
 
 	protected function get_back_markup() {
@@ -167,5 +288,4 @@ class Otpa_Passwordless {
 
 		return $output;
 	}
-
 }

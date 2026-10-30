@@ -11,29 +11,25 @@ class Otpa_Settings {
 
 	protected $settings_fields;
 	protected $error_message;
+	/** @var Otpa_Settings_Renderer|false */
 	protected $settings_renderer;
 
 	public function __construct( $init_hooks = false, $settings_renderer = false ) {
-		$this->load_textdomain();
-
 		self::$settings          = self::get_options();
 		$this->settings_renderer = $settings_renderer;
 
 		if ( $init_hooks ) {
-			add_action( 'init', array( $this, 'load_textdomain' ), 0, 0 );
-			add_action( 'init', array( $this, 'set_cache_policy' ), 0, 0 );
+			add_action( 'init', array( $this, 'set_cache_policy' ), 2, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_main' ), 10, 0 );
 			add_action( 'wp_loaded', array( $this, 'init_settings_definition' ), 10, 0 );
 			add_filter( 'plugin_action_links_otp-authenticator/otp-authenticator.php', array( $this, 'plugin_action_links' ), 10, 1 );
 
-			add_filter( 'pre_update_option_otpa_settings', array( get_class(), 'sanitize_settings' ), 10, 2 );
+			add_filter( 'pre_update_option_otpa_settings', array( self::class, 'sanitize_settings' ), 10, 2 );
 			add_filter( 'default_option_otpa_settings', array( $this, 'maybe_init_settings' ), 10, 3 );
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public static function get_options() {
 		self::$settings = wp_cache_get( 'otpa_settings', 'otpa' );
@@ -49,9 +45,9 @@ class Otpa_Settings {
 		return self::$settings;
 	}
 
-	public static function get_option( $key, $default = false ) {
+	public static function get_option( $key, $_default = false ) {
 		$options = self::get_options();
-		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $default;
+		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $_default;
 
 		return apply_filters( 'otpa_option', $value, $key );
 	}
@@ -74,10 +70,6 @@ class Otpa_Settings {
 
 	public function set_cache_policy() {
 		wp_cache_add_non_persistent_groups( 'otpa' );
-	}
-
-	public function load_textdomain() {
-		load_plugin_textdomain( 'otpa', false, 'otp-authenticator/languages' );
 	}
 
 	public function validate() {
@@ -111,10 +103,10 @@ class Otpa_Settings {
 	public function settings_error() {
 		$href    = admin_url( 'options-general.php?page=otpa' );
 		$link    = ' <a href="' . $href . '">' . __( 'Edit configuration', 'otpa' ) . '</a>';
-		$class   = 'notice notice-error is-dismissible';
+		$_class  = 'notice notice-error is-dismissible';
 		$message = __( 'OTP Authenticator is not ready. ', 'otpa' );
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message . $link . $this->error_message ); // @codingStandardsIgnoreLine
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $_class ), wp_kses_post( $message . $link . $this->error_message ) );
 	}
 
 	public function plugin_options_menu_main() {
@@ -122,7 +114,7 @@ class Otpa_Settings {
 			'otpa',
 			'otpa_settings',
 			array(
-				'sanitize_callback' => array( get_class(), 'sanitize_settings' ),
+				'sanitize_callback' => array( self::class, 'sanitize_settings' ),
 			)
 		);
 
@@ -138,7 +130,9 @@ class Otpa_Settings {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 		}
 
-		$this->settings_renderer->register_settings( $this->settings_fields, 'otpa' );
+		if ( $this->settings_renderer instanceof Otpa_Settings_Renderer ) {
+			$this->settings_renderer->register_settings( $this->settings_fields, 'otpa' );
+		}
 	}
 
 	public function admin_enqueue_scripts( $hook_suffix ) {
@@ -178,7 +172,7 @@ class Otpa_Settings {
 			wp_die( __( 'Sorry, you are not allowed to access this page.', 'otpa' ) ); // @codingStandardsIgnoreLine
 		}
 
-		$active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
+		$active_tab = sanitize_key( (string) filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) );
 		$active_tab = ( $active_tab ) ? $active_tab : 'settings';
 
 		do_action( 'otpa_settings_page', $active_tab );
@@ -192,17 +186,18 @@ class Otpa_Settings {
 		echo ob_get_clean(); // @codingStandardsIgnoreLine
 	}
 
-	public function maybe_init_settings( $default, $option, $passed_default ) {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies all three default-option filter arguments.
+	public function maybe_init_settings( $_default, $option, $passed_default ) {
 
-		if ( ! is_array( $default ) ) {
-			$default = array();
+		if ( ! is_array( $_default ) ) {
+			$_default = array();
 		}
 
 		remove_filter( 'default_option_otpa_settings', array( $this, 'maybe_init_settings' ), 10 );
-		update_option( 'otpa_settings', $default );
+		update_option( 'otpa_settings', $_default );
 		add_filter( 'default_option_otpa_settings', array( $this, 'maybe_init_settings' ), 10, 3 );
 
-		return $default;
+		return $_default;
 	}
 
 	public static function sanitize_settings( $settings, $old_settings = array() ) {
@@ -388,9 +383,7 @@ class Otpa_Settings {
 		$this->settings_fields = apply_filters( 'otpa_settings_fields', $this->settings_fields );
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected static function get_default_settings() {
 		$default_settings = array(
@@ -419,5 +412,4 @@ class Otpa_Settings {
 
 		return $wp_roles->role_names;
 	}
-
 }

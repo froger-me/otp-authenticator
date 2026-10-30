@@ -2,6 +2,11 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var string $class The link wrapper class supplied through WordPress query variables. */
+/** @var string $url The passwordless login URL supplied through WordPress query variables. */
+/** @var string $target The link target supplied through WordPress query variables. */
+/** @var string $link_text The link text supplied through WordPress query variables. */
+
 ?>
 <?php if ( empty( $class ) ) : ?>
 	<a href="<?php echo esc_attr( $url ); ?>" target="<?php echo esc_attr( $target ); ?>">

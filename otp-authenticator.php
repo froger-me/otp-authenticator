@@ -3,7 +3,8 @@
 Plugin Name: OTP Authenticator
 Plugin URI: https://github.com/froger-me/otp-authenticator
 Description: One-Time Password Authentication: add Two-Factor Authentication, Passwordless Authentication and Account Validation to your WordPress website
-Version: 1.1
+Version: 1.2
+Requires PHP: 8.4
 Author: Alexandre Froger
 Author URI: https://froger.me/
 Text Domain: otpa
@@ -28,6 +29,10 @@ require_once OTPA_PLUGIN_PATH . 'inc/class-otpa.php';
 register_activation_hook( __FILE__, array( 'Otpa', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Otpa', 'deactivate' ) );
 register_uninstall_hook( __FILE__, array( 'Otpa', 'uninstall' ) );
+
+function otpa_load_textdomain() {
+	load_plugin_textdomain( 'otpa', false, 'otp-authenticator/languages' );
+}
 
 function otpa_run() {
 	require_once OTPA_PLUGIN_PATH . 'inc/class-otpa-account-validation.php';
@@ -119,4 +124,5 @@ function otpa_run() {
 		do_action( 'otpa_invalid_settings', $otpa_objects );
 	}
 }
-add_action( 'plugins_loaded', 'otpa_run', 10, 0 );
+add_action( 'init', 'otpa_load_textdomain', 0, 0 );
+add_action( 'init', 'otpa_run', 1, 0 );

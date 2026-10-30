@@ -7,11 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Otpa_UM_Integration extends Otpa_Integration {
 	protected $sync_metakey;
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function init_hooks() {
+		if ( ! $this->gateway instanceof Otpa_Abstract_Gateway ) {
+			return;
+		}
+
 		add_action( 'um_after_form', array( $this, 'auth_link' ), 0, 1 );
 		add_filter( 'um_get_option_filter__accessible', array( $this, 'um_allow_access' ), 10, 1 );
 
@@ -77,9 +79,11 @@ class Otpa_UM_Integration extends Otpa_Integration {
 				$display = true;
 			}
 
-			$class = 'otpa-passwordless-um-' . str_replace( '_', '-', current_filter() );
+			$_class = 'otpa-passwordless-um-' . str_replace( '_', '-', current_filter() );
 
-			$this->otpa_passwordless->auth_link( true, $class );
+			if ( $this->otpa_passwordless instanceof Otpa_Passwordless ) {
+				$this->otpa_passwordless->auth_link( true, $_class );
+			}
 		}
 	}
 
@@ -152,7 +156,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 				$url = UM()->account()->tab_link( $args['_um_account_tab'] );
 				$url = add_query_arg( 'err', 'OTPA_MISSING_IDENTIFIER', $url );
 
-				wp_redirect( $url );
+				wp_safe_redirect( $url );
 
 				exit();
 			} elseif ( ! empty( $args[ $post_key ] ) && $this->gateway->allow_edit_identifier() ) {
@@ -165,7 +169,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 					$url = UM()->account()->tab_link( $args['_um_account_tab'] );
 					$url = add_query_arg( 'err', 'OTPA_DUPLICATE_IDENTIFIER', $url );
 
-					wp_redirect( $url );
+					wp_safe_redirect( $url );
 
 					exit();
 				}
@@ -194,7 +198,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 	}
 
 	public function save_account_details( $user_id, $changes ) {
-		$value = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$value = sanitize_text_field( (string) filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW ) );
 
 		if ( $value ) {
 			$this->gateway->set_user_identifier( $value, $user_id );
@@ -207,7 +211,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 			'otpa_otp_identifier_field_label',
 			__( 'One-Time Password Identifier', 'otpa' )
 		);
-		$value                  = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$value                  = sanitize_text_field( (string) filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW ) );
 		$identifier_description = '';
 		$show_identifier_field  = ( ! $this->sync_metakey );
 
@@ -239,12 +243,16 @@ class Otpa_UM_Integration extends Otpa_Integration {
 		<?php if ( $can_change_2fa ) : ?>
 		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 			<?php
-				echo $this->otpa_2fa->get_user_2fa_button_switch( // @codingStandardsIgnoreLine
-					apply_filters( 'otpa_2fa_um_switch_button_label', '' ),
-					apply_filters( 'otpa_2fa_um_switch_button_on_text', '' ),
-					apply_filters( 'otpa_2fa_um_switch_button_off_text', '' ),
-					apply_filters( 'otpa_2fa_um_switch_button_class', '' )
+			if ( $this->otpa_2fa instanceof Otpa_2FA ) {
+				echo wp_kses_post(
+					$this->otpa_2fa->get_user_2fa_button_switch(
+						apply_filters( 'otpa_2fa_um_switch_button_label', '' ),
+						apply_filters( 'otpa_2fa_um_switch_button_on_text', '' ),
+						apply_filters( 'otpa_2fa_um_switch_button_off_text', '' ),
+						apply_filters( 'otpa_2fa_um_switch_button_class', '' )
+					)
 				);
+			}
 			?>
 		</p>
 		<?php endif; ?>
@@ -261,7 +269,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 				</div>
 
 				<?php if ( ! empty( $identifier_description ) ) : ?>
-					<span class="description opta-warning"><em><?php echo $identifier_description; // @codingStandardsIgnoreLine ?></em></span>
+						<span class="description opta-warning"><em><?php echo wp_kses_post( $identifier_description ); ?></em></span>
 				<?php endif; ?>
 			<?php else : ?>
 				<span class="otpa-otp-identifier" name="otp_identifier" id="otp_identifier"><?php echo esc_html( $value ); ?></span>
@@ -270,9 +278,4 @@ class Otpa_UM_Integration extends Otpa_Integration {
 		<?php endif; ?>
 		<?php
 	}
-
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
-
 }

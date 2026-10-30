@@ -2,6 +2,8 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var string $active_tab The active settings tab supplied by the style settings page. */
+
 ?>
 
 <?php do_action( 'otpa_before_style_tab_settings', $active_tab ); ?>

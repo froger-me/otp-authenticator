@@ -38,18 +38,17 @@ class Otpa_User_Info {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function user_profile_form_alter( $user ) {
 		echo $this->get_otp_info_markup( otpa_get_user_identifier( $user->ID ), $user ); // @codingStandardsIgnoreLine
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the login and email to this filter callback.
 	public function registration_form_validate( $errors, $sanitized_user_login, $user_email ) {
 
 		if ( is_admin() ) {
-			$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+			$identifier = $this->get_posted_identifier();
 			$errors     = $this->validate_default_otp_info( $identifier, $errors );
 		}
 
@@ -67,19 +66,19 @@ class Otpa_User_Info {
 	}
 
 	public function registration_form_alter() {
-		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$identifier = $this->get_posted_identifier();
 
 		echo $this->get_otp_info_markup( $identifier ); // @codingStandardsIgnoreLine
 	}
 
 
 	public function user_info_form_validate( $errors, $update, $user ) {
-		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$identifier = $this->get_posted_identifier();
 		$errors     = $this->validate_default_otp_info( $identifier, $errors, $user );
 	}
 
 	public function save_user_info( $user_id, $old_user_data = false ) {
-		$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+		$identifier = $this->get_posted_identifier();
 
 		if ( is_a( $old_user_data, 'WP_User' ) ) {
 
@@ -95,22 +94,37 @@ class Otpa_User_Info {
 	}
 
 	public function get_otp_info_markup( $identifier, $user = false ) {
-		$show_identifier_field     = ! $this->is_identifier_synced;
-		$otpa_validation_enabled   = $this->otpa_settings->get_option( 'enable_validation' );
-		$otpa_2fa_enabled          = $this->otpa_settings->get_option( 'enable_2fa' );
-		$otpa_passwordless_enabled = $this->otpa_settings->get_option( 'enable_passwordless' );
+		$show_identifier_field        = ! $this->is_identifier_synced;
+		$otpa_validation_enabled      = $this->otpa_settings->get_option( 'enable_validation' );
+		$otpa_2fa_enabled             = $this->otpa_settings->get_option( 'enable_2fa' );
+		$otpa_passwordless_enabled    = $this->otpa_settings->get_option( 'enable_passwordless' );
+		$identifier_field_label       = $this->get_identifier_field_label();
+		$label                        = $identifier_field_label;
+		$title                        = '';
+		$identifier_field_description = false;
+		$identifier_field_editable    = false;
+		$validation_info              = array( 'validated' => false );
+		$validation_status            = '';
+		$validation_exluded           = '';
+		$validation_needed            = '';
+		$validation_forced            = '';
+		$validation_expiry            = '';
+		$user_2fa_active              = false;
+		$show_admin_validation_button = false;
+		$show_admin_2fa_button        = false;
+		$show_admin_otp_section       = false;
 
-		if ( $user ) {
+		if ( $user instanceof WP_User ) {
 			$identifier = otpa_get_user_identifier( $user->ID );
 		} else {
-			$identifier = filter_input( INPUT_POST, 'otp_identifier', FILTER_SANITIZE_STRING );
+			$user       = false;
+			$identifier = $this->get_posted_identifier();
 		}
 
 		if ( is_admin() ) {
 			$title = apply_filters( 'otpa_profile_info_title', __( 'OTP Authenticator', 'otpa' ) );
 
 			if ( $show_identifier_field ) {
-				$identifier_field_label       = $this->get_identifier_field_label();
 				$identifier_field_description = false;
 				$identifier_field_editable    = otpa_gateway_allow_edit_identifier();
 				$current_user                 = wp_get_current_user();
@@ -191,7 +205,7 @@ class Otpa_User_Info {
 
 		$output = '';
 
-		if ( $user ) {
+		if ( $user instanceof WP_User ) {
 
 			ob_start();
 
@@ -233,7 +247,10 @@ class Otpa_User_Info {
 			false !== otpa_get_user_by_identifier( $identifier ) &&
 			(
 				false === $user ||
-				otpa_get_user_identifier( $user->ID ) !== otpa_sanitize_user_identifier( $identifier )
+				(
+					$user instanceof WP_User &&
+					otpa_get_user_identifier( $user->ID ) !== otpa_sanitize_user_identifier( $identifier )
+				)
 			)
 		) {
 			$wp_error     = Otpa::get_wp_error( 'OTPA_DUPLICATE_IDENTIFIER' );
@@ -283,7 +300,7 @@ class Otpa_User_Info {
 	}
 
 	public function toggle_user_validation() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$nonce = sanitize_text_field( (string) filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW ) );
 
 		if ( ! wp_verify_nonce( $nonce, 'otpa_user_info_nonce' ) ) {
 			wp_send_json_error(
@@ -296,7 +313,7 @@ class Otpa_User_Info {
 		$user_id = filter_input( INPUT_POST, 'user_id', FILTER_VALIDATE_INT );
 		$user    = get_user_by( 'ID', $user_id );
 
-		if ( ! $user ) {
+		if ( ! $user instanceof WP_User ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Error: unauthorized access - please reload the page and try again.', 'otpa' ),
@@ -320,7 +337,7 @@ class Otpa_User_Info {
 	}
 
 	public function toggle_user_2fa_active() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$nonce = sanitize_text_field( (string) filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW ) );
 
 		if ( ! wp_verify_nonce( $nonce, 'otpa_user_info_nonce' ) ) {
 			wp_send_json_error(
@@ -333,7 +350,7 @@ class Otpa_User_Info {
 		$user_id = filter_input( INPUT_POST, 'user_id', FILTER_VALIDATE_INT );
 		$user    = get_user_by( 'ID', $user_id );
 
-		if ( ! $user ) {
+		if ( ! $user instanceof WP_User ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Error: unauthorized access - please reload the page and try again.', 'otpa' ),
@@ -383,9 +400,11 @@ class Otpa_User_Info {
 		}
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
+
+	protected function get_posted_identifier() {
+		return sanitize_text_field( (string) filter_input( INPUT_POST, 'otp_identifier', FILTER_UNSAFE_RAW ) );
+	}
 
 	protected function build_validation_status_cell( $user_id ) {
 		$info    = otpa_get_user_account_validation_info( $user_id );

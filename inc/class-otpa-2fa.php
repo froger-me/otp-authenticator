@@ -37,9 +37,7 @@ class Otpa_2FA {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function add_api_endpoints( $endpoints ) {
 		$endpoints['2fa'] = '2fa';
@@ -63,7 +61,7 @@ class Otpa_2FA {
 
 		if ( $this->need_2fa_check( $user ) ) {
 			update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
-			wp_redirect( home_url() );
+			wp_safe_redirect( home_url() );
 
 			exit();
 		}
@@ -74,7 +72,11 @@ class Otpa_2FA {
 	}
 
 	public function handle_api_request() {
-		$nonce = filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING );
+		$request = filter_input_array( INPUT_POST, FILTER_UNSAFE_RAW );
+		$request = is_array( $request ) ? $request : array();
+		$nonce   = isset( $request['nonce'] ) && is_string( $request['nonce'] )
+			? sanitize_text_field( $request['nonce'] )
+			: '';
 
 		if ( ! wp_verify_nonce( $nonce, 'otpa_2fa_nonce' ) ) {
 			wp_send_json_error(
@@ -84,7 +86,9 @@ class Otpa_2FA {
 			);
 		}
 
-		$handler       = filter_input( INPUT_POST, 'handler', FILTER_SANITIZE_STRING );
+		$handler       = isset( $request['handler'] ) && is_string( $request['handler'] )
+			? sanitize_key( $request['handler'] )
+			: '';
 		$valid_handler = apply_filters(
 			'otpa_2fa_api_valid_callback',
 			method_exists( $this, $this->sanitizer_api_handler( $handler ) ),
@@ -105,7 +109,9 @@ class Otpa_2FA {
 		);
 		$args     = apply_filters(
 			'otpa_2fa_api_callback_args',
-			filter_input( INPUT_POST, 'payload', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY ),
+			isset( $request['payload'] ) && is_array( $request['payload'] )
+				? map_deep( $request['payload'], 'sanitize_text_field' )
+				: array(),
 			$handler
 		);
 
@@ -157,6 +163,7 @@ class Otpa_2FA {
 		return $valid && $otp_type === $this->get_otp_type();
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The filter supplies the OTP type as its third argument.
 	public function otp_api_callback( $callback, $handler, $otp_type ) {
 		return ( 'verify_otp_code' === $handler ) ? array( $this, $handler ) : $callback;
 	}
@@ -305,20 +312,23 @@ class Otpa_2FA {
 	}
 
 	public function add_2fa_button_switch_shortcode( $attrs = array(), $content = '' ) {
-		$attrs = extract( // @codingStandardsIgnoreLine
-			shortcode_atts(
-				array(
-					'label'         => '',
-					'turn_on_text'  => '',
-					'turn_off_text' => '',
-					'class'         => '',
-				),
-				$attrs,
-				'otpa_2fa_switch'
-			)
+		$attrs = shortcode_atts(
+			array(
+				'label'         => '',
+				'turn_on_text'  => '',
+				'turn_off_text' => '',
+				'class'         => '',
+			),
+			$attrs,
+			'otpa_2fa_switch'
 		);
 
-		$content = $this->get_user_2fa_button_switch( $label, $turn_off_text, $turn_on_text, $class );
+		$content = $this->get_user_2fa_button_switch(
+			$attrs['label'],
+			$attrs['turn_off_text'],
+			$attrs['turn_on_text'],
+			$attrs['class']
+		);
 
 		return $content;
 	}
@@ -431,7 +441,7 @@ class Otpa_2FA {
 		return $result;
 	}
 
-	public function get_user_2fa_button_switch( $label = '', $on_text = '', $off_text = '', $class = '' ) {
+	public function get_user_2fa_button_switch( $label = '', $on_text = '', $off_text = '', $_class = '' ) {
 		$user = wp_get_current_user();
 
 		if ( ! $this->is_block_editor() ) {
@@ -458,7 +468,7 @@ class Otpa_2FA {
 		wp_enqueue_script( 'otpa-user-2fa-switch-script' );
 		wp_localize_script( 'otpa-user-2fa-switch-script', 'OTPA', $params );
 
-		$class    = ( empty( $class ) ) ? 'otpa-user-2fa-button-switch' : esc_attr( $class ) . ' otpa-user-2fa-button-switch';
+		$_class   = ( empty( $_class ) ) ? 'otpa-user-2fa-button-switch' : esc_attr( $_class ) . ' otpa-user-2fa-button-switch';
 		$on_text  = ( empty( $on_text ) ) ? __( 'Two-Factor Authentication is ON - Click to Disable', 'otpa' ) : $on_text;
 		$off_text = ( empty( $off_text ) ) ? __( 'Two-Factor Authentication is OFF - Click to Enable', 'otpa' ) : $off_text;
 		$active   = $this->is_user_2fa_active( $user );
@@ -468,7 +478,7 @@ class Otpa_2FA {
 		$output  .= '<button data-handler="switch_2fa" data-user_id="' . esc_attr( $user->ID );
 		$output  .= '" data-active_text="' . esc_attr( $on_text ) . '" data-inactive_text="' . esc_attr( $off_text ) . '"';
 		$output  .= '" data-active="' . esc_attr( $active ) . '"';
-		$output  .= '" type="button" class="' . $class . '">';
+		$output  .= '" type="button" class="' . $_class . '">';
 		$output  .= ( $active ) ? esc_html( $on_text ) : esc_html( $off_text ) . '</button>' . $nonce;
 		$output  .= '<div class="error otpa-error" style="display:none;">';
 		$output  .= __( 'An undefined error occured.', 'otpa' ) . '<br/>';
@@ -476,12 +486,10 @@ class Otpa_2FA {
 		$output  .= '</div>';
 		$output  .= '</div>';
 
-		return apply_filters( 'otpa_2fa_button_switch_markup', $output, $label, $on_text, $off_text, $class, $nonce );
+		return apply_filters( 'otpa_2fa_button_switch_markup', $output, $label, $on_text, $off_text, $_class, $nonce );
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected function sanitizer_api_handler( $handler ) {
 
@@ -494,16 +502,16 @@ class Otpa_2FA {
 	}
 
 	protected function get_otp_type() {
-		return str_replace( 'otpa_', '', strtolower( get_class() ) );
+		return str_replace( 'otpa_', '', strtolower( get_class( $this ) ) );
 	}
 
 	protected function is_block_editor() {
+		$context = sanitize_key( (string) filter_input( INPUT_GET, 'context', FILTER_UNSAFE_RAW ) );
 
 		return (
 			defined( 'REST_REQUEST' ) &&
 			true === REST_REQUEST &&
-			'edit' === filter_input( INPUT_GET, 'context', FILTER_SANITIZE_STRING )
+			'edit' === $context
 		);
 	}
-
 }

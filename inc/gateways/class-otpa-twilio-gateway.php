@@ -26,17 +26,15 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function validate_settings( $valid, $main_settings ) {
 		$errors = is_array( $valid ) ? $valid : array();
 
 		if (
-			isset( $main_settings['enable_2fa'] ) && $main_settings['enable_2fa'] ||
-			isset( $main_settings['enable_passwordless'] ) && $main_settings['enable_passwordless'] ||
-			isset( $main_settings['enable_validation'] ) && $main_settings['enable_validation']
+			( isset( $main_settings['enable_2fa'] ) && $main_settings['enable_2fa'] ) ||
+			( isset( $main_settings['enable_passwordless'] ) && $main_settings['enable_passwordless'] ) ||
+			( isset( $main_settings['enable_validation'] ) && $main_settings['enable_validation'] )
 		) {
 			// translators: %s is the name of the required field
 			$missing_field_format = __( 'Authentication Gateway setting value "%s" is missing.', 'otpa' );
@@ -363,9 +361,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 		return $message;
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected static function get_default_settings() {
 
@@ -399,7 +395,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 	protected function load_library() {
 
 		try {
-			require_once OTPA_PLUGIN_PATH . 'libraries/twilio/Twilio/autoload.php';
+			require_once OTPA_PLUGIN_PATH . 'libraries/vendor/autoload.php';
 
 			return true;
 		} catch ( Throwable $e ) {
@@ -520,5 +516,4 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 			);
 		}
 	}
-
 }

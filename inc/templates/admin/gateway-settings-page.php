@@ -2,6 +2,8 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var string $active_tab The active settings tab supplied by the gateway settings page. */
+
 ?>
 
 <?php do_action( 'otpa_before_gateway_settings', $active_tab ); ?>

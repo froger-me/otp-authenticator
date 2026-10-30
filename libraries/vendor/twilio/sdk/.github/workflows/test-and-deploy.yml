@@ -1,0 +1,165 @@
+name: Twilio Public release-packagist
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  composer-lockfile-hygiene:
+    runs-on: ubuntu-x64
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: twilio/sdk-actions/composer-lockfile-hygiene@f293ed2cd776fd9476360826a78b7b33e692b261 # main (pending v1 tag update)
+
+  verify:
+    name: Verify - PHP ${{ matrix.php }}
+    needs: [composer-lockfile-hygiene]
+    runs-on: ubuntu-x64
+    if: github.repository_owner == 'twilio'
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.3", "8.4"]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag must be reachable from main
+        if: github.ref_type == 'tag'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/main \
+            || { echo "::error::${GITHUB_REF_NAME} is not an ancestor of main"; exit 1; }
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+
+      - name: Artifactory OIDC Auth
+        uses: twilio/sdk-actions/artifactory-oidc@f293ed2cd776fd9476360826a78b7b33e692b261 # main (pending v1 tag update)
+        with:
+          ecosystem: php
+
+      - name: Install dependencies
+        env:
+          PHP: ${{ matrix.php }}
+        run: |
+          set -euo pipefail
+          if printf '%s\n' 8.2 8.3 8.4 | grep -qx "$PHP"; then
+            composer install --no-interaction --no-progress
+          else
+            composer update --no-interaction --no-progress
+          fi
+
+      - name: Run tests
+        run: make test
+
+  validate-release:
+    name: Validate Release
+    needs: [verify]
+    runs-on: ubuntu-x64
+    if: success() && github.ref_type == 'tag' && github.repository_owner == 'twilio'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.3"
+
+      - name: Validate tag matches VersionInfo
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          PKG_VERSION=$(php -r "require 'src/Twilio/VersionInfo.php'; echo Twilio\VersionInfo::string();")
+          echo "Tag: $TAG"
+          echo "Package version: $PKG_VERSION"
+          if [ "$TAG" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $TAG does not match VersionInfo.php version $PKG_VERSION"
+            exit 1
+          fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Verify release type
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          case "$TAG" in
+            *-*) echo "::notice::Release type: PRE-RELEASE ($TAG)" ;;
+            *)   echo "::notice::Release type: STABLE ($TAG)" ;;
+          esac
+
+  publish:
+    name: Publish to Packagist
+    needs: [validate-release]
+    runs-on: ubuntu-x64
+    if: success() && github.repository_owner == 'twilio'
+    environment: production
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.3"
+
+      - name: Validate tag format and version match
+        if: github.ref_type == 'tag'
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "::error::Release tag must be in the form 1.2.3 (got '$TAG')"
+            exit 1
+          fi
+          VERSION="$TAG"
+          PKG_VERSION=$(php -r "require 'src/Twilio/VersionInfo.php'; echo Twilio\VersionInfo::string();")
+          echo "Package version: $PKG_VERSION"
+          echo "PKG_VERSION=$PKG_VERSION" >> "$GITHUB_ENV"
+          if [ "$VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag $TAG does not match VersionInfo.php version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Download the zipball Composer will install
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/${GITHUB_REPOSITORY}/zipball/${GITHUB_SHA}" > release.zip
+
+      - uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v2
+        with:
+          subject-path: release.zip
+
+      - name: Create GitHub Release
+        uses: twilio/sdk-actions/github-release@f293ed2cd776fd9476360826a78b7b33e692b261 # main (pending v1 tag update)
+        with:
+          changelog-file: CHANGES.md
+
+      - name: Confirm Packagist picked up the release
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            curl -sf "https://repo.packagist.org/p2/twilio/sdk.json" \
+              | jq -e --arg v "$GITHUB_REF_NAME" \
+                  '.packages["twilio/sdk"][] | select(.version == $v)' >/dev/null \
+              && { echo "::notice::Packagist is serving $GITHUB_REF_NAME"; exit 0; }
+            sleep 15
+          done
+          echo "::warning::Not indexed after 3 minutes — check the Packagist webhook."

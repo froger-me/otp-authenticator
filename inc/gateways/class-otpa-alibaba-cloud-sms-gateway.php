@@ -1,8 +1,11 @@
 <?php
 
-use AlibabaCloud\Client\AlibabaCloud;
-use AlibabaCloud\Client\Exception\ClientException;
-use AlibabaCloud\Client\Exception\ServerException;
+use AlibabaCloud\Dara\Models\RuntimeOptions;
+use AlibabaCloud\SDK\Dysmsapi\V20170525\Dysmsapi;
+use Darabonba\OpenApi\Models\Config;
+use Darabonba\OpenApi\Models\OpenApiRequest;
+use Darabonba\OpenApi\Models\Params;
+use Darabonba\OpenApi\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -12,6 +15,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 	protected $identifier_meta = 'otpa_aliyun_phone';
 	protected $code_length     = 4;
 	protected $code_chars      = '0123456789';
+	protected $client;
 
 	public function __construct( $init_hooks = false, $settings_renderer = false, $otpa_settings = false ) {
 		$this->name = __( 'Alibaba Cloud SMS', 'otpa' );
@@ -28,9 +32,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 		}
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function admin_enqueue_scripts( $hook_suffix ) {
 
@@ -53,9 +55,9 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 		$errors = is_array( $valid ) ? $valid : array();
 
 		if (
-			isset( $main_settings['enable_2fa'] ) && $main_settings['enable_2fa'] ||
-			isset( $main_settings['enable_passwordless'] ) && $main_settings['enable_passwordless'] ||
-			isset( $main_settings['enable_validation'] ) && $main_settings['enable_validation']
+			( isset( $main_settings['enable_2fa'] ) && $main_settings['enable_2fa'] ) ||
+			( isset( $main_settings['enable_passwordless'] ) && $main_settings['enable_passwordless'] ) ||
+			( isset( $main_settings['enable_validation'] ) && $main_settings['enable_validation'] )
 		) {
 			// translators: %s is the name of the required field
 			$missing_field_format = __( 'Authentication Gateway setting value "%s" is missing.', 'otpa' );
@@ -457,9 +459,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 		return $message;
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected static function get_default_settings() {
 
@@ -495,7 +495,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 	protected function load_library() {
 
 		try {
-			require_once OTPA_PLUGIN_PATH . 'libraries/alibaba/autoload.php';
+			require_once OTPA_PLUGIN_PATH . 'libraries/vendor/autoload.php';
 
 			return true;
 		} catch ( Throwable $e ) {
@@ -513,10 +513,17 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 	protected function init_api() {
 
 		try {
-			AlibabaCloud::accessKeyClient(
-				$this->settings['access_key'],
-				$this->settings['access_secret']
-			)->regionId( $this->settings['region'] )->asDefaultClient();
+			$endpoint     = $this->settings['intl'] ? 'dysmsapi.ap-southeast-1.aliyuncs.com' : 'dysmsapi.aliyuncs.com';
+			$config       = new Config(
+				array(
+					'accessKeyId'     => $this->settings['access_key'],
+					'accessKeySecret' => $this->settings['access_secret'],
+					'endpoint'        => $endpoint,
+					'protocol'        => 'https',
+					'regionId'        => $this->settings['region'],
+				)
+			);
+			$this->client = new Dysmsapi( $config );
 
 			return true;
 		} catch ( Throwable $e ) {
@@ -635,35 +642,50 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 		}
 
 		try {
-			$result = AlibabaCloud::rpc()
-					->product( 'Dysmsapi' )
-					->version( $this->settings['version'] )
-					->action( $action )
-					->method( 'POST' )
-					->host( $host )
-					->options( $args )
-					->request();
+			$request = new OpenApiRequest(
+				array(
+					'endpointOverride' => $host,
+					'query'            => Utils::query( $args['query'] ),
+				)
+			);
+			$params  = new Params(
+				array(
+					'action'      => $action,
+					'authType'    => 'AK',
+					'bodyType'    => 'json',
+					'method'      => 'POST',
+					'pathname'    => '/',
+					'protocol'    => 'HTTPS',
+					'reqBodyType' => 'formData',
+					'style'       => 'RPC',
+					'version'     => $this->settings['version'],
+				)
+			);
+			$result  = $this->client->callApi( $params, $request, new RuntimeOptions( array() ) );
+			$body    = isset( $result['body'] ) && is_array( $result['body'] ) ? $result['body'] : array();
+			$code    = isset( $body['Code'] ) ? (string) $body['Code'] : '';
+			$detail  = isset( $body['Message'] ) ? (string) $body['Message'] : '';
 
-			if ( ! $result ) {
+			if ( empty( $body ) ) {
 
 				return array(
 					'status'  => false,
 					'message' => __( 'An undefined error occured - please try again or use another phone number.', 'otpa' ),
 				);
-			} elseif ( 'OK' !== $result->Code ) { // @codingStandardsIgnoreLine
+			} elseif ( 'OK' !== $code ) {
 
-				if ( 'isv.BUSINESS_LIMIT_CONTROL' === $result->Code ) { // @codingStandardsIgnoreLine
+				if ( 'isv.BUSINESS_LIMIT_CONTROL' === $code ) {
 					$message = __( 'You are submitting this form too many times or too fast - please try again in 1 minute.', 'otpa' );
-				} elseif ( 'isv.MOBILE_NUMBER_ILLEGAL' === $result->Code ) { // @codingStandardsIgnoreLine
+				} elseif ( 'isv.MOBILE_NUMBER_ILLEGAL' === $code ) {
 					$message = __( 'The phone number is invalid. Please try again with a valid mobile phone number.', 'otpa' );
 				}
 
-				otpa_db_log( __METHOD__ . ' - error ' . $result->Code . ': ' . $result->Message, 'alert', true );  // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . $code . ': ' . $detail, 'alert', true );
 
 				return array(
 					'status'  => false,
 					'message' => $message,
-					'code'    => $result->Code, // @codingStandardsIgnoreLine
+					'code'    => $code,
 				);
 			}
 
@@ -673,23 +695,16 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 				'message' => sprintf( __( 'An SMS with a Verification Code was sent to %s.', 'otpa' ), $phone ),
 				'code'    => 'OK',
 			);
-		} catch ( ClientException $e ) {
-			otpa_db_log( __METHOD__ . ' - error ' . $e->getErrorCode() . ': ' . $e->getErrorMessage(), 'alert', true );
+		} catch ( Throwable $e ) {
+			$error_code = method_exists( $e, 'getErrCode' ) ? $e->getErrCode() : $e->getCode();
+			$error_code = $error_code ? (string) $error_code : 'OTPA_ALIBABA_REQUEST_FAILED';
+			otpa_db_log( __METHOD__ . ' - error ' . $error_code . ': ' . $e->getMessage(), 'alert', true );
 
 			return array(
 				'status'  => false,
 				'message' => $message,
-				'code'    => $e->getErrorCode(),
-			);
-		} catch ( ServerException $e ) {
-			otpa_db_log( __METHOD__ . ' - error ' . $e->getErrorCode() . ': ' . $e->getErrorMessage(), 'alert', true );
-
-			return array(
-				'status'  => false,
-				'message' => $message,
-				'code'    => $e->getErrorCode(),
+				'code'    => $error_code,
 			);
 		}
 	}
-
 }

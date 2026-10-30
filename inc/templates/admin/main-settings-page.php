@@ -2,6 +2,8 @@
 	exit; // Exit if accessed directly
 }
 
+/** @var string $active_tab The active settings tab supplied by the settings page. */
+
 ?>
 <div class="wrap">
 	<h1><?php esc_html_e( 'OTP Authenticator', 'otpa' ); ?></h1>

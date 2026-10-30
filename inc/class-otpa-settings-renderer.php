@@ -7,14 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Otpa_Settings_Renderer {
 
 	protected $settings_fields;
+	protected $settings;
 	protected $style_dependencies  = array();
 	protected $script_dependencies = array();
 
 	public function __construct() {}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function __call( $method_name, $args ) {
 
@@ -67,13 +66,13 @@ class Otpa_Settings_Renderer {
 					$id          = 'otpa_' . $field['id'];
 					$title       = $field['label'];
 					$section_key = 'otpa_' . $section_name . '_section';
-					$class       = 'otpa-' . $section_name . '-section otpa-' . $field['id'] . '-field';
+					$_class      = 'otpa-' . $section_name . '-section otpa-' . $field['id'] . '-field';
 
 					if (
-						isset( $section['class'] ) && false !== strpos( $section['class'], 'hidden' ) ||
-						isset( $field['class'] ) && false !== strpos( $field['class'], 'hidden' )
+						( isset( $section['class'] ) && false !== strpos( $section['class'], 'hidden' ) ) ||
+						( isset( $field['class'] ) && false !== strpos( $field['class'], 'hidden' ) )
 					) {
-						$class .= ' hidden';
+						$_class .= ' hidden';
 					}
 
 					if ( isset( $field['script_dependencies'] ) && is_array( $field['script_dependencies'] ) ) {
@@ -88,7 +87,7 @@ class Otpa_Settings_Renderer {
 						$this->script_dependencies[] = 'wp_media';
 					}
 
-					$args     = array( 'class' => $class );
+					$args     = array( 'class' => $_class );
 					$callback = apply_filters(
 						'otpa_settings_renderer_field_callback',
 						array( $this, $page . '_' . $field['id'] . '_render' ),
@@ -105,6 +104,7 @@ class Otpa_Settings_Renderer {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies the current admin page to this action callback.
 	public function admin_enqueue_scripts( $hook_suffix ) {
 		$debug       = apply_filters( 'otpa_debug', (bool) ( constant( 'WP_DEBUG' ) ) );
 		$js_ext      = ( $debug ) ? '.js' : '.min.js';
@@ -147,9 +147,7 @@ class Otpa_Settings_Renderer {
 		);
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected function get_input_text_option( $key, $settings_group ) {
 		$value  = isset( $this->settings[ $key ] ) ? $this->settings[ $key ] : $this->get_field_attr( $key, 'default' );
@@ -280,6 +278,7 @@ class Otpa_Settings_Renderer {
 		return $input;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Dynamic setting callbacks share this two-argument signature.
 	protected function get_raw_text_option( $key, $settings_group ) {
 		$paragraph  = '<p' . $this->get_field_class( $key ) . ' id="otpa_' . $key . '">';
 		$paragraph .= $this->get_field_attr( $key, 'value' ) . '</p>';
@@ -335,38 +334,38 @@ class Otpa_Settings_Renderer {
 				$this->settings
 			);
 
-			echo $output; // @codingStandardsIgnoreLine
+			echo wp_kses_post( $output );
 		}
 
 		if ( $this->get_field_attr( $key, 'help' ) ) {
-			echo '<p class="description">' . $this->get_field_attr( $key, 'help' ) . '</p>'; // @codingStandardsIgnoreLine
+			echo '<p class="description">' . wp_kses_post( $this->get_field_attr( $key, 'help' ) ) . '</p>';
 		}
 	}
 
 	protected function section_render( $key ) {
-		$hide   = isset( $this->settings_fields[ $key ]['class'] );
-		$hide   = $hide && false !== strpos( $this->settings_fields[ $key ]['class'], 'hidden' );
-		$class  = 'otpa-' . $key . '-description';
-		$class .= ( $hide ) ? ' hidden' : '';
+		$hide    = isset( $this->settings_fields[ $key ]['class'] );
+		$hide    = $hide && false !== strpos( $this->settings_fields[ $key ]['class'], 'hidden' );
+		$_class  = 'otpa-' . $key . '-description';
+		$_class .= ( $hide ) ? ' hidden' : '';
 
 		if ( isset( $this->settings_fields[ $key ]['class'] ) ) {
 			$output  = '<span class="section-class-holder hidden" data-section_class="';
-			$output .= $this->settings_fields[ $key ]['class'];
+			$output .= esc_attr( $this->settings_fields[ $key ]['class'] );
 			$output .= '"></span>';
 
-			echo $output; // @codingStandardsIgnoreLine
+			echo wp_kses_post( $output );
 		}
 
 		if ( isset( $this->settings_fields[ $key ]['description'] ) ) {
-			echo '<div class="' . $class . '">' . $this->settings_fields[ $key ]['description'] . '</div>'; // @codingStandardsIgnoreLine
+			echo '<div class="' . esc_attr( $_class ) . '">' . wp_kses_post( $this->settings_fields[ $key ]['description'] ) . '</div>';
 		}
 	}
 
 	protected function get_field_class( $key, $classes = '' ) {
-		$class = $this->get_field_attr( $key, 'class' );
-		$class = empty( $class ) && empty( $classes ) ? ' ' : ' class="' . $class . ' ' . $classes . '" ';
+		$_class = $this->get_field_attr( $key, 'class' );
+		$_class = empty( $_class ) && empty( $classes ) ? ' ' : ' class="' . esc_attr( $_class . ' ' . $classes ) . '" ';
 
-		return $class;
+		return $_class;
 	}
 
 	protected function get_field_attr( $key, $attr ) {
@@ -384,5 +383,4 @@ class Otpa_Settings_Renderer {
 
 		return false;
 	}
-
 }

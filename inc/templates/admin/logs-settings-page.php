@@ -4,6 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+/** @var string $active_tab The active settings tab supplied by the log settings page. */
+/** @var array $logs_settings The saved log settings supplied by the log manager. */
+/** @var int $num_logs The current number of saved log entries. */
+/** @var string $logs The rendered log rows. */
+
 ?>
 <?php do_action( 'otpa_before_logs_settings', $active_tab ); ?>
 <?php if ( 'logs-settings' === $active_tab ) : ?>
@@ -44,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php submit_button(); ?>
 					<div class="logs-container">
 						<div id="logs_view">
-							<?php echo $logs; // WPCS XSS OK ?>
+								<?php echo wp_kses_post( $logs ); ?>
 						</div>
 						<button class="button" id="otpa_log_refresh"><?php esc_html_e( 'Refresh', 'otpa' ); ?></button>		
 					</div>

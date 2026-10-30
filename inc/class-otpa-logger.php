@@ -23,8 +23,8 @@ class Otpa_Logger {
 		);
 
 		if ( $init_hooks ) {
-			add_action( 'wp', array( get_class(), 'register_logs_cleanup' ) );
-			add_action( 'otpa_logs_cleanup', array( get_class(), 'clear_logs' ) );
+			add_action( 'wp', array( self::class, 'register_logs_cleanup' ) );
+			add_action( 'otpa_logs_cleanup', array( self::class, 'clear_logs' ) );
 			add_action( 'wp_ajax_otpa_refresh_logs', array( $this, 'refresh_logs_async' ), 10, 0 );
 			add_action( 'wp_ajax_otpa_clear_logs', array( $this, 'clear_logs_async' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'register_settings' ), 10, 0 );
@@ -37,9 +37,7 @@ class Otpa_Logger {
 		self::init();
 	}
 
-	/*******************************************************************
-	 * Public methods
-	 *******************************************************************/
+	// Public methods.
 
 	public function log_otpa_wp_error( $wp_error ) {
 		$data  = $wp_error->get_error_data();
@@ -88,6 +86,7 @@ class Otpa_Logger {
 
 		dbDelta( $sql );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Installation must confirm that its newly created table exists.
 		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "otpa_logs'" );
 
 		if ( $wpdb->prefix . 'otpa_logs' !== $table_name ) {
@@ -108,13 +107,14 @@ class Otpa_Logger {
 	public static function log( $expression, $extend = '', $destination = 'error_log', $force = false ) {
 		$destination = ( 'dblog' === $destination ) ? 'db_log' : $destination;
 
-		if ( method_exists( get_class(), $destination ) ) {
-			call_user_func_array( array( get_class(), $destination ), array( $expression, $extend, $force ) );
+		if ( method_exists( self::class, $destination ) ) {
+			call_user_func_array( array( self::class, $destination ), array( $expression, $extend, $force ) );
 		} else {
 			self::error_log( $expression, $extend, $force );
 		}
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- The shared logging callback signature includes the force argument.
 	public static function clear_logs( $force = false ) {
 
 		if ( defined( 'WP_SETUP_CONFIG' ) || defined( 'WP_INSTALLING' ) ) {
@@ -124,8 +124,10 @@ class Otpa_Logger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Log cleanup operates on the plugin's own table and immediately changes its contents.
 		$result = $wpdb->query(
-			$wpdb->prepare( "
+			$wpdb->prepare(
+				"
 				DELETE FROM {$wpdb->prefix}otpa_logs
 				WHERE id <= (
 					SELECT id
@@ -146,6 +148,7 @@ class Otpa_Logger {
 	public static function get_logs_count() {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- This reads the current size of the plugin's append-only log table.
 		$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}otpa_logs WHERE 1 = 1;" );
 
 		return absint( $count );
@@ -155,6 +158,7 @@ class Otpa_Logger {
 		global $wpdb;
 
 		$logs = '';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- The log screen must read the latest rows from the plugin's own table.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}otpa_logs ORDER BY timestamp ASC LIMIT %d;",
@@ -248,7 +252,7 @@ class Otpa_Logger {
 	public function admin_enqueue_scripts( $hook_suffix ) {
 
 		if ( 'settings_page_otpa' === $hook_suffix ) {
-			$active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
+			$active_tab = sanitize_key( (string) filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) );
 
 			if ( 'logs-settings' !== $active_tab ) {
 
@@ -269,9 +273,7 @@ class Otpa_Logger {
 		}
 	}
 
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
+	// Protected methods.
 
 	protected static function db_log( $expression, $type, $force = false ) {
 
@@ -315,6 +317,7 @@ class Otpa_Logger {
 			'data'      => maybe_serialize( $data ),
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Logging intentionally inserts into the plugin's own log table.
 		$result = $wpdb->insert(
 			$wpdb->prefix . 'otpa_logs',
 			$log
@@ -328,6 +331,7 @@ class Otpa_Logger {
 		return false;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The shared logging callback signature includes the force argument.
 	protected static function error_log( $expression, $extend_context = '', $force = false ) {
 
 		if ( ! is_string( $expression ) ) {
@@ -364,12 +368,11 @@ class Otpa_Logger {
 		$trace               = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 3 ); // @codingStandardsIgnoreLine
 		$caller_line_holder  = $trace[1];
 		$caller_class_holder = $trace[2];
-		$class               = isset( $caller_class_holder['class'] ) ? $caller_class_holder['class'] : '';
+		$_class              = isset( $caller_class_holder['class'] ) ? $caller_class_holder['class'] : '';
 		$type                = isset( $caller_class_holder['type'] ) ? $caller_class_holder['type'] : '';
 		$function            = isset( $caller_class_holder['function'] ) ? $caller_class_holder['function'] : '';
-		$context             = $class . $type . $function . ' on line ' . $caller_line_holder['line'] . $extend_context . ': ';
+		$context             = $_class . $type . $function . ' on line ' . $caller_line_holder['line'] . $extend_context . ': ';
 
 		error_log( $context . $expression ); // @codingStandardsIgnoreLine
 	}
-
 }
