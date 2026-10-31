@@ -24,6 +24,7 @@ class Otpa_2FA {
 		add_action( 'init', array( $this, 'add_2fa_button_switch_editor_block' ), 10, 0 );
 
 		if ( $init_hooks ) {
+			$this->deny_state_changing_request();
 			add_action( 'admin_init', array( $this, 'admin_redirect' ), 10, 0 );
 			add_action( 'init', array( $this, 'check_2fa' ), 10, 0 );
 			add_action( 'wp_login', array( $this, 'set_need_2fa_check' ), 10, 2 );
@@ -154,8 +155,6 @@ class Otpa_2FA {
 				update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
 			}
 
-			add_action( 'parse_request', array( $this, 'deny_state_changing_request' ), PHP_INT_MIN, 1 );
-
 			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
 
 			if ( $this->otpa->allow_template_redirect() ) {
@@ -221,20 +220,60 @@ class Otpa_2FA {
 		return $result;
 	}
 
-	public function deny_state_changing_request( $wp ) {
-		$is_otp_endpoint = (
-			isset( $wp->query_vars['__otpa_api'], $wp->query_vars['action'] ) &&
-			'otp' === $wp->query_vars['action']
-		);
-		$request_method  = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+	public function deny_state_changing_request() {
+		if ( ! $this->need_2fa_check() ) {
 
-		if ( ! $is_otp_endpoint && in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
-			wp_die(
-				esc_html__( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
-				esc_html__( 'Access denied', 'otpa' ),
-				array( 'response' => 403 )
+			return;
+		}
+
+		$request_method = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+
+		if ( ! in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
+
+			return;
+		}
+
+		$request_uri  = (string) filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_UNSAFE_RAW );
+		$request_path = untrailingslashit( (string) wp_parse_url( esc_url_raw( $request_uri ), PHP_URL_PATH ) );
+		$rest_path    = untrailingslashit( (string) wp_parse_url( rest_url(), PHP_URL_PATH ) );
+		$xmlrpc_path  = untrailingslashit( (string) wp_parse_url( site_url( 'xmlrpc.php' ), PHP_URL_PATH ) );
+
+		if (
+			$xmlrpc_path === $request_path ||
+			$rest_path === $request_path ||
+			( $rest_path && str_starts_with( $request_path, $rest_path . '/' ) )
+		) {
+
+			return;
+		}
+
+		$otp_path = untrailingslashit( (string) wp_parse_url( home_url( 'otpa-api/otp' ), PHP_URL_PATH ) );
+
+		if ( $otp_path === $request_path ) {
+			$handler = sanitize_key( (string) filter_input( INPUT_POST, 'handler', FILTER_UNSAFE_RAW ) );
+
+			if ( $this->otpa->is_pending_otp_request_allowed( $handler, wp_get_current_user() ) ) {
+
+				return;
+			}
+		}
+
+		$wc_ajax = sanitize_key( (string) filter_input( INPUT_GET, 'wc-ajax', FILTER_UNSAFE_RAW ) );
+
+		if ( wp_doing_ajax() || $wc_ajax ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
+				),
+				403
 			);
 		}
+
+		wp_die(
+			esc_html__( 'OTP Authenticator: Two-Factor Authentication required.', 'otpa' ),
+			esc_html__( 'Access denied', 'otpa' ),
+			array( 'response' => 403 )
+		);
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies credentials to this authentication filter.
@@ -243,7 +282,7 @@ class Otpa_2FA {
 			defined( 'XMLRPC_REQUEST' ) &&
 			XMLRPC_REQUEST &&
 			$user instanceof WP_User &&
-			$this->need_2fa_check( $user )
+			$this->is_user_2fa_required( $user )
 		) {
 			return new WP_Error(
 				'otpa_2fa_required',
@@ -258,6 +297,24 @@ class Otpa_2FA {
 		$user = ( $user ) ? $user : wp_get_current_user();
 
 		return (bool) get_user_meta( $user->ID, 'otpa_2fa_active', true );
+	}
+
+	/**
+	 * Check whether an account requires two-factor authentication.
+	 *
+	 * @param WP_User|false $user User to check, or false for the current user.
+	 * @return bool Whether the account requires two-factor authentication.
+	 */
+	public function is_user_2fa_required( $user = false ) {
+		$user = $user instanceof WP_User ? $user : wp_get_current_user();
+
+		return (
+			$user->ID &&
+			(
+				$this->is_user_2fa_active( $user ) ||
+				$this->otpa_settings->get_option( 'force_2fa' )
+			)
+		);
 	}
 
 	public function set_user_2fa_active( $user = false, $active = true ) {

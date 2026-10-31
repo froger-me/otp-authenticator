@@ -54,9 +54,8 @@ final class OtpaCodeFlowTest extends IntegrationTestCase {
 			$result
 		);
 		$this->assertArrayNotHasKey( 'otp_code', $result );
-		$this->assertSame( 'ABC123', $stored['otp_code'] );
-		$this->assertGreaterThan( time(), $stored['expiry'] );
-		$this->assertSame( Otpa::OTP_PURPOSE_DEFAULT, $stored['purpose'] );
+		$this->assertSame( 'ABC123', $stored[ Otpa::OTP_PURPOSE_DEFAULT ]['otp_code'] );
+		$this->assertGreaterThan( time(), $stored[ Otpa::OTP_PURPOSE_DEFAULT ]['expiry'] );
 	}
 
 	public function test_correct_code_runs_hook_removes_code_and_resets_attempts(): void {
@@ -102,7 +101,7 @@ final class OtpaCodeFlowTest extends IntegrationTestCase {
 		$this->assertWPError( $result );
 		$this->assertSame( 'OTPA_INVALID_CODE', $result->get_error_code() );
 		$this->assertSame( 1, $attempts['verify_count'] );
-		$this->assertSame( 'ABC123', $stored['otp_code'] );
+		$this->assertSame( 'ABC123', $stored[ Otpa::OTP_PURPOSE_DEFAULT ]['otp_code'] );
 		$this->assertNotWPError( $this->otpa->verify_otp_code( array( 'code' => 'ABC123' ) ) );
 	}
 
@@ -180,6 +179,42 @@ final class OtpaCodeFlowTest extends IntegrationTestCase {
 
 		$this->assertWPError( $result );
 		$this->assertSame( 'OTPA_CODE_NOT_FOUND', $result->get_error_code() );
+		$stored = get_user_meta( $this->user_id, 'otpa_verification_code', true );
+		$this->assertSame( 'ABC123', $stored[ Otpa::OTP_PURPOSE_2FA ]['otp_code'] );
+	}
+
+	public function test_codes_for_different_purposes_remain_independent(): void {
+		$this->save_code( 'TWO123', null, Otpa::OTP_PURPOSE_2FA );
+		$this->save_code( 'PASS12', null, Otpa::OTP_PURPOSE_PASSWORDLESS );
+
+		$result = $this->otpa->verify_otp_code(
+			array(
+				'code'        => 'TWO123',
+				'otp_purpose' => Otpa::OTP_PURPOSE_2FA,
+			)
+		);
+		$stored = get_user_meta( $this->user_id, 'otpa_verification_code', true );
+
+		$this->assertNotWPError( $result );
+		$this->assertArrayNotHasKey( Otpa::OTP_PURPOSE_2FA, $stored );
+		$this->assertSame( 'PASS12', $stored[ Otpa::OTP_PURPOSE_PASSWORDLESS ]['otp_code'] );
+	}
+
+	public function test_old_single_code_record_is_rejected_and_removed(): void {
+		update_user_meta(
+			$this->user_id,
+			'otpa_verification_code',
+			array(
+				'otp_code' => 'OLD123',
+				'expiry'   => time() + MINUTE_IN_SECONDS,
+				'purpose'  => Otpa::OTP_PURPOSE_DEFAULT,
+			)
+		);
+
+		$result = $this->otpa->verify_otp_code( array( 'code' => 'OLD123' ) );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'OTPA_CODE_NOT_FOUND', $result->get_error_code() );
 		$this->assertSame( '', get_user_meta( $this->user_id, 'otpa_verification_code', true ) );
 	}
 
@@ -248,6 +283,28 @@ final class OtpaCodeFlowTest extends IntegrationTestCase {
 		$this->assertSame( 0, $gateway->request_count );
 	}
 
+	public function test_expired_lock_owner_cannot_release_replacement(): void {
+		$lock_name = 'otpa_otp_request_lock_' . $this->user_id;
+		$old_lock  = array(
+			'owner'  => str_repeat( 'A', 64 ),
+			'expiry' => time() - MINUTE_IN_SECONDS,
+		);
+		$acquire   = new ReflectionMethod( Otpa::class, 'acquire_otp_request_lock' );
+		$release   = new ReflectionMethod( Otpa::class, 'release_otp_request_lock' );
+
+		add_option( $lock_name, $old_lock, '', false );
+		$new_lock = $acquire->invoke( $this->otpa, $this->user_id );
+
+		$this->assertIsArray( $new_lock );
+		$this->assertNotSame( $old_lock['owner'], $new_lock['owner'] );
+
+		$release->invoke( $this->otpa, $this->user_id, $old_lock );
+		$this->assertSame( $new_lock, get_option( $lock_name ) );
+
+		$release->invoke( $this->otpa, $this->user_id, $new_lock );
+		$this->assertFalse( get_option( $lock_name ) );
+	}
+
 	/** @return array<string, mixed>|WP_Error */
 	private function request_code() {
 		return $this->otpa->request_otp_code(
@@ -256,14 +313,17 @@ final class OtpaCodeFlowTest extends IntegrationTestCase {
 	}
 
 	private function save_code( $code = 'ABC123', $expiry = null, $purpose = Otpa::OTP_PURPOSE_DEFAULT ): void {
+		$codes             = get_user_meta( $this->user_id, 'otpa_verification_code', true );
+		$codes             = is_array( $codes ) ? $codes : array();
+		$codes[ $purpose ] = array(
+			'otp_code' => $code,
+			'expiry'   => null === $expiry ? time() + 5 * MINUTE_IN_SECONDS : $expiry,
+		);
+
 		update_user_meta(
 			$this->user_id,
 			'otpa_verification_code',
-			array(
-				'otp_code' => $code,
-				'expiry'   => null === $expiry ? time() + 5 * MINUTE_IN_SECONDS : $expiry,
-				'purpose'  => $purpose,
-			)
+			$codes
 		);
 	}
 }

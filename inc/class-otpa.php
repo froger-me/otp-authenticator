@@ -128,6 +128,9 @@ class Otpa {
 				case 'OTPA_DUPLICATE_IDENTIFIER':
 					$message = __( 'The identifier is already registered.', 'otpa' ) . '<br/>' . __( 'Please enter another valid identifier and try again.' );
 					break;
+				case 'OTPA_UNAUTHORIZED_OPERATION':
+					$message = __( 'This operation is not allowed.', 'otpa' ) . '<br/>' . __( 'Please reload the page and try again.', 'otpa' );
+					break;
 				case 'OTPA_MISSING_CODE':
 					$message = __( 'An undefined error occured: missing code.', 'otpa' ) . '<br/>' . __( 'Please reload the page and try again - if the problem persists, please contact an administrator.' );
 					break;
@@ -490,6 +493,26 @@ class Otpa {
 		return ! $this->is_setting_identifier;
 	}
 
+	/**
+	 * Check whether an OTP endpoint handler is required while authentication is pending.
+	 *
+	 * @param string  $handler Requested handler.
+	 * @param WP_User $user    Current user.
+	 * @return bool Whether the handler is allowed.
+	 */
+	public function is_pending_otp_request_allowed( $handler, $user ) {
+		if ( in_array( $handler, array( 'request_otp_code', 'verify_otp_code' ), true ) ) {
+
+			return true;
+		}
+
+		return (
+			'set_otp_identifier' === $handler &&
+			$user instanceof WP_User &&
+			$this->is_identifier_required( $user->ID )
+		);
+	}
+
 	public function request_otp_code( $payload ) {
 		if ( ! isset( $payload['identifier'] ) ) {
 			return self::get_wp_error(
@@ -540,7 +563,9 @@ class Otpa {
 			);
 		}
 
-		if ( ! $this->acquire_otp_request_lock( $user->ID ) ) {
+		$lock = $this->acquire_otp_request_lock( $user->ID );
+
+		if ( ! $lock ) {
 			return self::get_wp_error(
 				'OTPA_THROTTLE',
 				array(
@@ -600,7 +625,7 @@ class Otpa {
 				}
 			}
 		} finally {
-			$this->release_otp_request_lock( $user->ID );
+			$this->release_otp_request_lock( $user->ID, $lock );
 		}
 
 		if ( ! is_wp_error( $result ) && is_array( $result ) && ! empty( $result['status'] ) ) {
@@ -620,15 +645,16 @@ class Otpa {
 		$purpose = $this->get_otp_purpose( $purpose );
 
 		if ( $user->ID && false !== $purpose ) {
-			$expiry_length = $this->otpa_settings->get_option( 'otp_expiry' ) * 60;
-			$expiry        = time() + $expiry_length;
-			$meta          = array(
+			$expiry_length     = $this->otpa_settings->get_option( 'otp_expiry' ) * 60;
+			$expiry            = time() + $expiry_length;
+			$meta              = array(
 				'otp_code' => $otp_code,
 				'expiry'   => $expiry,
-				'purpose'  => $purpose,
 			);
+			$codes             = $this->get_otp_codes( $user->ID );
+			$codes[ $purpose ] = $meta;
 
-			$result = update_user_meta( $user->ID, 'otpa_verification_code', $meta );
+			$result = update_user_meta( $user->ID, 'otpa_verification_code', $codes );
 
 			if ( ! $result ) {
 				$result = self::get_wp_error(
@@ -665,14 +691,14 @@ class Otpa {
 				$blocked = $this->is_otp_blocked( $user->ID );
 
 				if ( ! $blocked ) {
-					$meta = get_user_meta( $user->ID, 'otpa_verification_code', true );
+					$meta = $this->get_otp_code( $user->ID, $purpose );
 
-					if ( $meta && isset( $meta['otp_code'], $meta['expiry'], $meta['purpose'] ) ) {
+					if ( $meta && isset( $meta['otp_code'], $meta['expiry'] ) ) {
 
 						if ( $meta['expiry'] < time() ) {
 							$verify_count = $this->process_otp_verify( $user->ID, false );
 
-							delete_user_meta( $user->ID, 'otpa_verification_code' );
+							$this->delete_otp_code( $user->ID, $purpose );
 
 							$result = self::get_wp_error(
 								'OTPA_EXPIRED_CODE',
@@ -685,26 +711,12 @@ class Otpa {
 									'verify_count' => $verify_count,
 								)
 							);
-						} elseif ( $meta['purpose'] !== $purpose ) {
-							$verify_count = $this->process_otp_verify( $user->ID, false );
-
-							delete_user_meta( $user->ID, 'otpa_verification_code' );
-
-							$result = self::get_wp_error(
-								'OTPA_CODE_NOT_FOUND',
-								array(
-									'method'       => __METHOD__,
-									'user_id'      => $user->ID,
-									'input_code'   => $input_code,
-									'verify_count' => $verify_count,
-								)
-							);
 						} elseif ( $meta['otp_code'] !== $input_code ) {
 							$verify_count = $this->process_otp_verify( $user->ID, false );
 							$max_verify   = $this->otpa_settings->get_option( 'max_verify' );
 
 							if ( 0 < $max_verify && $max_verify <= $verify_count ) {
-								delete_user_meta( $user->ID, 'otpa_verification_code' );
+								$this->delete_otp_code( $user->ID, $purpose );
 
 								$block_expiry = $this->is_otp_blocked( $user->ID );
 								$result       = self::get_wp_error(
@@ -731,16 +743,12 @@ class Otpa {
 							}
 						} else {
 							$this->process_otp_verify( $user->ID, true );
-							delete_user_meta( $user->ID, 'otpa_verification_code' );
+							$this->delete_otp_code( $user->ID, $purpose );
 							do_action( 'otpa_otp_code_verified', $user->ID, $purpose );
 
 							$result = true;
 						}
 					} elseif ( ! is_wp_error( $result ) ) {
-						if ( $meta ) {
-							delete_user_meta( $user->ID, 'otpa_verification_code' );
-						}
-
 						$verify_count = $this->process_otp_verify( $user->ID, false );
 						$result       = self::get_wp_error(
 							'OTPA_CODE_NOT_FOUND',
@@ -800,7 +808,7 @@ class Otpa {
 			$identifier = $payload['identifier'];
 			$user       = wp_get_current_user();
 
-			if ( $user->ID ) {
+			if ( $user->ID && $this->is_identifier_required( $user->ID ) ) {
 				$redirect = get_user_meta( $user->ID, 'otpa_set_otp_redirect', true );
 
 				if ( $this->gateway->is_valid_identifier( $identifier ) ) {
@@ -838,7 +846,7 @@ class Otpa {
 				}
 			} else {
 				$result = self::get_wp_error(
-					'OTPA_INVALID_USER',
+					$user->ID ? 'OTPA_UNAUTHORIZED_OPERATION' : 'OTPA_INVALID_USER',
 					array(
 						'method'     => __METHOD__,
 						'identifier' => $identifier,
@@ -924,19 +932,122 @@ class Otpa {
 		return in_array( $purpose, $allowed, true ) ? $purpose : false;
 	}
 
-	protected function acquire_otp_request_lock( $user_id ) {
-		$lock_name   = 'otpa_otp_request_lock_' . absint( $user_id );
-		$lock_expiry = absint( get_option( $lock_name, 0 ) );
+	/**
+	 * Get all stored codes for a user.
+	 *
+	 * @param int $user_id User number.
+	 * @return array<string, array<string, mixed>> Stored codes indexed by purpose.
+	 */
+	protected function get_otp_codes( $user_id ) {
+		$codes = get_user_meta( $user_id, 'otpa_verification_code', true );
 
-		if ( $lock_expiry && $lock_expiry <= time() ) {
-			delete_option( $lock_name );
+		if ( is_array( $codes ) && isset( $codes['otp_code'], $codes['expiry'], $codes['purpose'] ) ) {
+			delete_user_meta( $user_id, 'otpa_verification_code' );
+
+			return array();
 		}
 
-		return add_option( $lock_name, time() + MINUTE_IN_SECONDS, '', false );
+		return is_array( $codes ) ? $codes : array();
 	}
 
-	protected function release_otp_request_lock( $user_id ) {
-		delete_option( 'otpa_otp_request_lock_' . absint( $user_id ) );
+	/**
+	 * Get one stored code.
+	 *
+	 * @param int    $user_id User number.
+	 * @param string $purpose Code purpose.
+	 * @return array<string, mixed>|false Stored code, or false when absent.
+	 */
+	protected function get_otp_code( $user_id, $purpose ) {
+		$codes = $this->get_otp_codes( $user_id );
+
+		return isset( $codes[ $purpose ] ) && is_array( $codes[ $purpose ] ) ? $codes[ $purpose ] : false;
+	}
+
+	/**
+	 * Delete one purpose's stored code.
+	 *
+	 * @param int    $user_id User number.
+	 * @param string $purpose Code purpose.
+	 * @return int|bool Result of the user metadata update or deletion.
+	 */
+	protected function delete_otp_code( $user_id, $purpose ) {
+		$codes = $this->get_otp_codes( $user_id );
+		unset( $codes[ $purpose ] );
+
+		if ( $codes ) {
+			return update_user_meta( $user_id, 'otpa_verification_code', $codes );
+		}
+
+		return delete_user_meta( $user_id, 'otpa_verification_code' );
+	}
+
+	/**
+	 * Acquire the delivery lock for a user.
+	 *
+	 * @param int $user_id User number.
+	 * @return array<string, int|string>|false Lock value, or false when already locked.
+	 */
+	protected function acquire_otp_request_lock( $user_id ) {
+		global $wpdb;
+
+		$lock_name = 'otpa_otp_request_lock_' . absint( $user_id );
+		$lock      = array(
+			'owner'  => wp_generate_password( 64, false, false ),
+			'expiry' => time() + MINUTE_IN_SECONDS,
+		);
+
+		if ( add_option( $lock_name, $lock, '', false ) ) {
+
+			return $lock;
+		}
+
+		$current = get_option( $lock_name, false );
+		$expiry  = is_array( $current ) && isset( $current['expiry'] ) ? absint( $current['expiry'] ) : absint( $current );
+
+		if ( ! $expiry || $expiry > time() ) {
+
+			return false;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- The old lock value must be part of one conditional database update.
+		$updated = $wpdb->update(
+			$wpdb->options,
+			array( 'option_value' => maybe_serialize( $lock ) ),
+			array(
+				'option_name'  => $lock_name,
+				'option_value' => maybe_serialize( $current ),
+			),
+			array( '%s' ),
+			array( '%s', '%s' )
+		);
+
+		wp_cache_delete( $lock_name, 'options' );
+
+		return 1 === $updated ? $lock : false;
+	}
+
+	/**
+	 * Release a delivery lock only when its owner still matches.
+	 *
+	 * @param int                       $user_id User number.
+	 * @param array<string, int|string> $lock    Lock value returned during acquisition.
+	 */
+	protected function release_otp_request_lock( $user_id, $lock ) {
+		global $wpdb;
+
+		$lock_name = 'otpa_otp_request_lock_' . absint( $user_id );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- The owner value must be checked by the same database deletion that releases the lock.
+		$wpdb->delete(
+			$wpdb->options,
+			array(
+				'option_name'  => $lock_name,
+				'option_value' => maybe_serialize( $lock ),
+			),
+			array( '%s', '%s' )
+		);
+
+		wp_cache_delete( $lock_name, 'options' );
 	}
 
 	protected function set_otp_request_wait_cookie( $wait ) {

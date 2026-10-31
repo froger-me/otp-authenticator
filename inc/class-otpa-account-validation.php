@@ -16,6 +16,7 @@ class Otpa_Account_Validation {
 		$this->otpa          = $otpa;
 
 		if ( $init_hooks ) {
+			$this->deny_state_changing_request();
 			add_action( 'admin_init', array( $this, 'admin_redirect' ), 10, 0 );
 			add_action( 'init', array( $this, 'account_validation' ), 10, 0 );
 			add_action( 'wp_login', array( $this, 'set_need_account_validation' ), 10, 2 );
@@ -85,8 +86,6 @@ class Otpa_Account_Validation {
 				update_user_meta( $user->ID, 'otpa_account_validation_redirect', otpa_get_current_url() );
 			}
 
-			add_action( 'parse_request', array( $this, 'deny_state_changing_request' ), PHP_INT_MIN, 1 );
-
 			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
 
 			if ( $this->otpa->allow_template_redirect() ) {
@@ -137,20 +136,60 @@ class Otpa_Account_Validation {
 		return $result;
 	}
 
-	public function deny_state_changing_request( $wp ) {
-		$is_otp_endpoint = (
-			isset( $wp->query_vars['__otpa_api'], $wp->query_vars['action'] ) &&
-			'otp' === $wp->query_vars['action']
-		);
-		$request_method  = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+	public function deny_state_changing_request() {
+		if ( ! $this->need_account_validation() ) {
 
-		if ( ! $is_otp_endpoint && in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
-			wp_die(
-				esc_html__( 'OTP Authenticator: Account Validation required.', 'otpa' ),
-				esc_html__( 'Access denied', 'otpa' ),
-				array( 'response' => 403 )
+			return;
+		}
+
+		$request_method = strtoupper( sanitize_key( (string) filter_input( INPUT_SERVER, 'REQUEST_METHOD', FILTER_UNSAFE_RAW ) ) );
+
+		if ( ! in_array( $request_method, array( 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
+
+			return;
+		}
+
+		$request_uri  = (string) filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_UNSAFE_RAW );
+		$request_path = untrailingslashit( (string) wp_parse_url( esc_url_raw( $request_uri ), PHP_URL_PATH ) );
+		$rest_path    = untrailingslashit( (string) wp_parse_url( rest_url(), PHP_URL_PATH ) );
+		$xmlrpc_path  = untrailingslashit( (string) wp_parse_url( site_url( 'xmlrpc.php' ), PHP_URL_PATH ) );
+
+		if (
+			$xmlrpc_path === $request_path ||
+			$rest_path === $request_path ||
+			( $rest_path && str_starts_with( $request_path, $rest_path . '/' ) )
+		) {
+
+			return;
+		}
+
+		$otp_path = untrailingslashit( (string) wp_parse_url( home_url( 'otpa-api/otp' ), PHP_URL_PATH ) );
+
+		if ( $otp_path === $request_path ) {
+			$handler = sanitize_key( (string) filter_input( INPUT_POST, 'handler', FILTER_UNSAFE_RAW ) );
+
+			if ( $this->otpa->is_pending_otp_request_allowed( $handler, wp_get_current_user() ) ) {
+
+				return;
+			}
+		}
+
+		$wc_ajax = sanitize_key( (string) filter_input( INPUT_GET, 'wc-ajax', FILTER_UNSAFE_RAW ) );
+
+		if ( wp_doing_ajax() || $wc_ajax ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'OTP Authenticator: Account Validation required.', 'otpa' ),
+				),
+				403
 			);
 		}
+
+		wp_die(
+			esc_html__( 'OTP Authenticator: Account Validation required.', 'otpa' ),
+			esc_html__( 'Access denied', 'otpa' ),
+			array( 'response' => 403 )
+		);
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed, Generic.CodeAnalysis.UnusedFunctionParameter.Found -- WordPress supplies credentials to this authentication filter.
@@ -159,7 +198,7 @@ class Otpa_Account_Validation {
 			defined( 'XMLRPC_REQUEST' ) &&
 			XMLRPC_REQUEST &&
 			$user instanceof WP_User &&
-			$this->need_account_validation( $user )
+			$this->is_user_account_validation_required( $user )
 		) {
 			return new WP_Error(
 				'otpa_account_validation_required',
@@ -222,6 +261,23 @@ class Otpa_Account_Validation {
 		}
 
 		return ( $need_validation && ! $this->is_user_validated( $user ) ) || $force_validation;
+	}
+
+	/**
+	 * Check whether an account requires validation independently of a login marker.
+	 *
+	 * @param WP_User|false $user User to check, or false for the current user.
+	 * @return bool Whether the account requires validation.
+	 */
+	public function is_user_account_validation_required( $user = false ) {
+		$user = $user instanceof WP_User ? $user : wp_get_current_user();
+
+		return (
+			$user->ID &&
+			$this->otpa_settings->get_option( 'enable_validation' ) &&
+			! $this->is_user_validation_excluded( $user->ID ) &&
+			! $this->is_user_validated( $user )
+		);
 	}
 
 	public function set_need_account_validation( $user_login = false, $user = false, $force = false ) {

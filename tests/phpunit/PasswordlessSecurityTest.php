@@ -85,8 +85,8 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 			array_values( $bindings )[0]
 		);
 		$this->assertSame(
-			Otpa::OTP_PURPOSE_PASSWORDLESS,
-			get_user_meta( $this->requested_user_id, 'otpa_verification_code', true )['purpose']
+			'ABC123',
+			get_user_meta( $this->requested_user_id, 'otpa_verification_code', true )[ Otpa::OTP_PURPOSE_PASSWORDLESS ]['otp_code']
 		);
 	}
 
@@ -248,6 +248,63 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 		$this->assertSame( 0, get_current_user_id() );
 	}
 
+	public function test_request_restores_current_user_after_exception(): void {
+		$throwing_otpa = new class(new Otpa_Test_Settings(), new Otpa_Test_Gateway()) extends Otpa {
+			/**
+			 * Simulate an unexpected delivery failure.
+			 *
+			 * @param array<string, mixed> $payload Request payload.
+			 * @throws RuntimeException Always.
+			 */
+			public function request_otp_code( $payload ) {
+				unset( $payload );
+
+				throw new RuntimeException( 'Request failed.' );
+			}
+		};
+		$passwordless  = new Otpa_Test_Passwordless( $throwing_otpa );
+
+		try {
+			$passwordless->request_otp_code(
+				array( 'identifier' => $this->requested_user->user_email )
+			);
+			$this->fail( 'The expected exception was not thrown.' );
+		} catch ( RuntimeException $exception ) {
+			$this->assertSame( 'Request failed.', $exception->getMessage() );
+		}
+
+		$this->assertSame( 0, get_current_user_id() );
+	}
+
+	public function test_verification_restores_current_user_after_exception(): void {
+		$throwing_otpa = new class(new Otpa_Test_Settings(), new Otpa_Test_Gateway()) extends Otpa {
+			/**
+			 * Simulate an unexpected verification failure.
+			 *
+			 * @param array<string, mixed> $payload Verification payload.
+			 * @throws RuntimeException Always.
+			 */
+			public function verify_otp_code( $payload ) {
+				unset( $payload );
+
+				throw new RuntimeException( 'Verification failed.' );
+			}
+		};
+		$passwordless  = new Otpa_Test_Passwordless( $throwing_otpa );
+		$request_token = str_repeat( 'F', 64 );
+
+		$this->bind_token( $request_token, $this->requested_user_id );
+
+		try {
+			$passwordless->verify_otp_code( array( 'code' => 'ABC123' ) );
+			$this->fail( 'The expected exception was not thrown.' );
+		} catch ( RuntimeException $exception ) {
+			$this->assertSame( 'Verification failed.', $exception->getMessage() );
+		}
+
+		$this->assertSame( 0, get_current_user_id() );
+	}
+
 	private function bind_token( $request_token, $user_id ) {
 		$storage_key                                  = $this->storage_key( $request_token );
 		$_COOKIE[ Otpa_Passwordless::REQUEST_COOKIE ] = $request_token;
@@ -271,9 +328,10 @@ final class PasswordlessSecurityTest extends IntegrationTestCase {
 			$user_id,
 			'otpa_verification_code',
 			array(
-				'otp_code' => 'ABC123',
-				'expiry'   => time() + 5 * MINUTE_IN_SECONDS,
-				'purpose'  => Otpa::OTP_PURPOSE_PASSWORDLESS,
+				Otpa::OTP_PURPOSE_PASSWORDLESS => array(
+					'otp_code' => 'ABC123',
+					'expiry'   => time() + 5 * MINUTE_IN_SECONDS,
+				),
 			)
 		);
 	}

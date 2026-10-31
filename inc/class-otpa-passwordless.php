@@ -139,8 +139,12 @@ class Otpa_Passwordless {
 
 		$previous_user_id = get_current_user_id();
 		wp_set_current_user( $user->ID );
-		$result = $this->otpa->request_otp_code( $payload );
-		wp_set_current_user( $previous_user_id );
+
+		try {
+			$result = $this->otpa->request_otp_code( $payload );
+		} finally {
+			wp_set_current_user( $previous_user_id );
+		}
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
@@ -197,8 +201,12 @@ class Otpa_Passwordless {
 
 		$previous_user_id = get_current_user_id();
 		wp_set_current_user( $user->ID );
-		$result = $this->otpa->verify_otp_code( $verification_payload );
-		wp_set_current_user( $previous_user_id );
+
+		try {
+			$result = $this->otpa->verify_otp_code( $verification_payload );
+		} finally {
+			wp_set_current_user( $previous_user_id );
+		}
 
 		if ( ! is_wp_error( $result ) || 'OTPA_INVALID_CODE' !== $result->get_error_code() ) {
 			$this->clear_request_binding();

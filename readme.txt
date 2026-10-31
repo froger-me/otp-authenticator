@@ -85,8 +85,20 @@ Help is provided without compensation for general enquiries and bug fixes only: 
 
 = 1.2 =
 * Require PHP 8.4 and declare compatibility with WordPress 7.1
-* Update the Twilio and Alibaba Cloud SMS libraries
-* Prevent passwordless login requests from revealing verification codes or changing accounts during verification
+* Update the Twilio and Alibaba Cloud SMS libraries through Composer and remove library security warnings
+* Add a deployment script for creating release packages
+* Add PHP and browser tests for settings, gateways, passwordless login, two-factor authentication, account validation, and security rules
+* Require server-side permissions for administrative account-validation and two-factor controls
+* Bind each verification code to one purpose and store simultaneous two-factor, account-validation, and passwordless codes separately
+* Keep a valid verification code available after an incorrect attempt until it expires or reaches the configured attempt limit
+* Prevent passwordless requests from revealing codes, changing the selected account, depending on client IP addresses, or being reused by another browser
+* Restore the previous WordPress user after every passwordless request and verification, including unexpected failures
+* Restrict delivery-address enrollment so an existing address cannot be replaced while authentication is pending
+* Block protected REST, administration, background, front-end, WooCommerce, and XML-RPC requests until required authentication or validation is complete
+* Reject the first password-only XML-RPC request for accounts requiring two-factor authentication or account validation
+* Record request waiting periods only after successful delivery and protect simultaneous requests with an expiring, owner-checked server lock
+* Correct toolbar visibility, supplied-user checks, request retry behavior, and failed-delivery handling
+* Improve PHP 8.4 compatibility, WordPress coding-style compliance, input handling, output escaping, documentation, and static-analysis results
 
 = 1.1 =
 * Update Alibaba library

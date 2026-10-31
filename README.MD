@@ -1,15 +1,131 @@
 # OTP Authenticator - One-Time Password Authentication for WordPress
 
-- Current release: 1.2
-- Requires PHP: 8.4
-- Tested with WordPress: 7.1
-
-* [General Description](#user-content-general-description)
-    * [Overview](#user-content-overview)
-    * [Adding an Authentication Gateway](#user-content-adding-an-authentication-gateway)
-* [Hooks - actions & filters](#user-content-hooks---actions--filters)
-    * [Actions](#user-content-actions)
-    * [Filters](#user-content-filters)
+* [OTP Authenticator - One-Time Password Authentication for WordPress](#otp-authenticator---one-time-password-authentication-for-wordpress)
+    * [General Description](#general-description)
+        * [Overview](#overview)
+    * [Adding an Authentication Gateway](#adding-an-authentication-gateway)
+        * [Implementing filter and actions hooks and including a custom Authentication Gateway class](#implementing-filter-and-actions-hooks-and-including-a-custom-authentication-gateway-class)
+        * [Implementing a custom Authentication Gateway class - example](#implementing-a-custom-authentication-gateway-class---example)
+    * [Hooks - actions \& filters](#hooks---actions--filters)
+        * [Actions](#actions)
+            * [otpa\_init](#otpa_init)
+            * [otpa\_loaded](#otpa_loaded)
+            * [otpa\_ready](#otpa_ready)
+            * [otpa\_invalid\_settings](#otpa_invalid_settings)
+            * [otpa\_wp\_error](#otpa_wp_error)
+            * [otpa\_api\_](#otpa_api_)
+            * [otpa\_page\_](#otpa_page_)
+            * [otpa\_otp\_form\_scripts](#otpa_otp_form_scripts)
+            * [otpa\_otp\_code\_requested](#otpa_otp_code_requested)
+            * [otpa\_otp\_code\_saved](#otpa_otp_code_saved)
+            * [otpa\_otp\_code\_verified](#otpa_otp_code_verified)
+            * [otpa\_otp\_blocked](#otpa_otp_blocked)
+            * [otpa\_before\_set\_otp\_form](#otpa_before_set_otp_form)
+            * [otpa\_before\_set\_otp\_input](#otpa_before_set_otp_input)
+            * [otpa\_after\_set\_otp\_input](#otpa_after_set_otp_input)
+            * [otpa\_before\_set\_otp\_submit\_button](#otpa_before_set_otp_submit_button)
+            * [otpa\_after\_set\_otp\_submit\_button](#otpa_after_set_otp_submit_button)
+            * [otpa\_before\_set\_otp\_footer\_message](#otpa_before_set_otp_footer_message)
+            * [otpa\_after\_set\_otp\_footer\_message](#otpa_after_set_otp_footer_message)
+            * [otpa\_after\_set\_otp\_form](#otpa_after_set_otp_form)
+            * [otpa\_after\_otp\_identifier\_field](#otpa_after_otp_identifier_field)
+            * [otpa\_before\_otp\_form](#otpa_before_otp_form)
+            * [otpa\_before\_otp\_widget](#otpa_before_otp_widget)
+            * [otpa\_after\_otp\_widget](#otpa_after_otp_widget)
+            * [otpa\_before\_otp\_submit\_button](#otpa_before_otp_submit_button)
+            * [otpa\_after\_otp\_submit\_button](#otpa_after_otp_submit_button)
+            * [otpa\_before\_otp\_footer\_message](#otpa_before_otp_footer_message)
+            * [otpa\_after\_otp\_footer\_message](#otpa_after_otp_footer_message)
+            * [otpa\_after\_otp\_form](#otpa_after_otp_form)
+            * [otpa\_style\_settings\_page](#otpa_style_settings_page)
+            * [otpa\_style\_settings\_tab](#otpa_style_settings_tab)
+            * [otpa\_settings\_page](#otpa_settings_page)
+            * [otpa\_logs\_settings\_page](#otpa_logs_settings_page)
+            * [otpa\_logs\_settings\_tab](#otpa_logs_settings_tab)
+            * [otpa\_gateway\_settings\_page](#otpa_gateway_settings_page)
+            * [otpa\_gateway\_settings\_tab](#otpa_gateway_settings_tab)
+            * [otpa\_before\_tabs\_settings](#otpa_before_tabs_settings)
+            * [otpa\_after\_tabs\_settings](#otpa_after_tabs_settings)
+            * [otpa\_before\_style\_tab\_settings](#otpa_before_style_tab_settings)
+            * [otpa\_after\_style\_tab\_settings](#otpa_after_style_tab_settings)
+            * [otpa\_before\_logs\_tab\_settings](#otpa_before_logs_tab_settings)
+            * [otpa\_after\_logs\_tab\_settings](#otpa_after_logs_tab_settings)
+            * [otpa\_before\_gateway\_tab\_settings](#otpa_before_gateway_tab_settings)
+            * [otpa\_after\_gateway\_tab\_settings](#otpa_after_gateway_tab_settings)
+            * [otpa\_before\_main\_tab\_settings](#otpa_before_main_tab_settings)
+            * [otpa\_after\_main\_tab\_settings](#otpa_after_main_tab_settings)
+            * [otpa\_before\_settings](#otpa_before_settings)
+            * [otpa\_before\_main\_settings](#otpa_before_main_settings)
+            * [otpa\_before\_main\_settings\_inner](#otpa_before_main_settings_inner)
+            * [otpa\_after\_main\_settings\_inner](#otpa_after_main_settings_inner)
+            * [otpa\_after\_main\_settings](#otpa_after_main_settings)
+            * [otpa\_after\_settings](#otpa_after_settings)
+            * [otpa\_before\_style\_settings](#otpa_before_style_settings)
+            * [otpa\_before\_style\_settings\_inner](#otpa_before_style_settings_inner)
+            * [otpa\_after\_style\_settings\_inner](#otpa_after_style_settings_inner)
+            * [otpa\_after\_style\_settings](#otpa_after_style_settings)
+            * [otpa\_before\_logs\_settings](#otpa_before_logs_settings)
+            * [otpa\_before\_logs\_settings\_inner](#otpa_before_logs_settings_inner)
+            * [otpa\_after\_logs\_settings\_inner](#otpa_after_logs_settings_inner)
+            * [otpa\_after\_logs\_settings](#otpa_after_logs_settings)
+            * [otpa\_before\_gateway\_settings](#otpa_before_gateway_settings)
+            * [otpa\_before\_gateway\_settings\_inner](#otpa_before_gateway_settings_inner)
+            * [otpa\_after\_gateway\_settings\_inner](#otpa_after_gateway_settings_inner)
+            * [otpa\_after\_gateway\_settings](#otpa_after_gateway_settings)
+            * [otpa\_identifier\_updated](#otpa_identifier_updated)
+            * [otpa\_integration](#otpa_integration)
+            * [otpa\_integration\_run](#otpa_integration_run)
+        * [Filters](#filters)
+            * [otpa\_api\_otp\_handlers](#otpa_api_otp_handlers)
+            * [otpa\_wp\_error\_message](#otpa_wp_error_message)
+            * [otpa\_api\_endpoints](#otpa_api_endpoints)
+            * [otpa\_page\_endpoints](#otpa_page_endpoints)
+            * [otpa\_otp\_api\_valid\_callback](#otpa_otp_api_valid_callback)
+            * [otpa\_otp\_api\_callback](#otpa_otp_api_callback)
+            * [otpa\_otp\_api\_callback\_args](#otpa_otp_api_callback_args)
+            * [otpa\_api\_error\_data](#otpa_api_error_data)
+            * [otpa\_otp\_form\_vars](#otpa_otp_form_vars)
+            * [otpa\_otp\_identifier\_field\_label](#otpa_otp_identifier_field_label)
+            * [otpa\_set\_otp\_identifier\_form\_vars](#otpa_set_otp_identifier_form_vars)
+            * [otpa\_debug](#otpa_debug)
+            * [otpa\_otp\_form\_scripts\_params](#otpa_otp_form_scripts_params)
+            * [otpa\_otp\_form\_inline\_style](#otpa_otp_form_inline_style)
+            * [otpa\_profile\_info\_title](#otpa_profile_info_title)
+            * [otpa\_profile\_js\_parameters](#otpa_profile_js_parameters)
+            * [otpa\_style\_settings](#otpa_style_settings)
+            * [otpa\_style\_option](#otpa_style_option)
+            * [otpa\_template\_style](#otpa_template_style)
+            * [otpa\_template\_style](#otpa_template_style-1)
+            * [otpa\_sanitize\_style\_settings](#otpa_sanitize_style_settings)
+            * [otpa\_style\_settings\_fields](#otpa_style_settings_fields)
+            * [otpa\_settings](#otpa_settings)
+            * [otpa\_option](#otpa_option)
+            * [otpa\_default\_gateway\_id](#otpa_default_gateway_id)
+            * [otpa\_settings\_valid](#otpa_settings_valid)
+            * [otpa\_settings\_js\_parameters](#otpa_settings_js_parameters)
+            * [otpa\_template\_main](#otpa_template_main)
+            * [otpa\_sanitize\_settings](#otpa_sanitize_settings)
+            * [otpa\_settings\_fields](#otpa_settings_fields)
+            * [otpa\_passwordless\_auth\_link\_text](#otpa_passwordless_auth_link_text)
+            * [otpa\_template\_log](#otpa_template_log)
+            * [otpa\_template\_logs](#otpa_template_logs)
+            * [otpa\_template\_logs](#otpa_template_logs-1)
+            * [otpa\_api\_2fa\_handlers](#otpa_api_2fa_handlers)
+            * [otpa\_2fa\_api\_valid\_callback](#otpa_2fa_api_valid_callback)
+            * [otpa\_2fa\_api\_callback](#otpa_2fa_api_callback)
+            * [otpa\_2fa\_api\_callback\_args](#otpa_2fa_api_callback_args)
+            * [otpa\_user\_2fa\_switch\_scripts\_params](#otpa_user_2fa_switch_scripts_params)
+            * [otpa\_2fa\_button\_switch\_markup](#otpa_2fa_button_switch_markup)
+            * [otpa\_settings\_fields\_](#otpa_settings_fields_)
+            * [gateway\_id](#gateway_id)
+            * [gateway\_id](#gateway_id-1)
+            * [gateway\_id](#gateway_id-2)
+            * [otpa\_template\_gateway](#otpa_template_gateway)
+            * [otpa\_template\_gateway](#otpa_template_gateway-1)
+            * [otpa\_otp\_widget\_identifier\_placeholder](#otpa_otp_widget_identifier_placeholder)
+            * [otpa\_otp\_widget\_code\_placeholder](#otpa_otp_widget_code_placeholder)
+            * [otpa\_2fa\_deny\_rest](#otpa_2fa_deny_rest)
+            * [otpa\_account\_validation\_deny\_rest](#otpa_account_validation_deny_rest)
 
 ## General Description
 
@@ -99,87 +215,9 @@ ___
 
 ## Hooks - actions & filters
 
-** COMING SOON - WORK IN PROGRESS **
-
 OTP Authenticator gives developers the possibilty to customise its behavior with a series of custom actions and filters. 
 
 ### Actions
-
-** COMING SOON - WORK IN PROGRESS **
-
-```
-do_action( 'otpa_api_' . $action );
-do_action( 'otpa_page_' . $action );
-```
-
-Actions index:
-* [otpa_init](#user-content-otpa_init)
-* [otpa_loaded](#user-content-otpa_loaded)
-* [otpa_ready](#user-content-otpa_ready)
-* [otpa_invalid_settings](#user-content-otpa_invalid_settings)
-* [otpa_wp_error](#user-content-otpa_wp_error)
-* [otpa_api_](#user-content-otpa_api_)
-* [otpa_page_](#user-content-otpa_page_)
-* [otpa_otp_form_scripts](#user-content-otpa_otp_form_scripts)
-* [otpa_otp_code_requested](#user-content-otpa_otp_code_requested)
-* [otpa_otp_code_saved](#user-content-otpa_otp_code_saved)
-* [otpa_otp_code_verified](#user-content-otpa_otp_code_verified)
-* [otpa_otp_blocked](#user-content-otpa_otp_blocked)
-* [otpa_before_set_otp_form](#user-content-otpa_before_set_otp_form)
-* [otpa_before_set_otp_input](#user-content-otpa_before_set_otp_input)
-* [otpa_after_set_otp_input](#user-content-otpa_after_set_otp_input)
-* [otpa_before_set_otp_submit_button](#user-content-otpa_before_set_otp_submit_button)
-* [otpa_after_set_otp_submit_button](#user-content-otpa_after_set_otp_submit_button)
-* [otpa_before_set_otp_footer_message](#user-content-otpa_before_set_otp_footer_message)
-* [otpa_after_set_otp_footer_message](#user-content-otpa_after_set_otp_footer_message)
-* [otpa_after_set_otp_form](#user-content-otpa_after_set_otp_form)
-* [otpa_after_otp_identifier_field](#user-content-otpa_after_otp_identifier_field)
-* [otpa_before_otp_form](#user-content-otpa_before_otp_form)
-* [otpa_before_otp_widget](#user-content-otpa_before_otp_widget)
-* [otpa_after_otp_widget](#user-content-otpa_after_otp_widget)
-* [otpa_before_otp_submit_button](#user-content-otpa_before_otp_submit_button)
-* [otpa_after_otp_submit_button](#user-content-otpa_after_otp_submit_button)
-* [otpa_before_otp_footer_message](#user-content-otpa_before_otp_footer_message)
-* [otpa_after_otp_footer_message](#user-content-otpa_after_otp_footer_message)
-* [otpa_after_otp_form](#user-content-otpa_after_otp_form)
-* [otpa_style_settings_page](#user-content-otpa_style_settings_page)
-* [otpa_style_settings_tab](#user-content-otpa_style_settings_tab)
-* [otpa_settings_page](#user-content-otpa_settings_page)
-* [otpa_logs_settings_page](#user-content-otpa_logs_settings_page)
-* [otpa_logs_settings_tab](#user-content-otpa_logs_settings_tab)
-* [otpa_gateway_settings_page](#user-content-otpa_gateway_settings_page)
-* [otpa_gateway_settings_tab](#user-content-otpa_gateway_settings_tab)
-* [otpa_before_tabs_settings](#user-content-otpa_before_tabs_settings)
-* [otpa_after_tabs_settings](#user-content-otpa_after_tabs_settings)
-* [otpa_before_style_tab_settings](#user-content-otpa_before_style_tab_settings)
-* [otpa_after_style_tab_settings](#user-content-otpa_after_style_tab_settings)
-* [otpa_before_logs_tab_settings](#user-content-otpa_before_logs_tab_settings)
-* [otpa_after_logs_tab_settings](#user-content-otpa_after_logs_tab_settings)
-* [otpa_before_gateway_tab_settings](#user-content-otpa_before_gateway_tab_settings)
-* [otpa_after_gateway_tab_settings](#user-content-otpa_after_gateway_tab_settings)
-* [otpa_before_main_tab_settings](#user-content-otpa_before_main_tab_settings)
-* [otpa_after_main_tab_settings](#user-content-otpa_after_main_tab_settings)
-* [otpa_before_settings](#user-content-otpa_before_settings)
-* [otpa_before_main_settings](#user-content-otpa_before_main_settings)
-* [otpa_before_main_settings_inner](#user-content-otpa_before_main_settings_inner)
-* [otpa_after_main_settings_inner](#user-content-otpa_after_main_settings_inner)
-* [otpa_after_main_settings](#user-content-otpa_after_main_settings)
-* [otpa_after_settings](#user-content-otpa_after_settings)
-* [otpa_before_style_settings](#user-content-otpa_before_style_settings)
-* [otpa_before_style_settings_inner](#user-content-otpa_before_style_settings_inner)
-* [otpa_after_style_settings_inner](#user-content-otpa_after_style_settings_inner)
-* [otpa_after_style_settings](#user-content-otpa_after_style_settings)
-* [otpa_before_logs_settings](#user-content-otpa_before_logs_settings)
-* [otpa_before_logs_settings_inner](#user-content-otpa_before_logs_settings_inner)
-* [otpa_after_logs_settings_inner](#user-content-otpa_after_logs_settings_inner)
-* [otpa_after_logs_settings](#user-content-otpa_after_logs_settings)
-* [otpa_before_gateway_settings](#user-content-otpa_before_gateway_settings)
-* [otpa_before_gateway_settings_inner](#user-content-otpa_before_gateway_settings_inner)
-* [otpa_after_gateway_settings_inner](#user-content-otpa_after_gateway_settings_inner)
-* [otpa_after_gateway_settings](#user-content-otpa_after_gateway_settings)
-* [otpa_identifier_updated](#user-content-otpa_identifier_updated)
-* [otpa_integration](#user-content-otpa_integration)
-* [otpa_integration_run](#user-content-otpa_integration_run)
 
 ___
 
@@ -1390,80 +1428,6 @@ $var2
 ___
 
 ### Filters
-
-** COMING SOON - WORK IN PROGRESS **
-
-```
-apply_filters( 'otpa_template_style-settings-page', $path );
-apply_filters( 'otpa_template_style-settings-tab', $path );
-apply_filters( 'otpa_sanitize_style_settings', $settings );
-apply_filters( 'otpa_template_main-settings-page', $path );
-apply_filters( 'otpa_template_log-row', $path );
-apply_filters( 'otpa_template_logs-settings-page', $path );
-apply_filters( 'otpa_template_logs-settings-tab', $path );
-apply_filters( 'otpa_settings_fields_' . $this->get_gateway_id(), settings_fields );
-apply_filters( $gateway_id . '_sanitize_settings', $settings );
-apply_filters( $gateway_id . '_settings', $settings );
-apply_filters( $gateway_id . '_option', $value, $key );
-apply_filters( 'otpa_template_gateway-settings-page', $path );
-apply_filters( 'otpa_template_gateway-settings-tab', $path );
-```
-
-Filters index:
-
-* [otpa_api_otp_handlers](#user-content-otpa_api_otp_handlers)
-* [otpa_wp_error_message](#user-content-otpa_wp_error_message)
-* [otpa_api_endpoints](#user-content-otpa_api_endpoints)
-* [otpa_page_endpoints](#user-content-otpa_page_endpoints)
-* [otpa_otp_api_valid_callback](#user-content-otpa_otp_api_valid_callback)
-* [otpa_otp_api_callback](#user-content-otpa_otp_api_callback)
-* [otpa_otp_api_callback_args](#user-content-otpa_otp_api_callback_args)
-* [otpa_api_error_data](#user-content-otpa_api_error_data)
-* [otpa_otp_form_vars](#user-content-otpa_otp_form_vars)
-* [otpa_otp_identifier_field_label](#user-content-otpa_otp_identifier_field_label)
-* [otpa_set_otp_identifier_form_vars](#user-content-otpa_set_otp_identifier_form_vars)
-* [otpa_debug](#user-content-otpa_debug)
-* [otpa_otp_form_scripts_params](#user-content-otpa_otp_form_scripts_params)
-* [otpa_otp_form_inline_style](#user-content-otpa_otp_form_inline_style)
-* [otpa_profile_info_title](#user-content-otpa_profile_info_title)
-* [otpa_profile_js_parameters](#user-content-otpa_profile_js_parameters)
-* [otpa_style_settings](#user-content-otpa_style_settings)
-* [otpa_style_option](#user-content-otpa_style_option)
-* [otpa_template_style](#user-content-otpa_template_style)
-* [otpa_template_style](#user-content-otpa_template_style)
-* [otpa_sanitize_style_settings](#user-content-otpa_sanitize_style_settings)
-* [otpa_style_settings_fields](#user-content-otpa_style_settings_fields)
-* [otpa_settings](#user-content-otpa_settings)
-* [otpa_option](#user-content-otpa_option)
-* [otpa_default_gateway_id](#user-content-otpa_default_gateway_id)
-* [otpa_settings_valid](#user-content-otpa_settings_valid)
-* [otpa_settings_js_parameters](#user-content-otpa_settings_js_parameters)
-* [otpa_template_main](#user-content-otpa_template_main)
-* [otpa_sanitize_settings](#user-content-otpa_sanitize_settings)
-* [otpa_settings_fields](#user-content-otpa_settings_fields)
-* [otpa_passwordless_auth_link_text](#user-content-otpa_passwordless_auth_link_text)
-* [otpa_template_log](#user-content-otpa_template_log)
-* [otpa_template_logs](#user-content-otpa_template_logs)
-* [otpa_template_logs](#user-content-otpa_template_logs)
-* [otpa_api_2fa_handlers](#user-content-otpa_api_2fa_handlers)
-* [otpa_2fa_api_valid_callback](#user-content-otpa_2fa_api_valid_callback)
-* [otpa_2fa_api_callback](#user-content-otpa_2fa_api_callback)
-* [otpa_2fa_api_callback_args](#user-content-otpa_2fa_api_callback_args)
-* [otpa_user_2fa_switch_scripts_params](#user-content-otpa_user_2fa_switch_scripts_params)
-* [otpa_2fa_button_switch_markup](#user-content-otpa_2fa_button_switch_markup)
-* [otpa_settings_fields_](#user-content-otpa_settings_fields_)
-* [gateway_id](#user-content-gateway_id)
-* [gateway_id](#user-content-gateway_id)
-* [gateway_id](#user-content-gateway_id)
-* [otpa_template_gateway](#user-content-otpa_template_gateway)
-* [otpa_template_gateway](#user-content-otpa_template_gateway)
-* [otpa_otp_widget_identifier_placeholder](#user-content-otpa_otp_widget_identifier_placeholder)
-* [otpa_otp_widget_code_placeholder](#user-content-otpa_otp_widget_code_placeholder)
-* [otpa_2fa_deny_rest]( #user-content-otpa_2fa_deny_rest)
-* [otpa_account_validation_deny_rest]( #user-content-otpa_account_validation_deny_rest)
-
-
-___
 
 #### otpa_api_otp_handlers
 

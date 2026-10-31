@@ -197,6 +197,75 @@ final class OtpaSecurityRegressionTest extends IntegrationTestCase {
 		$this->assertSame( 0, $callback_count );
 	}
 
+	/** Confirm the public identifier endpoint permits enrollment but not replacement. */
+	public function test_identifier_endpoint_is_limited_to_first_time_enrollment(): void {
+		$settings = new Otpa_Test_Settings( array( 'enable_2fa' => true ) );
+		$gateway  = new class() extends Otpa_Abstract_Gateway {
+			/** @var string Metadata field used by this test delivery service. */
+			protected $identifier_meta = 'otpa_test_identifier';
+
+			/**
+			 * Validate the test email address.
+			 *
+			 * @param string $identifier Email address.
+			 * @return bool Whether the address is valid.
+			 */
+			public function is_valid_identifier( $identifier ) {
+				return (bool) is_email( $identifier );
+			}
+		};
+		$otpa = new Otpa( $settings, $gateway );
+
+		wp_set_current_user( $this->target_user->ID );
+		delete_user_meta( $this->target_user->ID, 'otpa_test_identifier' );
+
+		$this->assertTrue( $otpa->is_pending_otp_request_allowed( 'set_otp_identifier', $this->target_user ) );
+
+		$enrollment  = $otpa->set_otp_identifier( array( 'identifier' => 'first-address@example.test' ) );
+		$replacement = $otpa->set_otp_identifier( array( 'identifier' => 'replacement@example.test' ) );
+
+		$this->assertNotWPError( $enrollment );
+		$this->assertWPError( $replacement );
+		$this->assertSame( 'OTPA_UNAUTHORIZED_OPERATION', $replacement->get_error_code() );
+		$this->assertSame( 'first-address@example.test', get_user_meta( $this->target_user->ID, 'otpa_test_identifier', true ) );
+		$this->assertFalse( $otpa->is_pending_otp_request_allowed( 'set_otp_identifier', $this->target_user ) );
+		$this->assertFalse( $otpa->is_pending_otp_request_allowed( 'filtered_custom_handler', $this->target_user ) );
+	}
+
+	/** Confirm remote authentication requirements do not depend on pending browser markers. */
+	public function test_remote_authentication_requirements_apply_before_pending_markers_exist(): void {
+		$settings   = new Otpa_Test_Settings(
+			array(
+				'enable_2fa'        => true,
+				'enable_validation' => true,
+			)
+		);
+		$otpa       = new Otpa( $settings );
+		$two_factor = new Otpa_2FA( $otpa );
+		$validation = new Otpa_Account_Validation( $otpa );
+
+		update_user_meta( $this->target_user->ID, 'otpa_2fa_active', true );
+		delete_user_meta( $this->target_user->ID, 'otpa_need_2fa_check' );
+		delete_user_meta( $this->target_user->ID, 'otpa_need_account_validation' );
+		delete_user_meta( $this->target_user->ID, 'otpa_validated' );
+
+		$this->assertTrue( $two_factor->is_user_2fa_required( $this->target_user ) );
+		$this->assertTrue( $validation->is_user_account_validation_required( $this->target_user ) );
+
+		update_user_meta( $this->target_user->ID, 'otpa_2fa_active', false );
+		update_user_meta(
+			$this->target_user->ID,
+			'otpa_validated',
+			array(
+				'status'            => true,
+				'validation_expiry' => 0,
+			)
+		);
+
+		$this->assertFalse( $two_factor->is_user_2fa_required( $this->target_user ) );
+		$this->assertFalse( $validation->is_user_account_validation_required( $this->target_user ) );
+	}
+
 	/**
 	 * Run one protected profile permission decision.
 	 *

@@ -23,6 +23,22 @@ if ( $otpa_e2e_direct_request ) {
 			403
 		);
 	}
+
+	$otpa_e2e_fixture_action = sanitize_key( (string) filter_input( INPUT_POST, 'fixture_action', FILTER_UNSAFE_RAW ) );
+
+	if ( 'enable_passwordless_user_2fa' === $otpa_e2e_fixture_action ) {
+		$otpa_e2e_passwordless_user = get_user_by( 'login', 'otpa_passwordless_e2e' );
+
+		if ( ! $otpa_e2e_passwordless_user instanceof WP_User ) {
+			wp_send_json_error( array( 'message' => 'The passwordless browser-test user is unavailable.' ), 404 );
+		}
+
+		update_user_meta( $otpa_e2e_passwordless_user->ID, 'otpa_2fa_active', true );
+		delete_user_meta( $otpa_e2e_passwordless_user->ID, 'otpa_2fa_checked' );
+		delete_user_meta( $otpa_e2e_passwordless_user->ID, 'otpa_need_2fa_check' );
+
+		wp_send_json_success( array( 'message' => 'Two-factor authentication enabled for the passwordless browser-test user.' ) );
+	}
 }
 
 $otpa_e2e_users = array(
@@ -79,6 +95,7 @@ foreach ( $otpa_e2e_users as $otpa_e2e_user_data ) {
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_force_account_validation' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_account_validation_redirect' );
 	delete_user_meta( $otpa_e2e_user_id, 'otpa_otp_request_wait' );
+	delete_option( 'otpa_otp_request_lock_' . $otpa_e2e_user_id );
 
 	if ( 'otpa_two_factor_e2e' === $otpa_e2e_user_data['user_login'] ) {
 		update_user_meta( $otpa_e2e_user_id, 'otpa_2fa_active', true );

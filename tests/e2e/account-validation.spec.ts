@@ -45,6 +45,39 @@ test('account validation accepts the emailed code once and restores the requeste
     await page.locator('#wp-submit').click();
     await expect(page.locator('#otpa_otp_form[data-otp_form_type="account_validation"]')).toBeVisible();
 
+    const blockedStatuses = await page.evaluate(async () => {
+      const requests = [
+        fetch('/wp-json/wp/v2/users/me'),
+        fetch('/wp-json/wp/v2/users/me', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: 'must not be saved' }),
+        }),
+        fetch('/wp-admin/admin-ajax.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'action=heartbeat',
+        }),
+        fetch('/my-account/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'otpa_security_probe=1',
+        }),
+        fetch('/my-account/edit-account/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'account_display_name=must-not-be-saved&save_account_details=Save',
+        }),
+        fetch('/wp-admin/profile.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'first_name=must-not-be-saved',
+        }),
+      ];
+      return Promise.all(requests.map(async pendingRequest => (await pendingRequest).status));
+    });
+    expect(blockedStatuses).toEqual([403, 403, 403, 403, 403, 403]);
+
     await fillAndEnable(page.locator('#otpa_id_widget'), email);
     await page.locator('#otpa_send_code').click();
     const code = await waitForOtpCode(request, email);
@@ -60,7 +93,6 @@ test('account validation accepts the emailed code once and restores the requeste
     await closeContext(context);
   }
 });
-
 test('two-factor authentication and account validation require separate codes', async ({ browser, request }) => {
   await ensureOtpFixtures(request);
   await clearMailpit(request);
