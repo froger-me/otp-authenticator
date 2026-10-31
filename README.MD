@@ -151,66 +151,128 @@ ___
 
 ## Adding an Authentication Gateway
 
-** COMING SOON - WORK IN PROGRESS **
+An authentication gateway tells OTP Authenticator how to identify a user and how to deliver a one-time password. A custom gateway extends `Otpa_Abstract_Gateway`, which already provides the request form, code generation, identifier storage, and code verification.
 
-Developers can extend the plugin and add their own Authentication Gateway by using a few filter and action hooks as well as a class inheriting `Otpa_Abstract_Gateway`.  
-Below is a simple example of implementation of a `Custom` Authentication Gateway sending OTPs to the Activity logs (forced even if not enabled).  
+The example below adds an **Activity Log Example** gateway. It writes the identifier and one-time password to **Settings > OTP Authenticator > Activity Logs** instead of contacting an outside delivery service. Its action and filter examples also write a log entry and otherwise leave the plugin's behavior unchanged.
+
+This example always writes its entries, even when **Enable Logs** is clear. It exposes one-time passwords to administrators and is therefore for learning and local testing only.
 
 ### Implementing filter and actions hooks and including a custom Authentication Gateway class
 
-** COMING SOON - WORK IN PROGRESS **
-
-In this example, we are first creating a simple plugin to implement the action and filter hooks, and include the Authentication Gateway class.
+Create a directory named `otpa-example-gateway` inside `wp-content/plugins`. Add the following as `otpa-example-gateway.php`:
 
 ```php
 <?php
-/*
-Plugin Name: Example of Authentication Gateway for OTP Authenticator
-Version: 1.0
-Text Domain: my-domain
-*/
+/**
+ * Plugin Name: OTP Authenticator Example Gateway
+ * Description: A minimal authentication gateway that writes one-time passwords to the Activity Logs.
+ * Version: 1.0.0
+ * Text Domain: otpa-example-gateway
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
-if ( ! defined( 'OTPA_CUSTOM_GATEWAY_PLUGIN_PATH' ) ) {
-    define( 'OTPA_CUSTOM_GATEWAY_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'OTPA_EXAMPLE_GATEWAY_PATH', plugin_dir_path( __FILE__ ) );
+
+function otpa_example_gateway_load() {
+    require_once OTPA_EXAMPLE_GATEWAY_PATH . 'class-otpa-example-gateway.php';
+
+    add_filter(
+        'otpa_authentication_gateways',
+        array( 'Otpa_Example_Gateway', 'register_authentication_gateway' )
+    );
+
+    add_action( 'otpa_otp_code_requested', 'otpa_example_gateway_log_request' );
+    add_filter( 'otpa_otp_widget_identifier_placeholder', 'otpa_example_gateway_log_filter' );
+}
+add_action( 'otpa_init', 'otpa_example_gateway_load' );
+
+function otpa_example_gateway_log_request( $user_id ) {
+    otpa_db_log(
+        'Example action: a code was requested for user ' . (int) $user_id,
+        'info',
+        true
+    );
 }
 
-if ( ! defined( 'OTPA_CUSTOM_GATEWAY_PLUGIN_URL' ) ) {
-    define( 'OTPA_CUSTOM_GATEWAY_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+function otpa_example_gateway_log_filter( $placeholder ) {
+    otpa_db_log( 'Example filter: the identifier placeholder was read.', 'info', true );
+
+    return $placeholder;
 }
-
-// COMING SOON
-
 ```
+
+`otpa_init` runs after OTP Authenticator has loaded the parent gateway class. The callback then loads the example class and adds it to the **Authentication Gateway** list. The action receives a user number after a code request succeeds. The filter receives the form's placeholder text and must return it, even when it does not change it.
 
 ### Implementing a custom Authentication Gateway class - example
-The custom Authentication Gateway's logic is then implemented in the file `class-otpa-custom-gateway.php` included by the plugin.
+
+Add the following as `class-otpa-example-gateway.php` in the same directory:
 
 ```php
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
-class Otpa_Custom_Gateway extends Otpa_Abstract_Gateway {
+class Otpa_Example_Gateway extends Otpa_Abstract_Gateway {
+    protected $identifier_meta = 'otpa_example_identifier';
 
-    /*******************************************************************
-     * Public methods
-     *******************************************************************/
+    public function __construct( $init_hooks = false, $settings_renderer = false ) {
+        $this->name = __( 'Activity Log Example', 'otpa-example-gateway' );
 
-    // COMING SOON 
+        parent::__construct( $init_hooks, $settings_renderer );
+    }
 
-    /*******************************************************************
-     * Protected methods
-     *******************************************************************/
+    public function init_settings_definition() {
+        $this->settings_fields = array();
+    }
 
-    // COMING SOON
+    protected function send_request( $identifier, $message ) {
+        otpa_db_log(
+            array(
+                'message' => 'Example gateway delivery.',
+                'data'    => array(
+                    'identifier'        => $identifier,
+                    'one_time_password' => $message,
+                ),
+            ),
+            'info',
+            true
+        );
+
+        return array(
+            'status'  => true,
+            'message' => sprintf(
+                /* translators: %s is the user's gateway identifier. */
+                __( 'The example gateway recorded a code for %s.', 'otpa-example-gateway' ),
+                $identifier
+            ),
+            'code'    => 'OK',
+        );
+    }
+
+    protected function send_sandox_request( $identifier, $message ) {
+        return $this->send_request( $identifier, $message );
+    }
 }
 ```
+
+The parent class uses `identifier_meta` to store one unique identifier for each WordPress user. The example needs no settings, so `init_settings_definition()` supplies an empty list. `send_request()` receives the sanitized identifier and the generated one-time password, records both, and reports success. `send_sandox_request()` has that spelling because it must match the method currently provided by `Otpa_Abstract_Gateway`; it sends Sandbox Mode requests through the same logging method.
+
+To try the example:
+
+1. Activate **OTP Authenticator** and **OTP Authenticator Example Gateway**.
+2. Open **Settings > OTP Authenticator** and choose **Activity Log Example** as the Authentication Gateway.
+3. Enable one authentication mode and save the settings.
+4. Edit a test user and enter a unique value in the OTP Authenticator identifier field.
+5. Sign in as that user and request a code.
+6. Open **Settings > OTP Authenticator > Activity Logs**. Use the `one_time_password` value from **Example gateway delivery** to complete the form.
+
+Replace `send_request()` with the real delivery call when building a production gateway. Keep its return value in the same form: `status` is `true` only after delivery succeeds, `message` is safe to show to the user, and `code` identifies the result.
+
 ___
 
 ## Hooks - actions & filters
