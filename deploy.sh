@@ -108,7 +108,8 @@ fi
 GITPATH="$DIR/"
 # SVN config
 SVNPATH="/tmp/$PLUGINSLUG" # path to a temp SVN repo. No trailing slash required and don't add trunk.
-SVNURL="http://plugins.svn.wordpress.org/$PLUGINSLUG/" # Remote SVN repo on wordpress.org, with no trailing slash
+SVNURL="https://plugins.svn.wordpress.org/$PLUGINSLUG/" # Remote SVN repo on wordpress.org, with no trailing slash
+SVN_HTTP_TIMEOUT=3600
 
 # Function to handle command errors
 handle_error() {
@@ -328,7 +329,10 @@ if [ -d "$SVNPATH" ]; then
 fi
 
 # Create local copy of SVN repo
-execute_or_echo svn co "$SVNURL" "$SVNPATH"
+execute_or_echo svn co \
+    --config-option "servers:global:http-timeout=$SVN_HTTP_TIMEOUT" \
+    "$SVNURL" \
+    "$SVNPATH"
 
 echo "SVN repository checked out to $SVNPATH"
 
@@ -391,7 +395,10 @@ echo "Synchronized plugin files into SVN trunk."
 execute_or_echo cd "$SVNPATH"
 
 # Check if the tag already exists
-if svn list "$SVNURL"/tags/ | grep -q "$NEWVERSION1"; then
+if svn list \
+    --config-option "servers:global:http-timeout=$SVN_HTTP_TIMEOUT" \
+    "$SVNURL"/tags/ |
+    grep -q "$NEWVERSION1"; then
 
     # Switch back to the original branch
     execute_or_echo cd "$GITPATH"
@@ -474,7 +481,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-execute_or_echo svn commit --username="$SVNUSER" -m "$COMMITMSG"
+execute_or_echo svn commit \
+    --config-option "servers:global:http-timeout=$SVN_HTTP_TIMEOUT" \
+    --username="$SVNUSER" \
+    -m "$COMMITMSG"
 
 # Go back to current directory
 execute_or_echo cd "$GITPATH"
