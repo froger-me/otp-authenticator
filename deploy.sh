@@ -349,51 +349,6 @@ if [ ! -d "$SVNPATH"/trunk ]; then
     execute_or_echo mkdir "$SVNPATH"/trunk
 fi
 
-# Export the selected Git branch to a temporary directory, then synchronize it
-# into the Subversion trunk. This lets Subversion see ordinary additions,
-# changes, and removals instead of recreated children below deleted parents.
-EXPORTPATH="/tmp/$PLUGINSLUG-git-export/"
-
-if [ -d "$EXPORTPATH" ]; then
-    execute_or_echo rm -fr "$EXPORTPATH"
-fi
-
-execute_or_echo mkdir -p "$EXPORTPATH"
-execute_or_echo git checkout-index -a -f --prefix="$EXPORTPATH"
-execute_or_echo rsync -r --delete --delete-excluded \
-    --exclude=".*" \
-    --exclude="*.sh" \
-    --exclude="tests" \
-    "$EXPORTPATH" \
-    "$SVNPATH/trunk/"
-execute_or_echo rm -fr "$EXPORTPATH"
-
-# Ignore files
-execute_or_echo svn propset svn:ignore "deploy.sh
-.DS_Store
-.vscode
-.git
-.gitignore
-tests" "$SVNPATH/trunk/"
-
-# Record removed and added files in the Subversion trunk.
-execute_or_echo cd "$SVNPATH"/trunk/
-execute_or_echo bash -c "
-    svn status |
-    awk '\$1 == \"!\" {print \$2}' |
-    while IFS= read -r missing_path; do
-        if [ -n \"\$missing_path\" ]; then
-            svn rm --force \"\$missing_path\"
-        fi
-    done
-"
-execute_or_echo svn add --force .
-
-echo "Synchronized plugin files into SVN trunk."
-
-# Create new SVN tag
-execute_or_echo cd "$SVNPATH"
-
 # Check if the tag already exists
 if svn list \
     --config-option "servers:global:http-timeout=$SVN_HTTP_TIMEOUT" \
@@ -412,9 +367,58 @@ if svn list \
     exit 1
 fi
 
-execute_or_echo svn copy trunk tags/"$NEWVERSION1"
+# Export the selected Git branch to a temporary directory. Keep only readme.txt
+# in trunk and put the complete production package in the version tag.
+EXPORTPATH="/tmp/$PLUGINSLUG-git-export/"
+TRUNKEXPORTPATH="/tmp/$PLUGINSLUG-trunk-export/"
 
-echo "Created SVN tag $NEWVERSION1 from the synchronized trunk."
+if [ -d "$EXPORTPATH" ]; then
+    execute_or_echo rm -fr "$EXPORTPATH"
+fi
+
+if [ -d "$TRUNKEXPORTPATH" ]; then
+    execute_or_echo rm -fr "$TRUNKEXPORTPATH"
+fi
+
+execute_or_echo mkdir -p "$EXPORTPATH"
+execute_or_echo mkdir -p "$TRUNKEXPORTPATH"
+execute_or_echo git checkout-index -a -f --prefix="$EXPORTPATH"
+execute_or_echo cp "$EXPORTPATH/readme.txt" "$TRUNKEXPORTPATH/readme.txt"
+execute_or_echo rsync -a --delete --delete-excluded \
+    "$TRUNKEXPORTPATH" \
+    "$SVNPATH/trunk/"
+execute_or_echo mkdir -p "$SVNPATH/tags/$NEWVERSION1"
+execute_or_echo rsync -a --delete --delete-excluded \
+    --exclude=".*" \
+    --exclude="*.sh" \
+    --exclude="tests" \
+    "$EXPORTPATH" \
+    "$SVNPATH/tags/$NEWVERSION1/"
+execute_or_echo rm -fr "$EXPORTPATH"
+execute_or_echo rm -fr "$TRUNKEXPORTPATH"
+
+# Ignore files
+execute_or_echo svn propset svn:ignore "deploy.sh
+.DS_Store
+.vscode
+.git
+.gitignore
+tests" "$SVNPATH/trunk/"
+
+# Record removed and added files in the Subversion trunk and version tag.
+execute_or_echo cd "$SVNPATH"
+execute_or_echo bash -c "
+    svn status --depth=immediates trunk |
+    awk '\$1 == \"!\" {print \$2}' |
+    while IFS= read -r missing_path; do
+        if [ -n \"\$missing_path\" ]; then
+            svn rm --force \"\$missing_path\"
+        fi
+    done
+"
+execute_or_echo svn add --force trunk tags/"$NEWVERSION1"
+
+echo "Synchronized readme.txt into SVN trunk and the production package into tag $NEWVERSION1."
 
 if ! $SKIP_ASSETS; then
     # Change to the assets folder
