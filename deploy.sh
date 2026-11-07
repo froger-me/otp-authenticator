@@ -10,6 +10,8 @@ SVNUSER=""
 VERBOSE=false
 # Deploy mode
 DEPLOY=false
+# Whether this run created the GitHub release.
+GITHUB_RELEASE_CREATED=false
 # Skip assets
 SKIP_ASSETS=false
 # Script name
@@ -227,11 +229,18 @@ if [ "$NEWVERSION1" != "$NEWVERSION2" ]; then
     exit 1
 fi
 
-# Check if git tag exists
-if git show-ref --tags --quiet --verify -- "refs/tags/$NEWVERSION1"; then
-    echo "Version $NEWVERSION1 already exists as git tag. Exiting."
-    exit 1
-fi
+# Refuse only a local release tag that points to different code. A matching tag
+# may exist when a failed deployment is retried.
+for RELEASE_TAG in "$NEWVERSION1" "v$NEWVERSION1"; do
+    if git show-ref --tags --quiet --verify -- "refs/tags/$RELEASE_TAG"; then
+        if [ "$(git rev-list -n 1 "$RELEASE_TAG")" != "$(git rev-parse HEAD)" ]; then
+            echo "Version $RELEASE_TAG already exists for different code. Exiting."
+            exit 1
+        fi
+
+        echo "Version $RELEASE_TAG already exists for the current code. Continuing."
+    fi
+done
 
 # Prompt for commit message
 echo -e "Enter a commit message for this new version: \c"
@@ -266,44 +275,49 @@ execute_or_echo git push origin "$GITBRANCH"
 
 # check if gh cli is installed
 if which gh > /dev/null; then
-    # Create a GitHub release using the GitHub API
-    echo "Creating GitHub release for $NEWVERSION1..."
-
     # Define the GitHub repository owner and name
     GITHUB_OWNER=$(git config --get remote.origin.url | sed -E 's#(https://github.com|git@github.com:)([^/]+)/.*#\2#')
     GITHUB_REPO=$(git config --get remote.origin.url | sed -E 's#(https://github.com|git@github.com:)[^/]+/([^/]+).git#\2#')
-    # Define the release path
-    RELEASEPATH="/tmp/$PLUGINSLUG-release/"
-    # Define the zip file name
-    ZIPFILE="$PLUGINSLUG.zip"
 
-    # Delete the release path if it doesn't exist
-    if [ -d "$RELEASEPATH" ]; then
+    if gh release view "v$NEWVERSION1" --repo "$GITHUB_OWNER/$GITHUB_REPO" > /dev/null 2>&1; then
+        echo "GitHub release v$NEWVERSION1 already exists. Continuing with the WordPress repository deployment."
+    else
+        echo "Creating GitHub release for $NEWVERSION1..."
+
+        # Define the release path
+        RELEASEPATH="/tmp/$PLUGINSLUG-release/"
+        # Define the zip file name
+        ZIPFILE="$PLUGINSLUG.zip"
+
+        # Delete the release path if it doesn't exist
+        if [ -d "$RELEASEPATH" ]; then
+            execute_or_echo rm -fr "$RELEASEPATH"
+        fi
+
+        # Create the release path
+        execute_or_echo mkdir -p "$RELEASEPATH"
+
+        # Create a zip file of the plugin, excluding development files.
+        execute_or_echo rsync -r --exclude=".*" --exclude="*.sh" --exclude="tests" "$GITPATH" "$RELEASEPATH"
+
+        # Create the zip file from the prepared release directory.
+        execute_or_echo rm -f "/tmp/$ZIPFILE"
+        execute_or_echo bash -c 'cd "$1" && zip -qr "$2" .' _ "$RELEASEPATH" "/tmp/$ZIPFILE"
+
+        # Delete the release path
         execute_or_echo rm -fr "$RELEASEPATH"
+
+        # use gh cli to create a release
+        execute_or_echo gh release create v"$NEWVERSION1" \
+            --title "Release v$NEWVERSION1" \
+            --notes "Auto-deployed from tag $NEWVERSION1" \
+            --repo "$GITHUB_OWNER/$GITHUB_REPO" \
+            "/tmp/$ZIPFILE"
+        GITHUB_RELEASE_CREATED=true
+
+        # Delete the zip file
+        execute_or_echo rm -f "/tmp/$ZIPFILE"
     fi
-
-    # Create the release path
-    execute_or_echo mkdir -p "$RELEASEPATH"
-
-    # Create a zip file of the plugin, excluding development files.
-    execute_or_echo rsync -r --exclude=".*" --exclude="*.sh" --exclude="tests" "$GITPATH" "$RELEASEPATH"
-
-    # Create the zip file from the prepared release directory.
-    execute_or_echo rm -f "/tmp/$ZIPFILE"
-    execute_or_echo bash -c 'cd "$1" && zip -qr "$2" .' _ "$RELEASEPATH" "/tmp/$ZIPFILE"
-
-    # Delete the release path
-    execute_or_echo rm -fr "$RELEASEPATH"
-
-    # use gh cli to create a release
-    execute_or_echo gh release create v"$NEWVERSION1" \
-        --title "Release v$NEWVERSION1" \
-        --notes "Auto-deployed from tag $NEWVERSION1" \
-        --repo "$GITHUB_OWNER/$GITHUB_REPO" \
-        "/tmp/$ZIPFILE"
-
-    # Delete the zip file
-   execute_or_echo rm -f "/tmp/$ZIPFILE"
 else
     echo "Command 'gh' not found. Skipping GitHub release creation."
 fi
@@ -331,16 +345,24 @@ if [ ! -d "$SVNPATH"/trunk ]; then
     execute_or_echo mkdir "$SVNPATH"/trunk
 fi
 
-# Clear SVN repo trunk only if it is not empty
-if [ -n "$(ls -A "$SVNPATH"/trunk/ 2>/dev/null)" ]; then
-    execute_or_echo svn rm "$SVNPATH"/trunk/*
-else
-    echo "Trunk is already empty. Skipping removal."
+# Export the selected Git branch to a temporary directory, then synchronize it
+# into the Subversion trunk. This lets Subversion see ordinary additions,
+# changes, and removals instead of recreated children below deleted parents.
+EXPORTPATH="/tmp/$PLUGINSLUG-git-export/"
+
+if [ -d "$EXPORTPATH" ]; then
+    execute_or_echo rm -fr "$EXPORTPATH"
 fi
 
-# Export HEAD of branch from git to SVN trunk
-execute_or_echo git checkout-index -a -f --prefix="$SVNPATH"/trunk/
-execute_or_echo rm -rf "${SVNPATH:?}/trunk/tests"
+execute_or_echo mkdir -p "$EXPORTPATH"
+execute_or_echo git checkout-index -a -f --prefix="$EXPORTPATH"
+execute_or_echo rsync -r --delete --delete-excluded \
+    --exclude=".*" \
+    --exclude="*.sh" \
+    --exclude="tests" \
+    "$EXPORTPATH" \
+    "$SVNPATH/trunk/"
+execute_or_echo rm -fr "$EXPORTPATH"
 
 # Ignore files
 execute_or_echo svn propset svn:ignore "deploy.sh
@@ -350,11 +372,20 @@ execute_or_echo svn propset svn:ignore "deploy.sh
 .gitignore
 tests" "$SVNPATH/trunk/"
 
-# Add only readme.txt to SVN trunk
+# Record removed and added files in the Subversion trunk.
 execute_or_echo cd "$SVNPATH"/trunk/
-execute_or_echo svn add readme.txt
+execute_or_echo bash -c "
+    svn status |
+    awk '\$1 == \"!\" {print \$2}' |
+    while IFS= read -r missing_path; do
+        if [ -n \"\$missing_path\" ]; then
+            svn rm --force \"\$missing_path\"
+        fi
+    done
+"
+execute_or_echo svn add --force .
 
-echo "Added readme.txt to SVN trunk."
+echo "Synchronized plugin files into SVN trunk."
 
 # Create new SVN tag
 execute_or_echo cd "$SVNPATH"
@@ -376,16 +407,7 @@ fi
 
 execute_or_echo svn copy trunk tags/"$NEWVERSION1"
 
-# Add all new files in the tag folder
-execute_or_echo cd "$SVNPATH"/tags/"$NEWVERSION1"
-execute_or_echo bash -c "
-    svn status |
-    grep '^?' |
-    awk '{print \$2}' |
-    xargs -I {} svn add {}
-"
-
-echo "Added new files to SVN tag $NEWVERSION1."
+echo "Created SVN tag $NEWVERSION1 from the synchronized trunk."
 
 if ! $SKIP_ASSETS; then
     # Change to the assets folder
@@ -422,7 +444,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     execute_or_echo cd "$GITPATH"
 
     # check if gh cli is installed and remove GitHub release
-    if which gh > /dev/null; then
+    if which gh > /dev/null && $GITHUB_RELEASE_CREATED; then
         # Get GitHub repository information from git config
         GITHUB_OWNER=$(git config --get remote.origin.url | sed -E 's#(https://github.com|git@github.com:)([^/]+)/.*#\2#')
         GITHUB_REPO=$(git config --get remote.origin.url | sed -E 's#(https://github.com|git@github.com:)[^/]+/([^/]+).git#\2#')
