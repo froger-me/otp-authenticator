@@ -63,7 +63,7 @@ class Otpa_Passwordless {
 
 		$_class   = ( 'login_footer' === current_filter() ) ? 'otpa-passwordless-login-form-link' : $_class;
 		$url      = home_url( 'otpa/passwordless-login' );
-		$redirect = wp_http_validate_url( (string) filter_input( INPUT_GET, 'redirect_to', FILTER_UNSAFE_RAW ) );
+		$redirect = Otpa::get_safe_redirect( (string) filter_input( INPUT_GET, 'redirect_to', FILTER_UNSAFE_RAW ) );
 		$url      = ( ! empty( $redirect ) ) ? add_query_arg( 'redirect_to', rawurlencode( $redirect ), $url ) : $url;
 
 		set_query_var( 'class', $_class );
@@ -84,7 +84,7 @@ class Otpa_Passwordless {
 		$html = ob_get_clean();
 
 		if ( $output ) {
-			echo $html; // @codingStandardsIgnoreLine
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return ( $output ) ? $html : false;
@@ -131,6 +131,15 @@ class Otpa_Passwordless {
 		if ( ! $user instanceof WP_User || ! $user->ID ) {
 			return Otpa::get_wp_error(
 				'OTPA_INVALID_USER',
+				array(
+					'method' => __METHOD__,
+				)
+			);
+		}
+
+		if ( ! $this->is_user_role_included( $user ) ) {
+			return Otpa::get_wp_error(
+				'OTPA_PASSWORDLESS_NOT_AVAILABLE',
 				array(
 					'method' => __METHOD__,
 				)
@@ -195,6 +204,17 @@ class Otpa_Passwordless {
 			);
 		}
 
+		if ( ! $this->is_user_role_included( $user ) ) {
+			$this->clear_request_binding();
+
+			return Otpa::get_wp_error(
+				'OTPA_PASSWORDLESS_NOT_AVAILABLE',
+				array(
+					'method' => __METHOD__,
+				)
+			);
+		}
+
 		$verification_payload = $payload;
 		unset( $verification_payload['identifier'] );
 		$verification_payload['otp_purpose'] = Otpa::OTP_PURPOSE_PASSWORDLESS;
@@ -218,15 +238,30 @@ class Otpa_Passwordless {
 			wp_set_auth_cookie( $user->ID );
 
 			$redirect              = isset( $payload['redirect'] ) && is_string( $payload['redirect'] )
-				? wp_http_validate_url( $payload['redirect'] )
+				? Otpa::get_safe_redirect( $payload['redirect'] )
 				: false;
 			$redirect_to           = ( $redirect ) ? $redirect : home_url();
 			$requested_redirect_to = $redirect;
 			$result['message']     = __( 'Welcome!', 'otpa' ) . '<br/>' . __( 'Redirecting...', 'otpa' );
-			$result['redirect']    = apply_filters( 'login_redirect', $redirect_to, $requested_redirect_to, $user );
+			$result['redirect']    = Otpa::get_safe_redirect(
+				apply_filters( 'login_redirect', $redirect_to, $requested_redirect_to, $user ),
+				home_url( '/' )
+			);
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Check whether passwordless authentication includes one of a user's roles.
+	 *
+	 * @param WP_User $user User attempting passwordless authentication.
+	 * @return bool Whether passwordless authentication is available.
+	 */
+	protected function is_user_role_included( $user ) {
+		$included_roles = (array) $this->otpa->get_setting( 'passwordless_roles' );
+
+		return ! empty( array_intersect( $included_roles, (array) $user->roles ) );
 	}
 
 	public function nonce_user_logged_out( $user_id, $action ) {

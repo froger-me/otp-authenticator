@@ -20,7 +20,7 @@
 			<div class="otpa-wrapper">
 				<div id="otpa_logo" class="otpa-logo" data-otp_logo_url="<?php echo esc_url( $otp_logo_url ); ?>"></div>
 				<div id="otpa_otp_form" data-otp_form_type="<?php echo esc_attr( $otp_form_type ); ?>" data-handler="set_otp_identifier" class="otpa-form">
-					<h1><?php echo $otp_form_title; // @codingStandardsIgnoreLine ?></h1>
+					<h1><?php echo $otp_form_title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></h1>
 					<?php do_action( 'otpa_before_set_otp_form', $otp_form_type ); ?>
 					<form>
 						<?php wp_nonce_field( 'otpa_nonce', 'otpa_nonce' ); ?>
@@ -82,7 +82,7 @@
 						<input type="hidden" id="otpa_id">
 						<p class="message footer">
 							<?php do_action( 'otpa_before_set_otp_footer_message', $otp_form_type ); ?>
-							<?php echo $otp_footer_message; // @codingStandardsIgnoreLine ?>
+							<?php echo $otp_footer_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<?php do_action( 'otpa_after_set_otp_footer_message', $otp_form_type ); ?>
 						</p>
 					</form>

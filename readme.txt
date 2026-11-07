@@ -3,8 +3,8 @@ Contributors: frogerme
 Tags: 2fa, OTP, passwordless login
 Requires at least: 4.9.5
 Tested up to: 7.1
-Stable tag: 1.2
-Requires PHP: 8.4
+Stable tag: 2.0
+Requires PHP: 8.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -83,21 +83,33 @@ Help is provided without compensation for general enquiries and bug fixes only: 
 
 == Changelog ==
 
-= 1.2 =
-* Require PHP 8.4 and declare compatibility with WordPress 7.1
+= 2.0 =
+* Require PHP 8.3 and declare compatibility with WordPress 7.1
 * Update the Twilio and Alibaba Cloud SMS libraries through Composer and remove library security warnings
 * Add a deployment script for creating release packages
 * Add PHP and browser tests for settings, gateways, passwordless login, two-factor authentication, account validation, and security rules
+* Restrict Passwordless Authentication to selected WordPress roles and show a clear error when a user's role is not included
+* Select Subscriber as the default Passwordless Authentication role, restore it when no role remains selected, and allow another role to replace it
+* Display Two-Factor Authentication switch labels above the button by default and add an option to display them inline
 * Require server-side permissions for administrative account-validation and two-factor controls
 * Bind each verification code to one purpose and store simultaneous two-factor, account-validation, and passwordless codes separately
 * Keep a valid verification code available after an incorrect attempt until it expires or reaches the configured attempt limit
 * Prevent passwordless requests from revealing codes, changing the selected account, depending on client IP addresses, or being reused by another browser
+* Restrict every post-authentication redirect to a safe address on the current WordPress site
+* Require administrator permission and a valid request token before activity logs can be read or erased
+* Prevent the Ultimate Member integration from creating PHP objects from submitted form data
+* Keep Two-Factor Authentication switch text as plain text when its state changes
 * Restore the previous WordPress user after every passwordless request and verification, including unexpected failures
 * Restrict delivery-address enrollment so an existing address cannot be replaced while authentication is pending
 * Block protected REST, administration, background, front-end, WooCommerce, and XML-RPC requests until required authentication or validation is complete
 * Reject the first password-only XML-RPC request for accounts requiring two-factor authentication or account validation
 * Record request waiting periods only after successful delivery and protect simultaneous requests with an expiring, owner-checked server lock
 * Correct toolbar visibility, supplied-user checks, request retry behavior, and failed-delivery handling
+* Correct WordPress email defaults, saved subject handling, and identifier synchronization on the first email change
+* Correct direct account validation through the public helper function
+* Add a minimal working custom Authentication Gateway example to the developer documentation
+* Refresh the translation template with all new interface and error messages
+* Make every PHP code style exception comment name the exact rule it skips
 * Improve PHP 8.4 compatibility, WordPress coding-style compliance, input handling, output escaping, documentation, and static-analysis results
 
 = 1.1 =

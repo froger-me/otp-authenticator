@@ -26,11 +26,11 @@ jQuery(document).ready(function($) {
 
 				if (response.data.active) {
 					buttons.each( function( idx, el ) {
-						$(el).html($(el).data('active_text'));
+						$(el).text($(el).data('active_text'));
 					});
 				} else {
 					buttons.each( function( idx, el ) {
-						$(el).html($(el).data('inactive_text'));
+						$(el).text($(el).data('inactive_text'));
 					});
 				}
 

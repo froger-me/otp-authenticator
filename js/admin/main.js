@@ -5,6 +5,9 @@ jQuery(document).ready(function($) {
 	$('#otpa_enable_validation, #otpa_enable_2fa, #otpa_enable_passwordless, #otpa_force_2fa, #otpa_default_2fa').on('change', function() {
 		updateUI();
 	});
+	$('.otpa-passwordless-roles-container input[type="checkbox"]').on('change', function() {
+		updatePasswordlessRoles();
+	});
 
 	$('.settings_page_otpa input[type="password"]').on('focus', function() {
 		$(this).attr('type', 'text');
@@ -13,6 +16,22 @@ jQuery(document).ready(function($) {
 	$('.settings_page_otpa input[type="password"]').on('blur', function() {
 		$(this).attr('type', 'password');
 	} );
+
+	function updatePasswordlessRoles() {
+		var roles         = $('.otpa-passwordless-roles-container input[type="checkbox"]'),
+			subscriber    = $('#otpa_passwordless_roles-subscriber'),
+			otherSelected = roles.not(subscriber).is(':checked');
+
+		if ( ! subscriber.length ) {
+			return;
+		}
+
+		if ( ! otherSelected ) {
+			subscriber.prop('checked', true);
+		}
+
+		subscriber.prop('disabled', !otherSelected);
+	}
 
 	function updateUI() {
 
@@ -51,6 +70,14 @@ jQuery(document).ready(function($) {
 		} else {
 			$('.otpa-enable_2fa-field').show();
 		}
+
+		if ( $('#otpa_enable_passwordless').prop('checked') ) {
+			$('.otpa-passwordless_roles-field').show();
+		} else {
+			$('.otpa-passwordless_roles-field').hide();
+		}
+
+		updatePasswordlessRoles();
 
 		$('.settings_page_otpa .stuffbox .inside').css('visibility', 'visible');
 	}

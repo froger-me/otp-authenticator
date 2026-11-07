@@ -17,7 +17,7 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 
 		if ( $init_hooks ) {
 			add_action( 'otpa_before_otp_form', array( $this, 'print_form_hint' ), 10, 1 );
-			add_action( 'profile_update', array( $this, 'profile_update' ), 10, 2 );
+			add_action( 'profile_update', array( $this, 'profile_update' ), 10, 3 );
 
 			add_filter( 'otpa_otp_widget_identifier_placeholder', array( $this, 'otp_widget_identifier_placeholder' ), 10, 1 );
 		}
@@ -27,11 +27,16 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 	 * Public methods
 	 *******************************************************************/
 
-	public function profile_update( $user_id, $old_user_data ) {
-		$user = get_user_by( 'ID', $user_id );
+	public function profile_update( $user_id, $old_user_data, $userdata = array() ) {
+		$email = isset( $userdata['user_email'] ) ? sanitize_email( $userdata['user_email'] ) : '';
 
-		if ( $old_user_data->user_email !== $user->user_email ) {
-			$this->set_user_identifier( $user->user_email, $user_id );
+		if ( ! $email ) {
+			$user  = get_user_by( 'ID', $user_id );
+			$email = $user instanceof WP_User ? $user->user_email : '';
+		}
+
+		if ( $email && $old_user_data instanceof WP_User && $old_user_data->user_email !== $email ) {
+			$this->set_user_identifier( $email, $user_id );
 		}
 	}
 
@@ -98,7 +103,7 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 
 		$output .= '</p>';
 
-		echo $output; // @codingStandardsIgnoreLine
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function otp_widget_identifier_placeholder( $placeholder ) {
@@ -124,7 +129,7 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 	}
 
 	public function sanitize_user_identifier( $email, $user_id = false ) {
-		return trim( $email );
+		return trim( (string) $email );
 	}
 
 	public function is_valid_identifier( $email ) {
@@ -210,13 +215,14 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 	}
 
 	protected function send_sandox_request( $email, $message ) {
+		$subject = $this->get_subject();
 
 		otpa_db_log(
 			array(
 				'message' => __( 'Sandbox simulated request - data sent to the Authentication Gateway: ', 'otpa' ),
 				'data'    => array(
 					'email'   => $email,
-					'subject' => $this->settings['subject'],
+					'subject' => $subject,
 					'content' => $message,
 				),
 			)
@@ -233,7 +239,7 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 	protected function send_request( $email, $message ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_error' ), 10, 1 );
 
-		$result = wp_mail( $email, $this->settings['subject'], $message );
+		$result = wp_mail( $email, $this->get_subject(), $message );
 
 		remove_action( 'wp_mail_failed', array( $this, 'set_error' ), 10 );
 
@@ -246,5 +252,16 @@ class Otpa_WP_Email_Gateway extends Otpa_Abstract_Gateway {
 			),
 			'code'    => ( $this->error_code ) ? $this->error_code : 'OK',
 		);
+	}
+
+	/**
+	 * Get a non-empty email subject from the saved settings or the default value.
+	 *
+	 * @return string The email subject.
+	 */
+	protected function get_subject() {
+		$subject = trim( (string) $this->get_option( 'subject', self::get_default_subject() ) );
+
+		return '' !== $subject ? $subject : self::get_default_subject();
 	}
 }

@@ -19,7 +19,7 @@
 				</form>
 			</div>
 			<div class="otpa-form-settings-preview otpa-style-settings-column">
-				<iframe src="<?php echo esc_url( home_url( '/otpa/form-preview' ) ); ?>"></iframe>
+				<iframe title="<?php esc_attr_e( 'OTP Form Style Preview', 'otpa' ); ?>" src="<?php echo esc_url( home_url( '/otpa/form-preview' ) ); ?>"></iframe>
 			</div>
 			<?php do_action( 'otpa_after_style_settings_inner', $active_tab ); ?>
 		</div>

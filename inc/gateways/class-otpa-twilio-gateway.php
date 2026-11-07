@@ -234,7 +234,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 
 		$output .= '</p>';
 
-		echo $output; // @codingStandardsIgnoreLine
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function identifier_name( $placeholder ) {
@@ -403,7 +403,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 			if ( method_exists( $e, 'getCode' ) && method_exists( $e, 'getMessage' ) ) {
 				otpa_db_log( __METHOD__ . ' - error ' . $e->getCode() . ': ' . $e->getMessage(), 'alert', true );
 			} else {
-				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 
 			return false;
@@ -421,7 +421,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 			if ( method_exists( $e, 'getCode' ) && method_exists( $e, 'getMessage' ) ) {
 				otpa_db_log( __METHOD__ . ' - error ' . $e->getCode() . ': ' . $e->getMessage(), 'alert', true );
 			} else {
-				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 
 			return false;
@@ -470,7 +470,7 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 					'status'  => false,
 					'message' => __( 'An undefined error occured - please try again or use another phone number.', 'otpa' ),
 				);
-			} elseif ( null !== $result->errorCode ) {  // @codingStandardsIgnoreLine
+			} elseif ( null !== $result->errorCode ) {  // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$illegal_number_err_codes = array(
 					21211,
 					21214,
@@ -487,16 +487,16 @@ class Otpa_Twilio_Gateway extends Otpa_Abstract_Gateway {
 					22102,
 				);
 
-				if ( in_array( intval( $result->errorCode ), $illegal_number_err_codes, true ) ) {  // @codingStandardsIgnoreLine
+				if ( in_array( intval( $result->errorCode ), $illegal_number_err_codes, true ) ) {  // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$message = __( 'The phone number is invalid. Please try again with a valid mobile phone number.', 'otpa' );
 				}
 
-				otpa_db_log( __METHOD__ . ' - error ' . $result->errorCode . ': ' . $result->errorMessage, 'alert', true );  // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . $result->errorCode . ': ' . $result->errorMessage, 'alert', true );  // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 				return array(
 					'status'  => false,
 					'message' => $message,
-					'code'    => $result->errorCode, // @codingStandardsIgnoreLine
+					'code'    => $result->errorCode, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				);
 			}
 

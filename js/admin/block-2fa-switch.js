@@ -3,7 +3,7 @@ const {createElement}          = wp.element;
 const {__}                     = wp.i18n;
 const {InspectorControls}      = wp.blockEditor;
 const {serverSideRender}       = wp;
-const {TextControl, PanelBody} = wp.components;
+const {TextControl, ToggleControl, PanelBody} = wp.components;
 
 registerBlockType( 'otpa/otpa-2fa-switch', {
 	title: __( 'OTPA 2FA Switch', 'otpa' ),
@@ -11,6 +11,9 @@ registerBlockType( 'otpa/otpa-2fa-switch', {
 	attributes:  {
 		label: {
 			default: '',
+		},
+		labelInline: {
+			default: false,
 		},
 		turnOnText: {
 			default: __( 'Two-Factor Authentication is OFF - Click to Enable', 'otpa' ),
@@ -39,6 +42,10 @@ registerBlockType( 'otpa/otpa-2fa-switch', {
 			setAttributes({label});
 		}
 
+		function changeLabelInline(labelInline) {
+			setAttributes({labelInline});
+		}
+
 		return createElement('div', {key: 'otpa-block-container'}, [
 			createElement(serverSideRender, {
 				key: 'otpa-renderer-key',
@@ -53,7 +60,14 @@ registerBlockType( 'otpa/otpa-2fa-switch', {
 						label: __( 'Label', 'otpa' ),
 						onChange: changeLabel,
 						type: 'text',
-						help: __( 'Label text to display before the button.', 'otpa' )
+						help: __( 'Label text to display above the button by default.', 'otpa' )
+					}),
+					createElement(ToggleControl, {
+						key: 'otpa-toggle-control-label-inline',
+						checked: attributes.labelInline,
+						label: __( 'Display label inline', 'otpa' ),
+						onChange: changeLabelInline,
+						help: __( 'Display the label and button on the same line.', 'otpa' )
 					}),
 					createElement(TextControl, {
 						key: 'otpa-text-control-turn-on-text',

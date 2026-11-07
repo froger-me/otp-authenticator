@@ -1,6 +1,6 @@
 <?php
 /**
- * Security regression tests for OTP Authenticator.
+ * Security feature tests for OTP Authenticator.
  *
  * @package Otpa
  */
@@ -8,7 +8,7 @@
 use AnyapeWPTestTools\IntegrationTestCase;
 
 /** Tests the security rules shared by OTP Authenticator features. */
-final class OtpaSecurityRegressionTest extends IntegrationTestCase {
+final class OtpaSecurityTest extends IntegrationTestCase {
 	/**
 	 * Administrator user number.
 	 *
@@ -86,6 +86,62 @@ final class OtpaSecurityRegressionTest extends IntegrationTestCase {
 		$this->assertFalse( $this->can_toggle( $disabled, 'can_toggle_user_2fa' ) );
 		$this->assertFalse( $this->can_toggle( $forced, 'can_toggle_user_validation' ) );
 		$this->assertFalse( $this->can_toggle( $forced, 'can_toggle_user_2fa' ) );
+	}
+
+	/** Confirm authentication redirects remain on this WordPress site. */
+	public function test_authentication_redirects_remain_on_site(): void {
+		$fallback = home_url( '/' );
+
+		$this->assertSame( $fallback, Otpa::get_safe_redirect( 'javascript:alert(1)', $fallback ) );
+		$this->assertSame( $fallback, Otpa::get_safe_redirect( 'data:text/html,test', $fallback ) );
+		$this->assertSame( $fallback, Otpa::get_safe_redirect( 'https://attacker.example/path', $fallback ) );
+		$this->assertSame( $fallback, Otpa::get_safe_redirect( '//attacker.example/path', $fallback ) );
+		$this->assertSame( '/my-account/', Otpa::get_safe_redirect( '/my-account/', $fallback ) );
+
+		$settings   = new Otpa_Test_Settings( array( 'enable_2fa' => true ) );
+		$two_factor = new Otpa_2FA( new Otpa( $settings ) );
+
+		update_user_meta( $this->target_user->ID, 'otpa_2fa_active', true );
+		update_user_meta( $this->target_user->ID, 'otpa_need_2fa_check', true );
+		delete_user_meta( $this->target_user->ID, 'otpa_2fa_checked' );
+
+		$redirect = $two_factor->login_redirect(
+			admin_url(),
+			'javascript:alert(document.domain)',
+			$this->target_user
+		);
+
+		$this->assertSame( home_url(), $redirect );
+		$this->assertSame( $fallback, get_user_meta( $this->target_user->ID, 'otpa_2fa_redirect', true ) );
+	}
+
+	/** Confirm activity log requests require administrator permission and a valid token. */
+	public function test_activity_log_requests_require_administrator_access(): void {
+		$logger = new Otpa_Logger();
+		$method = new ReflectionMethod( Otpa_Logger::class, 'is_logs_request_allowed' );
+
+		wp_set_current_user( $this->subscriber_id );
+		$subscriber_nonce = wp_create_nonce( Otpa_Logger::AJAX_NONCE );
+		$this->assertFalse( $method->invoke( $logger, $subscriber_nonce ) );
+
+		wp_set_current_user( $this->administrator_id );
+		$this->assertFalse( $method->invoke( $logger, 'invalid-token' ) );
+		$this->assertTrue( $method->invoke( $logger, wp_create_nonce( Otpa_Logger::AJAX_NONCE ) ) );
+	}
+
+	/** Confirm the public account-validation helper validates its selected user. */
+	public function test_account_validation_helper_validates_selected_user(): void {
+		update_user_meta( $this->target_user->ID, 'otpa_need_account_validation', true );
+		update_user_meta( $this->target_user->ID, 'otpa_force_account_validation', true );
+
+		otpa_do_account_validation( $this->target_user->ID );
+
+		$validation = get_user_meta( $this->target_user->ID, 'otpa_validated', true );
+
+		$this->assertIsArray( $validation );
+		$this->assertTrue( $validation['status'] );
+		$this->assertSame( '', get_user_meta( $this->target_user->ID, 'otpa_need_account_validation', true ) );
+		$this->assertSame( '', get_user_meta( $this->target_user->ID, 'otpa_force_account_validation', true ) );
 	}
 
 	/** Confirm one code purpose cannot complete another security process. */

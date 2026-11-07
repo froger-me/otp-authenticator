@@ -44,7 +44,7 @@ class Otpa_Settings_Renderer {
 		} elseif ( $is_section_callback ) {
 			call_user_func_array( array( $this, 'section_render' ), array( $section_key ) );
 		} else {
-			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . esc_html( $method_name ) . '()', E_USER_ERROR ); // @codingStandardsIgnoreLine
+			trigger_error( 'Call to undefined method ' . __CLASS__ . '::' . esc_html( $method_name ) . '()', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 		}
 	}
 
@@ -321,7 +321,7 @@ class Otpa_Settings_Renderer {
 		$type = $this->get_field_attr( $key, 'type' );
 
 		if ( method_exists( $this, 'get_' . $type . '_option' ) ) {
-			echo call_user_func_array( array( $this, 'get_' . $type . '_option' ), array( $key, $settings_group ) ); // @codingStandardsIgnoreLine
+			echo call_user_func_array( array( $this, 'get_' . $type . '_option' ), array( $key, $settings_group ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
 			$output = apply_filters(
 				'otpa_field_render',

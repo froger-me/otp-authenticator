@@ -70,7 +70,7 @@ class Otpa {
 		$prefix = $wpdb->esc_like( '_transient_otpa' );
 		$sql    = "DELETE FROM $wpdb->options WHERE `option_name` LIKE '%s'";
 
-		$wpdb->query( $wpdb->prepare( $sql, $prefix . '%' ) ); // @codingStandardsIgnoreLine
+		$wpdb->query( $wpdb->prepare( $sql, $prefix . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public static function uninstall() {
@@ -109,6 +109,9 @@ class Otpa {
 					break;
 				case 'OTPA_INVALID_USER':
 					$message = __( 'User not found.', 'otpa' ) . '<br/>' . __( 'Please request a new code and try again.', 'otpa' );
+					break;
+				case 'OTPA_PASSWORDLESS_NOT_AVAILABLE':
+					$message = __( 'Passwordless authentication is not available for this user.', 'otpa' );
 					break;
 				case 'OTPA_CODE_PERSIST_FAILURE':
 					$message = __( 'A database error occured: the new OTP Verification Code could not be persisted', 'otpa' ) . '<br/>' . __( 'Please request a new code and try again.', 'otpa' );
@@ -163,6 +166,19 @@ class Otpa {
 
 	public function get_setting( $key ) {
 		return $this->otpa_settings->get_option( $key );
+	}
+
+	/**
+	 * Restrict a redirect to an address WordPress permits for this site.
+	 *
+	 * @param mixed  $redirect Redirect value to check.
+	 * @param string $fallback Value to return when the redirect is unsafe.
+	 * @return string Safe redirect value.
+	 */
+	public static function get_safe_redirect( $redirect, $fallback = '' ) {
+		$redirect = is_string( $redirect ) ? trim( $redirect ) : '';
+
+		return wp_validate_redirect( $redirect, $fallback );
 	}
 
 	public function add_query_vars( $vars ) {
@@ -457,7 +473,11 @@ class Otpa {
 		$user = wp_get_current_user();
 
 		if ( $this->is_identifier_required( $user->ID ) ) {
-			update_user_meta( $user->ID, 'otpa_set_otp_redirect', otpa_get_current_url() );
+			update_user_meta(
+				$user->ID,
+				'otpa_set_otp_redirect',
+				self::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+			);
 			wp_safe_redirect( home_url() );
 
 			exit();
@@ -467,7 +487,11 @@ class Otpa {
 	public function login_redirect( $redirect_to, $requested_redirect_to, $user ) {
 
 		if ( $user instanceof WP_User && $this->is_identifier_required( $user->ID ) ) {
-			update_user_meta( $user->ID, 'otpa_set_otp_redirect', $requested_redirect_to );
+			update_user_meta(
+				$user->ID,
+				'otpa_set_otp_redirect',
+				self::get_safe_redirect( $requested_redirect_to, home_url( '/' ) )
+			);
 
 			$redirect_to = home_url();
 		}
@@ -482,7 +506,11 @@ class Otpa {
 			$this->is_setting_identifier = true;
 
 			if ( ! metadata_exists( 'user', $user->ID, 'otpa_set_otp_redirect' ) ) {
-				update_user_meta( $user->ID, 'otpa_set_otp_redirect', otpa_get_current_url() );
+				update_user_meta(
+					$user->ID,
+					'otpa_set_otp_redirect',
+					self::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+				);
 			}
 
 			add_action( 'template_redirect', array( $this, 'set_otp_identifier_form_page' ), PHP_INT_MIN, 0 );
@@ -786,7 +814,10 @@ class Otpa {
 				$result = array(
 					'status'   => true,
 					'message'  => __( 'Code successfully verified!', 'otpa' ) . '<br/>' . __( 'Redirecting...', 'otpa' ),
-					'redirect' => apply_filters( 'otpa_otp_form_redirect_url', home_url(), $user ),
+					'redirect' => self::get_safe_redirect(
+						apply_filters( 'otpa_otp_form_redirect_url', home_url(), $user ),
+						home_url( '/' )
+					),
 				);
 			}
 		} else {
@@ -809,7 +840,10 @@ class Otpa {
 			$user       = wp_get_current_user();
 
 			if ( $user->ID && $this->is_identifier_required( $user->ID ) ) {
-				$redirect = get_user_meta( $user->ID, 'otpa_set_otp_redirect', true );
+				$redirect = self::get_safe_redirect(
+					get_user_meta( $user->ID, 'otpa_set_otp_redirect', true ),
+					home_url( '/' )
+				);
 
 				if ( $this->gateway->is_valid_identifier( $identifier ) ) {
 					$result = $this->gateway->set_user_identifier( $identifier, $user->ID );

@@ -20,7 +20,7 @@ class Otpa_UM_Integration extends Otpa_Integration {
 		$this->sync_metakey = $this->gateway->get_option( 'sync_metakey' );
 
 		if ( $this->sync_metakey ) {
-			add_action( 'um_submit_form_errors_hook', array( $this, 'um_submit_form_errors_hook' ), 10 );
+			add_action( 'um_submit_form_errors_hook', array( $this, 'um_submit_form_errors_hook' ), 10, 2 );
 
 			add_filter( 'um_' . $this->sync_metakey . '_form_edit_field', array( $this, 'alter_synced_field' ), 10, 2 );
 		} else {
@@ -106,9 +106,9 @@ class Otpa_UM_Integration extends Otpa_Integration {
 		return $access;
 	}
 
-	public function um_submit_form_errors_hook( $args ) {
+	public function um_submit_form_errors_hook( $args, $form_data = array() ) {
 		$post_key = ( $this->sync_metakey ) ? $this->sync_metakey : 'otp_identifier';
-		$fields   = isset( $args['custom_fields'] ) ? unserialize( $args['custom_fields'] ) : false; // @codingStandardsIgnoreLine
+		$fields   = $this->get_saved_form_fields( $form_data );
 
 		if ( ! empty( $fields ) && is_array( $fields ) ) {
 
@@ -277,5 +277,33 @@ class Otpa_UM_Integration extends Otpa_Integration {
 		</div>
 		<?php endif; ?>
 		<?php
+	}
+
+	/**
+	 * Read Ultimate Member's saved field definition without creating PHP objects.
+	 *
+	 * @param array $form_data Saved Ultimate Member form definition.
+	 * @return array Saved fields, or an empty array when unavailable.
+	 */
+	protected function get_saved_form_fields( $form_data ) {
+		if ( ! is_array( $form_data ) || ! isset( $form_data['custom_fields'] ) ) {
+
+			return array();
+		}
+
+		if ( is_array( $form_data['custom_fields'] ) ) {
+
+			return $form_data['custom_fields'];
+		}
+
+		if ( ! is_string( $form_data['custom_fields'] ) || ! is_serialized( $form_data['custom_fields'] ) ) {
+
+			return array();
+		}
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Ultimate Member stores this trusted form definition in PHP's serialized array format; object creation is explicitly disabled.
+		$fields = unserialize( $form_data['custom_fields'], array( 'allowed_classes' => false ) );
+
+		return is_array( $fields ) ? $fields : array();
 	}
 }

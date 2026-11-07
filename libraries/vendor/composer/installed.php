@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'froger-me/otp-authenticator',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '82b9b6da3ac090ab5f685cf68e8cc1a408ea958b',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '9849cedc074eaa0699066322ab352b51f89d60d0',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -80,9 +80,9 @@
             ),
         ),
         'froger-me/otp-authenticator' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '82b9b6da3ac090ab5f685cf68e8cc1a408ea958b',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '9849cedc074eaa0699066322ab352b51f89d60d0',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

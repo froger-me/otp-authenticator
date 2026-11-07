@@ -38,7 +38,11 @@ class Otpa_Account_Validation {
 	public function login_redirect( $redirect_to, $requested_redirect_to, $user ) {
 
 		if ( ! is_wp_error( $user ) && $this->need_account_validation( $user ) ) {
-			update_user_meta( $user->ID, 'otpa_account_validation_redirect', $requested_redirect_to );
+			update_user_meta(
+				$user->ID,
+				'otpa_account_validation_redirect',
+				Otpa::get_safe_redirect( $requested_redirect_to, home_url( '/' ) )
+			);
 
 			$redirect_to = home_url();
 		}
@@ -60,7 +64,11 @@ class Otpa_Account_Validation {
 				);
 			}
 
-			update_user_meta( $user->ID, 'otpa_account_validation_redirect', otpa_get_current_url() );
+			update_user_meta(
+				$user->ID,
+				'otpa_account_validation_redirect',
+				Otpa::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+			);
 			wp_safe_redirect( home_url() );
 
 			exit();
@@ -83,7 +91,11 @@ class Otpa_Account_Validation {
 			}
 
 			if ( ! metadata_exists( 'user', $user->ID, 'otpa_account_validation_redirect' ) ) {
-				update_user_meta( $user->ID, 'otpa_account_validation_redirect', otpa_get_current_url() );
+				update_user_meta(
+					$user->ID,
+					'otpa_account_validation_redirect',
+					Otpa::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+				);
 			}
 
 			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
@@ -352,7 +364,10 @@ class Otpa_Account_Validation {
 		if ( ! is_wp_error( $result ) ) {
 			$user               = wp_get_current_user();
 			$result['message']  = __( 'Account successfully validated!', 'otpa' ) . '<br/>' . __( 'Redirecting...', 'otpa' );
-			$result['redirect'] = get_user_meta( $user->ID, 'otpa_account_validation_redirect', true );
+			$result['redirect'] = Otpa::get_safe_redirect(
+				get_user_meta( $user->ID, 'otpa_account_validation_redirect', true ),
+				home_url( '/' )
+			);
 
 			delete_user_meta( $user->ID, 'otpa_account_validation_redirect' );
 		}

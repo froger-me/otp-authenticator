@@ -67,6 +67,22 @@ test('two-factor login accepts the emailed code and restores the requested page'
     await closeContext(context);
   }
 });
+
+test('two-factor switch keeps its state text as plain text', async ({ page, request }) => {
+  await ensureOtpFixtures(request);
+  await page.goto('/otpa-two-factor-switch-test/');
+
+  const button = page.locator('.otpa-user-2fa-button-switch');
+
+  await expect(button).toHaveText('Enable two-factor authentication');
+  await button.click();
+  await expect(button).toContainText("<img id='otpa-switch-injected-image'");
+  await expect(page.locator('#otpa-switch-injected-image')).toHaveCount(0);
+  expect(await page.evaluate(() => (
+    window as Window & { otpaSwitchMarkupRan?: boolean }
+  ).otpaSwitchMarkupRan ?? false)).toBe(false);
+});
+
 test('two-factor login keeps protected pages blocked after an incorrect code', async ({ browser, request }) => {
   await ensureOtpFixtures(request);
   await clearMailpit(request);

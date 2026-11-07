@@ -25,7 +25,7 @@
 					<form>
 						<?php do_action( 'otpa_before_otp_widget', $otp_form_type ); ?>
 						<div class='otpa-widget'>
-							<?php echo $otp_widget; // @codingStandardsIgnoreLine ?>
+							<?php echo $otp_widget; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						</div>
 						<?php do_action( 'otpa_after_otp_widget', $otp_form_type ); ?>
 						<p class="message result"><?php esc_html_e( 'Messages are displayed here.', 'otpa' ); ?></p>
@@ -36,7 +36,7 @@
 						<input type="hidden" id="otpa_code">
 						<p class="message footer">
 							<?php do_action( 'otpa_before_otp_footer_message', $otp_form_type ); ?>
-							<?php echo $otp_footer_message; // @codingStandardsIgnoreLine ?>
+							<?php echo $otp_footer_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<?php do_action( 'otpa_after_otp_footer_message', $otp_form_type ); ?>
 						</p>
 					</form>

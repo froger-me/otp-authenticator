@@ -319,7 +319,7 @@ function otpa_do_account_validation( $user_id = false ) {
 	$otpa                    = new Otpa( $otpa_settings );
 	$otpa_account_validation = new Otpa_Account_Validation( $otpa );
 
-	$otpa_account_validation->validate_account( $user->ID );
+	$otpa_account_validation->validate_account( $user->ID, Otpa::OTP_PURPOSE_ACCOUNT_VALIDATION );
 }
 
 /**
@@ -405,7 +405,7 @@ function otpa_is_identifier_synced() {
  * @return bool whether the OTP gateway is the WordPress User email
  */
 function otpa_is_email_gateway() {
-	return 'Otpa_WP_Email_Gateway' !== otpa_get_active_gateway_class_name();
+	return is_a( otpa_get_active_gateway_class_name(), Otpa_WP_Email_Gateway::class, true );
 }
 
 /**

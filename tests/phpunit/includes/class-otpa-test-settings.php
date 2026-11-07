@@ -28,6 +28,7 @@ final class Otpa_Test_Settings {
 				'max_request'               => 10,
 				'max_verify'                => 10,
 				'otp_expiry'                => 5,
+				'passwordless_roles'        => array( 'subscriber' ),
 				'request_frequency'         => 0,
 				'sandbox'                   => true,
 				'track_expiry'              => 24,

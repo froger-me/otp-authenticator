@@ -10,7 +10,10 @@ jQuery(document).ready(function($) {
 			$.ajax({
 				url: OTPA.ajax_url,
 				type: 'POST',
-				data: { action: 'otpa_refresh_logs' },
+				data: {
+					action: 'otpa_refresh_logs',
+					nonce: OTPA.nonce
+				},
 				success: function(response) {
 
 					if ( response.success ) {
@@ -53,7 +56,10 @@ jQuery(document).ready(function($) {
 		$.ajax({
 			url: OTPA.ajax_url,
 			type: 'POST',
-			data: { action: 'otpa_clear_logs' },
+			data: {
+				action: 'otpa_clear_logs',
+				nonce: OTPA.nonce
+			},
 			error: function(jqXHR, textStatus) {
 				OTPA.debug && console.log(textStatus);
 			},

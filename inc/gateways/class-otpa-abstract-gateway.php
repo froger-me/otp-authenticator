@@ -137,17 +137,7 @@ class Otpa_Abstract_Gateway {
 	 * @return array the gateway options
 	 */
 	public static function get_gateway_options( $gateway_id ) {
-		$settings = wp_cache_get( $gateway_id . '_settings', 'otpa' );
-
-		if ( ! $settings ) {
-			$settings = self::sanitize_gateway_settings( get_option( $gateway_id . '_settings' ), $gateway_id );
-
-			wp_cache_set( $gateway_id . '_settings', $settings, 'otpa' );
-		}
-
-		if ( empty( $settings ) ) {
-			$settings = self::get_default_settings();
-		}
+		$settings = self::sanitize_gateway_settings( get_option( $gateway_id . '_settings' ), $gateway_id );
 
 		$settings = apply_filters( $gateway_id . '_settings', $settings );
 
@@ -186,7 +176,14 @@ class Otpa_Abstract_Gateway {
 			$settings['sync_metakey'] = '';
 		}
 
-		$settings = array_merge( self::get_default_settings(), $settings );
+		$gateway_class    = self::get_gateway_class_name( $gateway_id );
+		$default_settings = self::get_default_settings();
+
+		if ( is_subclass_of( $gateway_class, self::class ) ) {
+			$default_settings = $gateway_class::get_default_settings();
+		}
+
+		$settings = array_merge( $default_settings, $settings );
 
 		return apply_filters( $gateway_id . '_sanitize_settings', $settings );
 	}
@@ -242,11 +239,11 @@ class Otpa_Abstract_Gateway {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_gateway-settings-page', // @codingStandardsIgnoreLine
+			'otpa_template_gateway-settings-page', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/gateway-settings-page.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -259,11 +256,11 @@ class Otpa_Abstract_Gateway {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_gateway-settings-tab', // @codingStandardsIgnoreLine
+			'otpa_template_gateway-settings-tab', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/gateway-settings-tab.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

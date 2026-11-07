@@ -4,7 +4,7 @@
     "type": "wordpress-plugin",
     "license": "GPL-3.0-or-later",
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.3",
         "alibabacloud/dysmsapi-20170525": "^4.6.0",
         "twilio/sdk": "^8.13.0"
     },
@@ -25,7 +25,7 @@
         "discard-changes": true,
         "optimize-autoloader": true,
         "platform": {
-            "php": "8.4.0"
+            "php": "8.3.0"
         },
         "preferred-install": "dist",
         "sort-packages": true,

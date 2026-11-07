@@ -1,25 +1,11 @@
 <?php
 /**
- * Tests the passwordless account binding added for OTP Authenticator 1.2.
+ * Tests passwordless account binding in OTP Authenticator 2.0.
  */
 
 use AnyapeWPTestTools\IntegrationTestCase;
 
-final class Otpa_Test_Passwordless extends Otpa_Passwordless {
-	protected function set_request_cookie( $request_token, $expires ) {
-		unset( $expires );
-		$_COOKIE[ self::REQUEST_COOKIE ] = $request_token;
-
-		return true;
-	}
-
-	protected function set_nonce_session_cookie( $session, $expires ) {
-		unset( $expires );
-		$this->nonce_session = $session;
-
-		return true;
-	}
-}
+require_once __DIR__ . '/includes/class-otpa-test-passwordless.php';
 
 final class PasswordlessSecurityTest extends IntegrationTestCase {
 	/** @var int */

@@ -3,8 +3,8 @@
 Plugin Name: OTP Authenticator
 Plugin URI: https://github.com/froger-me/otp-authenticator
 Description: One-Time Password Authentication: add Two-Factor Authentication, Passwordless Authentication and Account Validation to your WordPress website
-Version: 1.2
-Requires PHP: 8.4
+Version: 2.0
+Requires PHP: 8.3
 Author: Alexandre Froger
 Author URI: https://froger.me/
 Text Domain: otpa

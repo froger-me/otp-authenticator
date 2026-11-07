@@ -51,3 +51,76 @@ test('administrator can open and save OTP Authenticator settings without PHP err
     }
   }
 });
+
+test('passwordless roles keep one role selected while allowing Subscriber to be replaced', async ({ page, request }) => {
+  await ensureOtpFixtures(request);
+  await page.goto('/wp-admin/options-general.php?page=otpa&tab=settings');
+
+  const twoFactor = page.locator('#otpa_enable_2fa');
+  const passwordless = page.locator('#otpa_enable_passwordless');
+  const rolesField = page.locator('.otpa-passwordless_roles-field');
+  const subscriber = page.locator('#otpa_passwordless_roles-subscriber');
+  const administrator = page.locator('#otpa_passwordless_roles-administrator');
+
+  if (await twoFactor.isChecked()) await twoFactor.uncheck();
+  if (!(await passwordless.isChecked())) await passwordless.check();
+
+  await expect(rolesField).toBeVisible();
+  await expect(rolesField).toContainText('Roles to include for Passwordless Authentication');
+  await expect(rolesField).toContainText('Subscriber is selected automatically when no other role is selected.');
+  await expect(subscriber).toBeChecked();
+  await expect(subscriber).toBeDisabled();
+
+  await administrator.check();
+  await expect(subscriber).toBeEnabled();
+  await subscriber.uncheck();
+  await expect(subscriber).not.toBeChecked();
+
+  await administrator.uncheck();
+  await expect(subscriber).toBeChecked();
+  await expect(subscriber).toBeDisabled();
+});
+
+test('style settings update the form preview without saving', async ({ page, request }) => {
+  await ensureOtpFixtures(request);
+  await page.goto('/wp-admin/options-general.php?page=otpa&tab=style-settings');
+
+  const previewLogo = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  const preview = page.frameLocator('.otpa-form-settings-preview iframe');
+  const backgroundColor = page.locator('#otpa_submit_button_background_color');
+  const buttonTextColor = page.locator('#otpa_submit_button_text_color');
+  const linkTextColor = page.locator('#otpa_link_text_color');
+  const logoUrl = page.locator('#otpa_logo_url');
+
+  await expect(preview.locator('#otpa_otp_form')).toBeVisible();
+
+  await backgroundColor.evaluate(element => {
+    (element as HTMLInputElement).value = '#123456';
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await buttonTextColor.evaluate(element => {
+    (element as HTMLInputElement).value = '#abcdef';
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await linkTextColor.evaluate(element => {
+    (element as HTMLInputElement).value = '#654321';
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await logoUrl.evaluate((element, value) => {
+    (element as HTMLInputElement).value = value;
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+  }, previewLogo);
+
+  const liveStyles = preview.locator('#otpa-live-style-preview');
+  await expect(liveStyles).toBeAttached();
+
+  const liveStyleText = await liveStyles.evaluate(element => element.textContent ?? '');
+
+  expect(liveStyleText).toContain('background-color:#123456');
+  expect(liveStyleText).toContain('color:#abcdef');
+  expect(liveStyleText).toContain('color:#654321');
+  await expect(preview.locator('#otpa_logo')).toHaveCSS(
+    'background-image',
+    `url("${previewLogo}")`,
+  );
+});

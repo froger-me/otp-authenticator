@@ -147,11 +147,11 @@ class Otpa_Style_Settings {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_style-settings-page', // @codingStandardsIgnoreLine
+			'otpa_template_style-settings-page', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/style-settings-page.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function print_style_settings_tab( $active_tab ) {
@@ -159,11 +159,11 @@ class Otpa_Style_Settings {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_style-settings-tab', // @codingStandardsIgnoreLine
+			'otpa_template_style-settings-tab', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/style-settings-tab.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies all three default-option filter arguments.

@@ -39,7 +39,7 @@
 					<input type="text" id="otpa_otp_identifier" name="otp_identifier" value="<?php echo esc_attr( $identifier ); ?>" class="regular-text"/>
 					<?php if ( $identifier_field_description ) : ?>
 						<p class="description">
-							<?php echo $identifier_field_description; // @codingStandardsIgnoreLine ?>
+							<?php echo $identifier_field_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						</p>
 					<?php endif; ?>
 				<?php else : ?>

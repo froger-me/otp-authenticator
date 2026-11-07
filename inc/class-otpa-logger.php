@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Otpa_Logger {
 	const DEFAULT_MIN_LOG = 100;
+	const AJAX_NONCE      = 'otpa_logs_nonce';
 
 	public static $log_settings;
 	public static $log_types;
@@ -174,7 +175,7 @@ class Otpa_Logger {
 				ob_start();
 
 				include apply_filters(
-					'otpa_template_log-row', // @codingStandardsIgnoreLine
+					'otpa_template_log-row', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 					OTPA_PLUGIN_PATH . 'inc/templates/admin/log-row.php'
 				);
 
@@ -186,6 +187,8 @@ class Otpa_Logger {
 	}
 
 	public function refresh_logs_async() {
+		$this->require_logs_request_access();
+
 		wp_send_json_success(
 			array(
 				'html'               => self::get_logs(),
@@ -199,9 +202,14 @@ class Otpa_Logger {
 	}
 
 	public function clear_logs_async() {
+		$this->require_logs_request_access();
+
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- This administrator action intentionally empties the plugin's own log table.
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}otpa_logs;" );
+
+		wp_send_json_success();
 	}
 
 	public function init() {
@@ -223,11 +231,11 @@ class Otpa_Logger {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_logs-settings-page', // @codingStandardsIgnoreLine
+			'otpa_template_logs-settings-page', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/logs-settings-page.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function print_logs_settings_tab( $active_tab ) {
@@ -235,11 +243,11 @@ class Otpa_Logger {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_logs-settings-tab', // @codingStandardsIgnoreLine
+			'otpa_template_logs-settings-tab', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/logs-settings-tab.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function register_settings() {
@@ -263,6 +271,7 @@ class Otpa_Logger {
 			$script_params = array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'debug'    => $debug,
+				'nonce'    => wp_create_nonce( self::AJAX_NONCE ),
 			);
 			$key           = 'otpa-logs-script';
 			$js_ext        = ( $debug ) ? '.js' : '.min.js';
@@ -274,6 +283,30 @@ class Otpa_Logger {
 	}
 
 	// Protected methods.
+
+	/**
+	 * Check whether the current request may read or erase activity logs.
+	 *
+	 * @param string $nonce Request-verification token.
+	 * @return bool Whether the request is allowed.
+	 */
+	protected function is_logs_request_allowed( $nonce ) {
+		return current_user_can( 'manage_options' ) && (bool) wp_verify_nonce( $nonce, self::AJAX_NONCE );
+	}
+
+	/** Stop a background log request unless it has permission and a valid token. */
+	protected function require_logs_request_access() {
+		$nonce = sanitize_text_field( (string) filter_input( INPUT_POST, 'nonce', FILTER_UNSAFE_RAW ) );
+
+		if ( ! $this->is_logs_request_allowed( $nonce ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Error: unauthorized access - please reload the page and try again.', 'otpa' ),
+				),
+				403
+			);
+		}
+	}
 
 	protected static function db_log( $expression, $type, $force = false ) {
 
@@ -365,7 +398,7 @@ class Otpa_Logger {
 		}
 
 		$extend_context      = ( $extend_context ) ? ' - ' . $extend_context : '';
-		$trace               = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 3 ); // @codingStandardsIgnoreLine
+		$trace               = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 3 ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 		$caller_line_holder  = $trace[1];
 		$caller_class_holder = $trace[2];
 		$_class              = isset( $caller_class_holder['class'] ) ? $caller_class_holder['class'] : '';
@@ -373,6 +406,6 @@ class Otpa_Logger {
 		$function            = isset( $caller_class_holder['function'] ) ? $caller_class_holder['function'] : '';
 		$context             = $_class . $type . $function . ' on line ' . $caller_line_holder['line'] . $extend_context . ': ';
 
-		error_log( $context . $expression ); // @codingStandardsIgnoreLine
+		error_log( $context . $expression ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }

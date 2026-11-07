@@ -41,7 +41,7 @@ class Otpa_User_Info {
 	// Public methods.
 
 	public function user_profile_form_alter( $user ) {
-		echo $this->get_otp_info_markup( otpa_get_user_identifier( $user->ID ), $user ); // @codingStandardsIgnoreLine
+		echo $this->get_otp_info_markup( otpa_get_user_identifier( $user->ID ), $user ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies the login and email to this filter callback.
@@ -68,7 +68,7 @@ class Otpa_User_Info {
 	public function registration_form_alter() {
 		$identifier = $this->get_posted_identifier();
 
-		echo $this->get_otp_info_markup( $identifier ); // @codingStandardsIgnoreLine
+		echo $this->get_otp_info_markup( $identifier ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 
@@ -78,6 +78,11 @@ class Otpa_User_Info {
 	}
 
 	public function save_user_info( $user_id, $old_user_data = false ) {
+
+		if ( otpa_is_email_gateway() ) {
+			return;
+		}
+
 		$identifier = $this->get_posted_identifier();
 
 		if ( is_a( $old_user_data, 'WP_User' ) ) {

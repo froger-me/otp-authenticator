@@ -332,7 +332,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 
 		$output .= '</p>';
 
-		echo $output; // @codingStandardsIgnoreLine
+		echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public function identifier_name( $placeholder ) {
@@ -503,7 +503,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 			if ( method_exists( $e, 'getCode' ) && method_exists( $e, 'getMessage' ) ) {
 				otpa_db_log( __METHOD__ . ' - error ' . $e->getCode() . ': ' . $e->getMessage(), 'alert', true );
 			} else {
-				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 
 			return false;
@@ -531,7 +531,7 @@ class Otpa_Alibaba_Cloud_Sms_Gateway extends Otpa_Abstract_Gateway {
 			if ( method_exists( $e, 'getCode' ) && method_exists( $e, 'getMessage' ) ) {
 				otpa_db_log( __METHOD__ . ' - error ' . $e->getCode() . ': ' . $e->getMessage(), 'alert', true );
 			} else {
-				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // @codingStandardsIgnoreLine
+				otpa_db_log( __METHOD__ . ' - error ' . print_r( $e, true ), 'alert', true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			}
 
 			return false;

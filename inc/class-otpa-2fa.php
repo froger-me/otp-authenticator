@@ -50,7 +50,11 @@ class Otpa_2FA {
 	public function login_redirect( $redirect_to, $requested_redirect_to, $user ) {
 
 		if ( ! is_wp_error( $user ) && $this->need_2fa_check( $user ) ) {
-			update_user_meta( $user->ID, 'otpa_2fa_redirect', $requested_redirect_to );
+			update_user_meta(
+				$user->ID,
+				'otpa_2fa_redirect',
+				Otpa::get_safe_redirect( $requested_redirect_to, home_url( '/' ) )
+			);
 
 			$redirect_to = home_url();
 		}
@@ -72,7 +76,11 @@ class Otpa_2FA {
 				);
 			}
 
-			update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
+			update_user_meta(
+				$user->ID,
+				'otpa_2fa_redirect',
+				Otpa::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+			);
 			wp_safe_redirect( home_url() );
 
 			exit();
@@ -152,7 +160,11 @@ class Otpa_2FA {
 			$user = wp_get_current_user();
 
 			if ( ! metadata_exists( 'user', $user->ID, 'otpa_2fa_redirect' ) ) {
-				update_user_meta( $user->ID, 'otpa_2fa_redirect', otpa_get_current_url() );
+				update_user_meta(
+					$user->ID,
+					'otpa_2fa_redirect',
+					Otpa::get_safe_redirect( otpa_get_current_url(), home_url( '/' ) )
+				);
 			}
 
 			add_filter( 'rest_pre_dispatch', array( $this, 'deny_rest' ), PHP_INT_MIN, 3 );
@@ -388,7 +400,10 @@ class Otpa_2FA {
 
 		if ( ! is_wp_error( $result ) ) {
 			$user               = wp_get_current_user();
-			$result['redirect'] = get_user_meta( $user->ID, 'otpa_2fa_redirect', true );
+			$result['redirect'] = Otpa::get_safe_redirect(
+				get_user_meta( $user->ID, 'otpa_2fa_redirect', true ),
+				home_url( '/' )
+			);
 
 			delete_user_meta( $user->ID, 'otpa_2fa_redirect' );
 		}
@@ -413,9 +428,10 @@ class Otpa_2FA {
 	public function block_current_user_2fa_button_switch( $attrs ) {
 		$content = $this->get_user_2fa_button_switch(
 			$attrs['label'],
-			$attrs['turnOffText'],
 			$attrs['turnOnText'],
-			$attrs['className']
+			$attrs['turnOffText'],
+			$attrs['className'],
+			$attrs['labelInline'] ?? false
 		);
 
 		return $content;
@@ -428,6 +444,7 @@ class Otpa_2FA {
 				'turn_on_text'  => '',
 				'turn_off_text' => '',
 				'class'         => '',
+				'label_inline'  => false,
 			),
 			$attrs,
 			'otpa_2fa_switch'
@@ -435,9 +452,10 @@ class Otpa_2FA {
 
 		$content = $this->get_user_2fa_button_switch(
 			$attrs['label'],
-			$attrs['turn_off_text'],
 			$attrs['turn_on_text'],
-			$attrs['class']
+			$attrs['turn_off_text'],
+			$attrs['class'],
+			$attrs['label_inline']
 		);
 
 		return $content;
@@ -501,6 +519,10 @@ class Otpa_2FA {
 						'default' => '',
 						'type'    => 'string',
 					),
+					'labelInline' => array(
+						'default' => false,
+						'type'    => 'boolean',
+					),
 				),
 			)
 		);
@@ -551,7 +573,7 @@ class Otpa_2FA {
 		return $result;
 	}
 
-	public function get_user_2fa_button_switch( $label = '', $on_text = '', $off_text = '', $_class = '' ) {
+	public function get_user_2fa_button_switch( $label = '', $on_text = '', $off_text = '', $_class = '', $label_inline = false ) {
 		$user = wp_get_current_user();
 
 		if ( ! $this->is_block_editor() ) {
@@ -578,25 +600,32 @@ class Otpa_2FA {
 		wp_enqueue_script( 'otpa-user-2fa-switch-script' );
 		wp_localize_script( 'otpa-user-2fa-switch-script', 'OTPA', $params );
 
-		$_class   = ( empty( $_class ) ) ? 'otpa-user-2fa-button-switch' : esc_attr( $_class ) . ' otpa-user-2fa-button-switch';
-		$on_text  = ( empty( $on_text ) ) ? __( 'Two-Factor Authentication is ON - Click to Disable', 'otpa' ) : $on_text;
-		$off_text = ( empty( $off_text ) ) ? __( 'Two-Factor Authentication is OFF - Click to Enable', 'otpa' ) : $off_text;
-		$active   = $this->is_user_2fa_active( $user );
-		$nonce    = wp_nonce_field( 'otpa_2fa_nonce', 'otpa_2fa_nonce', true, false );
-		$output   = '<div class="otpa-user-2fa-button-switch-container">';
-		$output  .= ( ! empty( $label ) ) ? '<label>' . esc_html( $label ) . '</label> ' : '';
-		$output  .= '<button data-handler="switch_2fa" data-user_id="' . esc_attr( $user->ID );
-		$output  .= '" data-active_text="' . esc_attr( $on_text ) . '" data-inactive_text="' . esc_attr( $off_text ) . '"';
-		$output  .= '" data-active="' . esc_attr( $active ) . '"';
-		$output  .= '" type="button" class="' . $_class . '">';
-		$output  .= ( $active ) ? esc_html( $on_text ) : esc_html( $off_text ) . '</button>' . $nonce;
-		$output  .= '<div class="error otpa-error" style="display:none;">';
-		$output  .= __( 'An undefined error occured.', 'otpa' ) . '<br/>';
-		$output  .= __( 'Please reload the page and try again - if the problem persists, please contact an administrator.', 'otpa' );
-		$output  .= '</div>';
-		$output  .= '</div>';
+		$_class       = ( empty( $_class ) ) ? 'otpa-user-2fa-button-switch' : esc_attr( $_class ) . ' otpa-user-2fa-button-switch';
+		$on_text      = ( empty( $on_text ) ) ? __( 'Two-Factor Authentication is ON - Click to Disable', 'otpa' ) : $on_text;
+		$off_text     = ( empty( $off_text ) ) ? __( 'Two-Factor Authentication is OFF - Click to Enable', 'otpa' ) : $off_text;
+		$label_inline = filter_var( $label_inline, FILTER_VALIDATE_BOOLEAN );
+		$active       = $this->is_user_2fa_active( $user );
+		$nonce        = wp_nonce_field( 'otpa_2fa_nonce', 'otpa_2fa_nonce', true, false );
+		$output       = '<div class="otpa-user-2fa-button-switch-container">';
 
-		return apply_filters( 'otpa_2fa_button_switch_markup', $output, $label, $on_text, $off_text, $_class, $nonce );
+		if ( ! empty( $label ) ) {
+			$label_markup = '<label>' . esc_html( $label ) . '</label>';
+			$output      .= $label_inline ? $label_markup . ' ' : '<div class="otpa-user-2fa-button-switch-label">' . $label_markup . '</div>';
+		}
+
+		$output .= '<button data-handler="switch_2fa" data-user_id="' . esc_attr( $user->ID );
+		$output .= '" data-active_text="' . esc_attr( $on_text ) . '" data-inactive_text="' . esc_attr( $off_text ) . '"';
+		$output .= ' data-active="' . esc_attr( $active ) . '"';
+		$output .= ' type="button" class="' . $_class . '">';
+		$output .= ( $active ) ? esc_html( $on_text ) : esc_html( $off_text );
+		$output .= '</button>' . $nonce;
+		$output .= '<div class="error otpa-error" style="display:none;">';
+		$output .= __( 'An undefined error occured.', 'otpa' ) . '<br/>';
+		$output .= __( 'Please reload the page and try again - if the problem persists, please contact an administrator.', 'otpa' );
+		$output .= '</div>';
+		$output .= '</div>';
+
+		return apply_filters( 'otpa_2fa_button_switch_markup', $output, $label, $on_text, $off_text, $_class, $nonce, $label_inline );
 	}
 
 	// Protected methods.

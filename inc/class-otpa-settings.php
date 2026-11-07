@@ -169,7 +169,7 @@ class Otpa_Settings {
 	public function plugin_main_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.', 'otpa' ) ); // @codingStandardsIgnoreLine
+			wp_die( __( 'Sorry, you are not allowed to access this page.', 'otpa' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$active_tab = sanitize_key( (string) filter_input( INPUT_GET, 'tab', FILTER_UNSAFE_RAW ) );
@@ -179,11 +179,11 @@ class Otpa_Settings {
 		ob_start();
 
 		require_once apply_filters(
-			'otpa_template_main-settings-page',  // @codingStandardsIgnoreLine
+			'otpa_template_main-settings-page',  // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 			OTPA_PLUGIN_PATH . 'inc/templates/admin/main-settings-page.php'
 		);
 
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress supplies all three default-option filter arguments.
@@ -234,6 +234,14 @@ class Otpa_Settings {
 			$settings[ $key ] = (bool) $settings[ $key ];
 		}
 
+		$available_roles                = array_keys( wp_roles()->roles );
+		$passwordless_roles             = array_unique( array_map( 'sanitize_key', (array) $settings['passwordless_roles'] ) );
+		$settings['passwordless_roles'] = array_values( array_intersect( $passwordless_roles, $available_roles ) );
+
+		if ( empty( $settings['passwordless_roles'] ) && in_array( 'subscriber', $available_roles, true ) ) {
+			$settings['passwordless_roles'] = array( 'subscriber' );
+		}
+
 		return apply_filters( 'otpa_sanitize_settings', $settings );
 	}
 
@@ -259,7 +267,7 @@ class Otpa_Settings {
 					'help'  => __( 'When Two-Factor Authentication is enabled, users logging in with their login and password will be asked to login with the selected Authentication Gateway as well.', 'otpa' ) . '<br/>' . sprintf(
 						// translators: %1$s is the 2FA shortcode, %2$s is the "OTPA 2FA Form" Gutenberg Block name
 						__( 'Unless forced, users can opt in & out of Two Factor Authentication in their WordPress user profile, or with a button displayed either by the %1$s shortcode or with the %2$s Block.', 'otpa' ),
-						'<code>[otpa_2fa_switch label="" class="" turn_on_text="" turn_off_text=""]</code>',
+						'<code>[otpa_2fa_switch label="" label_inline="false" class="" turn_on_text="" turn_off_text=""]</code>',
 						'<code>' . __( 'OTPA 2FA Switch', 'otpa' ) . '</code>'
 					) . '<br/>' . __( 'Enabling Two-Factor Authentication disables Passwordless Authentication and Account Validation.', 'otpa' ),
 				),
@@ -283,6 +291,15 @@ class Otpa_Settings {
 					'type'  => 'input_checkbox',
 					'class' => '',
 					'help'  => __( 'When Passwordless Authentication is enabled, users can choose to log in with the selected Authentication Gateway instead of using their login and password.', 'otpa' ) . '<br/>' . __( 'Passwordless Authentication and Two-Factor Authentication cannot be enabled at the same time.', 'otpa' ),
+				),
+				array(
+					'id'           => 'passwordless_roles',
+					'label'        => __( 'Roles to include for Passwordless Authentication', 'otpa' ),
+					'type'         => 'checkbox_group',
+					'value'        => $this->get_roles(),
+					'sort'         => 'asc',
+					'class'        => 'otpa-passwordless-roles-container',
+					'help'         => __( 'Passwordless authentication applies only to users with a selected role. Subscriber is selected automatically when no other role is selected.', 'otpa' ),
 				),
 				array(
 					'id'    => 'enable_validation',
@@ -392,6 +409,7 @@ class Otpa_Settings {
 			'force_2fa'                => false,
 			'default_2fa'              => false,
 			'enable_passwordless'      => false,
+			'passwordless_roles'       => array( 'subscriber' ),
 			'enable_validation'        => false,
 			'validation_expiry'        => -1,
 			'validation_exclude_roles' => array(),

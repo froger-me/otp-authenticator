@@ -135,6 +135,29 @@ if ( $otpa_e2e_administrator instanceof WP_User ) {
 	update_user_meta( $otpa_e2e_administrator->ID, 'otpa_mail', $otpa_e2e_administrator->user_email );
 	update_user_meta( $otpa_e2e_administrator->ID, 'otpa_twilio_phone', '+12025550123' );
 	update_user_meta( $otpa_e2e_administrator->ID, 'otpa_aliyun_phone', '+8613812345678' );
+	update_user_meta( $otpa_e2e_administrator->ID, 'otpa_2fa_active', false );
+	delete_user_meta( $otpa_e2e_administrator->ID, 'otpa_2fa_checked' );
+	delete_user_meta( $otpa_e2e_administrator->ID, 'otpa_need_2fa_check' );
+
+	$otpa_e2e_switch_page = get_page_by_path( 'otpa-two-factor-switch-test', OBJECT, 'page' );
+	$otpa_e2e_page_data   = array(
+		'post_author'  => $otpa_e2e_administrator->ID,
+		'post_content' => '[otpa_2fa_switch turn_on_text="&lt;img id=&#039;otpa-switch-injected-image&#039; src=&#039;missing&#039; onerror=&#039;window.otpaSwitchMarkupRan=true&#039;&gt;" turn_off_text="Enable two-factor authentication"]',
+		'post_name'    => 'otpa-two-factor-switch-test',
+		'post_status'  => 'publish',
+		'post_title'   => 'OTP Two-Factor Switch Test',
+		'post_type'    => 'page',
+	);
+
+	if ( $otpa_e2e_switch_page instanceof WP_Post ) {
+		$otpa_e2e_page_data['ID'] = $otpa_e2e_switch_page->ID;
+	}
+
+	$otpa_e2e_switch_page_id = wp_insert_post( $otpa_e2e_page_data, true );
+
+	if ( is_wp_error( $otpa_e2e_switch_page_id ) ) {
+		throw new RuntimeException( esc_html( $otpa_e2e_switch_page_id->get_error_message() ) );
+	}
 }
 
 update_option(
@@ -145,6 +168,7 @@ update_option(
 		'force_2fa'                => false,
 		'default_2fa'              => false,
 		'enable_passwordless'      => true,
+		'passwordless_roles'       => array( 'subscriber' ),
 		'enable_validation'        => true,
 		'validation_expiry'        => -1,
 		'validation_exclude_roles' => array( 'administrator' ),

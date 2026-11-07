@@ -2,8 +2,8 @@
 
 # Main config
 DIR=$(pwd)
-PLUGINSLUG="otp-authenticator"
-MAINFILE="otp-authenticator.php"
+PLUGINSLUG=$(basename "$DIR")
+MAINFILE="$PLUGINSLUG.php"
 # SVN user
 SVNUSER=""
 # Verbose mode
@@ -15,7 +15,7 @@ SKIP_ASSETS=false
 # Script name
 SCRIPT_NAME=$(basename "$0")
 # Git branch
-GITBRANCH="master"
+GITBRANCH="main"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -285,11 +285,12 @@ if which gh > /dev/null; then
     # Create the release path
     execute_or_echo mkdir -p "$RELEASEPATH"
 
-    # Create a zip file of the plugin, excluding all hidden files and *.sh files
-    execute_or_echo rsync -r --exclude=".*" --exclude="*.sh" "$GITPATH" "$RELEASEPATH"
+    # Create a zip file of the plugin, excluding development files.
+    execute_or_echo rsync -r --exclude=".*" --exclude="*.sh" --exclude="tests" "$GITPATH" "$RELEASEPATH"
 
-    # Use tar to create the zip file
-    execute_or_echo tar -czf "/tmp/$ZIPFILE" -C "$RELEASEPATH" .
+    # Create the zip file from the prepared release directory.
+    execute_or_echo rm -f "/tmp/$ZIPFILE"
+    execute_or_echo bash -c 'cd "$1" && zip -qr "$2" .' _ "$RELEASEPATH" "/tmp/$ZIPFILE"
 
     # Delete the release path
     execute_or_echo rm -fr "$RELEASEPATH"
@@ -339,13 +340,15 @@ fi
 
 # Export HEAD of branch from git to SVN trunk
 execute_or_echo git checkout-index -a -f --prefix="$SVNPATH"/trunk/
+execute_or_echo rm -rf "${SVNPATH:?}/trunk/tests"
 
 # Ignore files
 execute_or_echo svn propset svn:ignore "deploy.sh
 .DS_Store
 .vscode
 .git
-.gitignore" "$SVNPATH/trunk/"
+.gitignore
+tests" "$SVNPATH/trunk/"
 
 # Add only readme.txt to SVN trunk
 execute_or_echo cd "$SVNPATH"/trunk/
